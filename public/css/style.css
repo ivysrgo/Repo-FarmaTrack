@@ -1,0 +1,290 @@
+/* ============================================================
+   FARMATRACK — Design Tokens
+   Generado desde farmatrack-tokens.json
+   Estructura: Global → Semantic → Components
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   GLOBAL — Valores primitivos
+   ------------------------------------------------------------ */
+:root {
+
+  /* --- Colores primitivos --- */
+  --color-mint-400: #5DCAA5;       /* Verde menta medio — paso activo, borde completado, badge activo */
+  --color-mint-700: #1A5C3A;       /* Verde oscuro profundo — botón primario, paso completado */
+  --color-blue-300: #7EC8E3;       /* Azul claro — avatares, iconos de acceso rápido, hover */
+  --color-nude-100: #F5EFE6;       /* Crema / nude claro — topbar, fondo stepper, fondo contextual */
+  --color-white:    #FFFFFF;       /* Blanco puro — fondo de cards, inputs activos, panel principal */
+  --color-gray-200: #D3D1C7;       /* Gris claro — pasos pendientes, checkboxes vacíos, bordes */
+  --color-gray-800: #444441;       /* Gris oscuro — texto principal */
+  --color-red-500:  #E24B4A;       /* Rojo error — campos fuera de rango BPM, validación crítica */
+  --color-yellow-400: #E8F055;     /* Amarillo alerta — botón no conformidad, alertas de desviación */
+  --color-amber-600: #633806;      /* Ocre oscuro — texto sobre badge amarillo */
+
+  /* --- Espaciado (px) --- */
+  --space-1: 4px;    /* Gap mínimo entre elementos inline */
+  --space-2: 8px;    /* Gap ícono/texto en botones, entre checkboxes */
+  --space-3: 12px;   /* Padding interno de campos de texto, gap entre cards aside */
+  --space-4: 14px;   /* Padding lateral del panel principal, gap entre botones */
+  --space-5: 16px;   /* Padding interno de cards, margen entre secciones */
+  --space-6: 18px;   /* Padding del topbar y stepper */
+  --space-8: 28px;   /* Separación entre bloques mayores */
+
+  /* --- Border Radius (px / %) --- */
+  --radius-sm:     4px;   /* Checkboxes, badges pequeños, hints */
+  --radius-md:     8px;   /* Inputs, botones, badges de estado */
+  --radius-lg:     12px;  /* Cards del aside */
+  --radius-pill:   20px;  /* Badges de paso activo, badge de estado del lote */
+  --radius-circle: 50%;   /* Círculos del stepper, avatares */
+
+  /* --- Border Width (px) --- */
+  --border-default: 0.5px;  /* Bordes de inputs sin foco, separadores, topbar */
+  --border-focus:   1.5px;  /* Input en estado focus */
+  --border-accent:  2px;    /* Borde izquierdo de tarjetas en espera */
+
+  /* --- Tipografía — Tamaños (px) --- */
+  --font-size-screen-title:  18px;  /* Título de pantalla — nombre del lote en topbar */
+  --font-size-section-title: 14px;  /* Título de sección — título del paso activo */
+  --font-size-input-text:    13px;  /* Texto de input */
+  --font-size-field-label:   11px;  /* Etiqueta de campo, texto de bitácora */
+  --font-size-hint:          10px;  /* Hint, badge/pill, número de paso en stepper */
+  --font-size-button:        12px;  /* Etiqueta de todos los botones */
+  --font-size-stepper-label: 9px;   /* Label del stepper — nombre del paso */
+
+  /* --- Tipografía — Pesos --- */
+  --font-weight-regular: 400;
+  --font-weight-medium:  500;
+
+  /* --- Tipografía — Familia --- */
+  --font-family-base: Inter, 'Segoe UI', sans-serif;  /* Única familia tipográfica del sistema */
+
+  /* --- Sizing (px) --- */
+  --size-button-height:      34px;  /* Altura de todos los botones */
+  --size-topbar-height:      44px;  /* Altura del topbar */
+  --size-input-height:       34px;  /* Altura de inputs de formulario */
+  --size-stepper-circle:     26px;  /* Diámetro del círculo del stepper */
+  --size-avatar:             28px;  /* Diámetro de los avatares */
+  --size-aside-width:        210px; /* Ancho del panel lateral aside */
+  --size-sidebar-width:      220px; /* Ancho del sidebar de navegación principal */
+  --size-sidebar-collapsed:  56px;  /* Ancho del sidebar en modo compacto */
+  --size-modal-width:        480px; /* Ancho de modales */
+  --size-badge-height:       22px;  /* Altura de badges / pills */
+}
+
+
+/* ------------------------------------------------------------
+   SEMANTIC — Tokens de uso por intención
+   ------------------------------------------------------------ */
+:root {
+
+  /* --- Acciones --- */
+  --color-action-primary:       var(--color-mint-700);   /* Fondo de botón primario */
+  --color-action-primary-hover: var(--color-mint-400);   /* Hover del botón primario */
+
+  /* --- Estados --- */
+  --color-state-active:    var(--color-mint-400);    /* Paso activo en stepper, borde completado */
+  --color-state-completed: var(--color-mint-700);    /* Paso completado, checkbox marcado */
+  --color-state-pending:   var(--color-gray-200);    /* Paso pendiente, checkbox vacío */
+  --color-state-warning:   var(--color-yellow-400);  /* No conformidad, alertas de desviación */
+  --color-state-error:     var(--color-red-500);     /* Campos fuera de rango, errores de validación */
+
+  /* --- Superficies --- */
+  --color-surface-base:   var(--color-white);      /* Panel principal, cards, inputs activos */
+  --color-surface-raised: var(--color-nude-100);   /* Topbar, fondo stepper, fondo contextual */
+  --color-surface-info:   var(--color-blue-300);   /* Elementos informativos secundarios */
+
+  /* --- Bordes semánticos --- */
+  --color-border-default: var(--color-gray-200);   /* Inputs sin foco, separadores */
+  --color-border-active:  var(--color-mint-400);   /* Input con valor completado */
+  --color-border-error:   var(--color-red-500);    /* Input con valor fuera de rango */
+
+  /* --- Texto semántico --- */
+  --color-text-primary:          var(--color-gray-800);   /* Texto principal del sistema */
+  --color-text-secondary:        #888780;                 /* Labels, hints, metadatos */
+  --color-text-on-primary:       var(--color-white);      /* Texto sobre botón primario */
+  --color-text-on-active-badge:  var(--color-mint-700);   /* Texto en badge de estado activo */
+  --color-text-on-warning-badge: var(--color-amber-600);  /* Texto en badge de pendiente verificación */
+}
+
+
+/* ------------------------------------------------------------
+   COMPONENTS — Tokens por componente
+   ------------------------------------------------------------ */
+:root {
+
+  /* ---- Botón primario ---- */
+  --btn-primary-bg:              var(--color-action-primary);
+  --btn-primary-text:            var(--color-white);
+  --btn-primary-border:          var(--color-action-primary);
+  --btn-primary-height:          var(--size-button-height);
+  --btn-primary-radius:          var(--radius-md);
+  --btn-primary-font-size:       var(--font-size-button);
+  --btn-primary-font-weight:     var(--font-weight-medium);
+  --btn-primary-padding-x:       var(--space-5);
+  --btn-primary-disabled-opacity: 0.4;
+
+  /* ---- Botón secundario ---- */
+  --btn-secondary-bg:          var(--color-surface-base);
+  --btn-secondary-text:        var(--color-action-primary);
+  --btn-secondary-border:      var(--color-border-default);
+  --btn-secondary-height:      var(--size-button-height);
+  --btn-secondary-radius:      var(--radius-md);
+  --btn-secondary-font-size:   var(--font-size-button);
+  --btn-secondary-font-weight: var(--font-weight-medium);
+
+  /* ---- Botón de alerta (no conformidad) ---- */
+  /* Nota: aplicar 22% de opacidad al background en Figma */
+  --btn-alert-bg:          var(--color-state-warning);
+  --btn-alert-border:      var(--color-state-warning);
+  --btn-alert-text:        var(--color-amber-600);
+  --btn-alert-height:      var(--size-button-height);
+  --btn-alert-radius:      var(--radius-md);
+  --btn-alert-font-size:   var(--font-size-button);
+  --btn-alert-font-weight: var(--font-weight-medium);
+
+  /* ---- Input — Vacío ---- */
+  --input-empty-border:     var(--color-border-default);
+  --input-empty-bg:         #F8F7F4;  /* Gris muy claro cuando está vacío */
+
+  /* ---- Input — Completado ---- */
+  --input-completed-border: var(--color-border-active);
+  --input-completed-bg:     var(--color-surface-base);
+
+  /* ---- Input — Error ---- */
+  /* Nota: aplicar 5% de opacidad al background */
+  --input-error-border:     var(--color-border-error);
+  --input-error-bg:         var(--color-red-500);
+
+  /* ---- Input — Focus ---- */
+  --input-focus-border:       var(--color-border-active);
+  --input-focus-border-width: var(--border-focus);
+  --input-focus-bg:           var(--color-surface-base);
+
+  /* ---- Input — Compartido ---- */
+  --input-height:     var(--size-input-height);
+  --input-radius:     var(--radius-md);
+  --input-font-size:  var(--font-size-input-text);
+  --input-padding-x:  var(--space-3);
+
+  /* ---- Checkbox — Vacío ---- */
+  --checkbox-empty-border:       var(--color-border-default);
+  --checkbox-empty-border-width: 1.5px;
+  --checkbox-empty-bg:           var(--color-surface-base);
+  --checkbox-empty-radius:       var(--radius-sm);
+
+  /* ---- Checkbox — En progreso ---- */
+  /* Nota: aplicar 13% de opacidad al background */
+  --checkbox-in-progress-border:       var(--color-state-active);
+  --checkbox-in-progress-border-width: 1.5px;
+  --checkbox-in-progress-bg:           var(--color-mint-400);
+  --checkbox-in-progress-radius:       var(--radius-sm);
+
+  /* ---- Checkbox — Marcado ---- */
+  --checkbox-checked-bg:       var(--color-state-completed);
+  --checkbox-checked-checkmark: var(--color-white);
+  --checkbox-checked-radius:   var(--radius-sm);
+
+  /* ---- Checkbox — Compartido ---- */
+  --checkbox-size: 16px;
+
+  /* ---- Badge — Activo ---- */
+  /* Nota: aplicar 13% de opacidad al background + borde mint sólido */
+  --badge-active-bg:     var(--color-mint-400);
+  --badge-active-border: var(--color-mint-400);
+  --badge-active-text:   var(--color-mint-700);
+
+  /* ---- Badge — Advertencia ---- */
+  /* Nota: aplicar 13% de opacidad al background + borde amarillo sólido */
+  --badge-warning-bg:     var(--color-yellow-400);
+  --badge-warning-border: var(--color-yellow-400);
+  --badge-warning-text:   var(--color-amber-600);
+
+  /* ---- Badge — Liberado ---- */
+  /* Nota: aplicar 10% de opacidad al background, sin borde */
+  --badge-liberated-bg:   var(--color-mint-400);
+  --badge-liberated-text: var(--color-mint-700);
+
+  /* ---- Badge — Compartido ---- */
+  --badge-height:       var(--size-badge-height);
+  --badge-radius:       var(--radius-pill);
+  --badge-font-size:    var(--font-size-hint);
+  --badge-font-weight:  var(--font-weight-medium);
+  --badge-padding-x:    10px;
+
+  /* ---- Avatar ---- */
+  --avatar-size:        var(--size-avatar);
+  --avatar-bg:          var(--color-blue-300);
+  --avatar-text:        var(--color-mint-700);
+  --avatar-radius:      var(--radius-circle);
+  --avatar-font-size:   10px;
+  --avatar-font-weight: var(--font-weight-medium);
+
+  /* ---- Topbar ---- */
+  --topbar-bg:              var(--color-surface-raised);
+  --topbar-height:          var(--size-topbar-height);
+  --topbar-border-bottom:   var(--color-border-default);
+  --topbar-padding-x:       var(--space-6);
+  --topbar-title-font-size: 13px;
+  --topbar-title-font-weight: var(--font-weight-medium);
+  --topbar-subtitle-font-size: var(--font-size-field-label);
+
+  /* ---- Stepper ---- */
+  --stepper-bg:      var(--color-surface-raised);
+  --stepper-padding: var(--space-6);
+
+  --stepper-circle-size:               var(--size-stepper-circle);
+  --stepper-circle-radius:             var(--radius-circle);
+  --stepper-circle-active-bg:          var(--color-state-active);
+  --stepper-circle-completed-bg:       var(--color-state-completed);
+  --stepper-circle-pending-border:     var(--color-state-pending);
+  --stepper-circle-pending-bg:         var(--color-surface-base);
+  --stepper-circle-text-on-active:     var(--color-white);
+  --stepper-circle-text-on-pending:    #888780;
+
+  --stepper-connector-height:  1.5px;
+  --stepper-connector-done:    var(--color-mint-700);
+  --stepper-connector-active:  var(--color-mint-400);
+  --stepper-connector-pending: var(--color-gray-200);
+
+  --stepper-label-font-size: var(--font-size-stepper-label);
+  --stepper-label-color:     #888780;
+
+  /* ---- Card del aside ---- */
+  --aside-card-bg:      var(--color-surface-base);
+  --aside-card-border:  var(--color-border-default);
+  --aside-card-radius:  var(--radius-lg);
+  --aside-card-padding: var(--space-3);
+
+  /* ---- Card de lote ---- */
+  --lote-card-bg:               var(--color-surface-base);
+  --lote-card-border:           var(--color-border-default);
+  --lote-card-radius:           var(--radius-lg);
+  --lote-card-padding:          var(--space-4);
+  --lote-card-waiting-accent:   var(--color-yellow-400);  /* Borde izquierdo 2px en lotes bloqueados */
+
+  --lote-progress-pill-height: 5px;
+  --lote-progress-pill-radius: 10px;
+  --lote-progress-pill-done:   var(--color-mint-700);
+  --lote-progress-pill-active: var(--color-mint-400);
+  --lote-progress-pill-pending: var(--color-gray-200);
+
+  /* ---- Modal ---- */
+  --modal-width:   var(--size-modal-width);
+  --modal-bg:      var(--color-surface-base);
+  --modal-radius:  var(--radius-lg);
+  --modal-padding: var(--space-5);
+  /* Nota: overlay negro con 35% de opacidad */
+  --modal-overlay: #000000;
+
+  /* ---- Divider ---- */
+  --divider-color: var(--color-border-default);
+  --divider-width: 0.5px;
+
+  /* ---- Sidebar ---- */
+  --sidebar-bg:               var(--color-surface-raised);
+  --sidebar-width:            var(--size-sidebar-width);
+  --sidebar-collapsed-width:  var(--size-sidebar-collapsed);
+  --sidebar-active-bg:        var(--color-surface-base);
+  --sidebar-active-border:    var(--color-border-default);
+  --sidebar-active-font-weight: var(--font-weight-medium);
+}

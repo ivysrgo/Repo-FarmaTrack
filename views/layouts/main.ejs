@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= typeof title !== 'undefined' ? title : 'FarmaTrack' %> | FarmaTrack</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/app.css" />
+</head>
+<body>
+
+  <!-- ── Sidebar ─────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <span class="sidebar__logo">💊</span>
+      <span class="sidebar__name">FarmaTrack</span>
+    </div>
+    <nav class="sidebar__nav">
+      <a href="/lotes" class="sidebar__link <%= typeof currentPath !== 'undefined' && currentPath === '/lotes' ? 'sidebar__link--active' : '' %>">
+        <span class="sidebar__link-icon">📋</span>
+        <span class="sidebar__link-label">Lotes Activos</span>
+      </a>
+      <a href="#" class="sidebar__link">
+        <span class="sidebar__link-icon">📊</span>
+        <span class="sidebar__link-label">Reportes</span>
+      </a>
+      <a href="#" class="sidebar__link">
+        <span class="sidebar__link-icon">⚙️</span>
+        <span class="sidebar__link-label">Configuración</span>
+      </a>
+    </nav>
+    <div class="sidebar__user">
+      <div class="avatar">DT</div>
+      <div class="sidebar__user-info">
+        <p class="sidebar__user-name">Director Técnico</p>
+        <p class="sidebar__user-role">Admin</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Contenido principal ──────────────────────── -->
+  <div class="app-body">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar__left">
+        <p class="topbar__title"><%= typeof title !== 'undefined' ? title : 'FarmaTrack' %></p>
+        <% if (typeof subtitle !== 'undefined') { %>
+          <p class="topbar__subtitle"><%= subtitle %></p>
+        <% } %>
+      </div>
+      <div class="topbar__right">
+        <div class="avatar">DT</div>
+      </div>
+    </header>
+
+    <!-- Contenido de la página -->
+    <main class="page-content">
+      <%- body %>
+    </main>
+
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
