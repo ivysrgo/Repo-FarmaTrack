@@ -1,0 +1,145 @@
+<%# views/lotes/paso9.ejs — Etiquetado %>
+<div class="step-page">
+  <%- include('../partials/stepper-topbar') %>
+
+  <div class="step-layout">
+    <div class="step-main">
+
+      <div class="step-header">
+        <div class="step-header__meta">
+          <span>Paso 9/9 · <%= lote.numeroLote %> · <%= lote.medicamento %> · Operario: <%= operario.nombre %></span>
+          <span class="step-header__badge" style="background:rgba(26,92,58,0.12); border-color:var(--green-dark); color:var(--green-dark);">✅ Lote completado</span>
+          <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+        </div>
+        <h1 class="step-header__title">Etiquetado</h1>
+      </div>
+
+      <div class="readonly-notice">🔒 Vista de solo lectura — Director Técnico. Este paso fue completado por el Operario.</div>
+
+      <!-- Verificación de etiquetas -->
+      <div class="step-card">
+        <p class="step-card__title">Verificación de etiquetado — completado por operario</p>
+        <div class="info-notice" style="margin-bottom:14px">
+          ✅ Todas las verificaciones de etiquetado fueron confirmadas por el operario. Lote listo para liberación.
+        </div>
+
+        <div class="checklist-grid">
+          <% checklist.forEach(item => { %>
+            <div class="check-row">
+              <div class="check-box"></div>
+              <span><%= item %></span>
+            </div>
+          <% }) %>
+        </div>
+
+        <div style="margin-top:16px">
+          <div class="field-group">
+            <span class="field-label">Cantidad de unidades etiquetadas</span>
+            <div class="field-value" style="max-width:200px;"><%= unidadesEtiquetadas %> unidades</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <p class="obs-label">Observaciones del operario</p>
+          <div class="field-value field-value--wide"><%= observaciones %></div>
+        </div>
+      </div>
+
+      <!-- Resumen del lote completado -->
+      <div class="step-card" style="border-color: var(--green-mid); background: rgba(93,202,165,0.04);">
+        <p class="step-card__title" style="color:var(--green-dark);">🏭 Resumen del lote — <%= lote.numeroLote %></p>
+        <div class="field-grid field-grid--3" style="margin-top:8px;">
+          <div class="field-group">
+            <span class="field-label">Medicamento</span>
+            <div class="field-value" style="background:var(--white)"><%= lote.medicamento %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Cantidad planificada</span>
+            <div class="field-value" style="background:var(--white)"><%= lote.cantidadPlanificada.toLocaleString('es-CO') %> unidades</div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Unidades etiquetadas</span>
+            <div class="field-value" style="background:var(--white)"><%= unidadesEtiquetadas %> unidades</div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Operario</span>
+            <div class="field-value" style="background:var(--white)"><%= lote.operario %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Estado final</span>
+            <div class="field-value" style="background:var(--white); color:var(--green-dark); font-weight:500;">✅ Completado</div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Pasos completados</span>
+            <div class="field-value" style="background:var(--white);">9 / 9</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <p class="obs-label">Observaciones del operario (solo lectura)</p>
+        <div class="field-value field-value--wide" style="color:var(--muted)">Sin observaciones adicionales registradas en este paso.</div>
+      </div>
+
+    </div>
+
+    <!-- Aside final -->
+    <aside class="step-aside">
+      <div class="aside-card">
+        <p class="aside-card__title">Checklist paso 9 — Operario</p>
+        <div class="aside-checklist">
+          <% checklist.forEach(item => { %>
+            <div class="aside-check-item">
+              <div class="check-dot"></div>
+              <span><%= item %></span>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="aside-card" style="border-color:var(--green-mid);">
+        <p class="aside-card__title" style="color:var(--green-dark);">✅ Lote completado</p>
+        <p style="font-size:11px; color:var(--muted); margin-top:4px;">
+          Todos los pasos del proceso han sido completados y verificados.
+        </p>
+      </div>
+
+      <div class="aside-card">
+        <p class="aside-card__title">Eventos recientes</p>
+        <div class="event-list">
+          <% eventos.forEach(ev => { %>
+            <div class="event-item">
+              <div class="event-dot"></div>
+              <span class="event-item__text"><%= ev.texto %></span>
+              <span class="event-item__time"><%= ev.hora %></span>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="aside-card">
+        <p class="aside-card__title">Navegación de pasos</p>
+        <div class="nav-step-list">
+          <% pasos.forEach(p => { %>
+            <a href="/lotes/<%= lote.id %>/paso/<%= p.n %>"
+               class="nav-step-item nav-step-item--done">
+              <div class="nav-step-dot nav-step-dot--done"></div>
+              <span>Paso <%= p.n %> — <%= p.nombre %> ✓</span>
+            </a>
+          <% }) %>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Footer especial para último paso -->
+  <div class="step-footer">
+    <div class="step-footer__left">
+      <span>Solo lectura · D.T.</span>
+    </div>
+    <div class="step-footer__right">
+      <a href="/lotes/<%= lote.id %>/paso/8" class="btn-step btn-step--ghost">← Paso anterior</a>
+      <a href="/lotes" class="btn-step btn-step--secondary">Ver todos los lotes</a>
+    </div>
+  </div>
+</div>

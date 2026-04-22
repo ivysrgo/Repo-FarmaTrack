@@ -1,0 +1,101 @@
+<%# views/lotes/paso6.ejs — Retiro de marmita %>
+<div class="step-page">
+  <%- include('../partials/stepper-topbar') %>
+
+  <div class="step-layout">
+    <div class="step-main">
+
+      <div class="step-header">
+        <div class="step-header__meta">
+          <span>Paso 6/9 · <%= lote.numeroLote %> · <%= lote.medicamento %> · Operario: <%= operario.nombre %></span>
+          <span class="step-header__badge step-header__badge--readonly">🔒 Solo lectura · D.T.</span>
+          <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+        </div>
+        <h1 class="step-header__title">Retiro de marmita</h1>
+      </div>
+
+      <div class="readonly-notice">🔒 Vista de solo lectura — Director Técnico. Este paso fue completado por el Operario.</div>
+
+      <div class="step-card">
+        <p class="step-card__title">Retiro de marmita — datos registrados por operario</p>
+        <div class="field-grid field-grid--2">
+          <div class="field-group">
+            <span class="field-label">Cantidad planificada</span>
+            <div class="field-value"><%= cantidadPlanificada %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Producto</span>
+            <div class="field-value"><%= producto %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Cantidad obtenida</span>
+            <div class="field-value"><%= cantidadObtenida %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Rendimiento real</span>
+            <div class="field-value"><%= rendimiento %> ✓</div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Hora de retiro</span>
+            <div class="field-value"><%= horaRetiro %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Destino del producto</span>
+            <div class="field-value"><%= destino %></div>
+          </div>
+          <div class="field-group" style="grid-column:span 2">
+            <span class="field-label">Condición del producto</span>
+            <div class="field-value"><%= condicion %></div>
+          </div>
+        </div>
+
+        <!-- Barra de rendimiento -->
+        <div style="margin-top:12px; padding:10px; background:var(--nude); border-radius:8px;">
+          <p style="font-size:11px; color:var(--muted); margin-bottom:6px;">
+            Rendimiento: <%= cantidadObtenida %> / <%= cantidadPlanificada %> = <%= rendimiento %>
+          </p>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="progress-bar-wrap">
+              <div id="rendimiento-bar" class="progress-bar-fill" data-width="<%= rendimientoPct %>"></div>
+            </div>
+            <span class="progress-bar-label"><%= rendimiento %> — Conforme ✓</span>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <p class="obs-label">Observaciones del operario</p>
+          <div class="field-value field-value--wide"><%= observaciones %></div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <p class="step-card__title">Checklist completado</p>
+        <div class="checklist-grid">
+          <% checklist.forEach(item => { %>
+            <div class="check-row">
+              <div class="check-box"></div>
+              <span><%= item %></span>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <p class="obs-label">Observaciones del operario (solo lectura)</p>
+        <div class="field-value field-value--wide" style="color:var(--muted)">Sin observaciones adicionales registradas en este paso.</div>
+      </div>
+
+    </div>
+    <%- include('../partials/stepper-aside') %>
+  </div>
+  <%- include('../partials/stepper-footer') %>
+</div>
+
+<script>
+  (function () {
+    const bar = document.getElementById('rendimiento-bar');
+    if (!bar) return;
+    const value = Math.max(0, Math.min(100, Number(bar.dataset.width) || 0));
+    bar.style.width = value + '%';
+  })();
+</script>

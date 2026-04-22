@@ -1,0 +1,73 @@
+<%# Frame 5 — Welcome post-login %>
+<%
+  const u        = locals.currentUser || {};
+  const nombre   = u.nombre || 'Usuario';
+  const cargo    = u.cargo  || '';
+  const email    = u.email  || '';
+  const initials = nombre.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+  const hora     = new Date().toLocaleString('es-CO', { dateStyle:'medium', timeStyle:'short' });
+  const rolesLabel = { director_tecnico:'Director Técnico — Planta Principal', operario:'Operario de Producción', calidad:'Analista de Calidad' };
+  const rolLabel = rolesLabel[u.rol] || u.rol || 'Usuario';
+%>
+
+<div class="welcome-card">
+  <!-- Accent top bar via ::before -->
+
+  <div class="welcome-card__body" style="position:relative;">
+
+    <!-- Confetti — frame5 -->
+    <div style="position:relative; display:inline-block; margin-bottom:0;">
+      <!-- Dots decorativos -->
+      <div style="position:absolute; top:-20px; left:-80px; width:14px; height:14px; border-radius:50%; background:var(--yellow);"></div>
+      <div style="position:absolute; top:-30px; left:-52px; width:8px; height:8px; border-radius:50%; background:var(--green-mid);"></div>
+      <div style="position:absolute; top:-24px; right:-52px; width:12px; height:12px; border-radius:50%; background:var(--green-mid);"></div>
+      <div style="position:absolute; top:-32px; right:-80px; width:14px; height:14px; border-radius:50%; background:var(--yellow);"></div>
+      <!-- Cuadraditos rotados -->
+      <div style="position:absolute; top:-10px; left:-100px; width:9px; height:9px; background:var(--green-mid); transform:rotate(28deg);"></div>
+      <div style="position:absolute; top:-8px; right:-100px; width:9px; height:9px; background:var(--yellow); transform:rotate(-22deg);"></div>
+
+      <!-- Círculo éxito — frame5: ring exterior dashed + inner + checkmark -->
+      <div class="success-ring">
+        <div class="success-ring__inner">
+          <span style="font-size:24px; line-height:1; color:white;">✓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saludo — font-size="26" del frame5 -->
+    <h1 class="welcome-card__title">¡Bienvenido, <%= nombre.split(' ')[0] %>!</h1>
+    <p class="welcome-card__sub">
+      Has iniciado sesión correctamente como <%= rolLabel %>.<br/>
+      El sistema está listo para su uso.
+    </p>
+
+    <!-- Info sesión — rect fill="#F5EFE6" del SVG -->
+    <div class="session-info">
+      <div class="session-info__row">
+        <span class="session-info__label">Rol</span>
+        <span class="session-info__value"><%= rolLabel %></span>
+      </div>
+      <div class="session-info__row">
+        <span class="session-info__label">Correo</span>
+        <span class="session-info__value"><%= email %></span>
+      </div>
+      <div class="session-info__row">
+        <span class="session-info__label">Sesión iniciada</span>
+        <span class="session-info__value"><%= hora %></span>
+      </div>
+      <div class="session-info__row">
+        <span class="session-info__label">Estado del sistema</span>
+        <span class="status-badge">● Operativo · Sin alertas</span>
+      </div>
+    </div>
+
+    <!-- Botón salir -->
+    <form action="/auth/logout" method="POST">
+      <button type="submit" class="ft-btn ft-btn--secondary" style="width:100%;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Cerrar sesión
+      </button>
+    </form>
+
+  </div>
+</div>

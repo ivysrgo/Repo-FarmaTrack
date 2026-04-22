@@ -1,0 +1,48 @@
+<%# partials/stepper-aside.ejs — aside derecho con checklist, eventos y nav %>
+<aside class="step-aside">
+
+  <!-- Checklist del paso -->
+  <div class="aside-card">
+    <p class="aside-card__title">Checklist paso <%= paso %> — Operario</p>
+    <div class="aside-checklist">
+      <% checklist.forEach(item => { %>
+        <div class="aside-check-item">
+          <div class="check-dot"></div>
+          <span><%= item %></span>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Eventos recientes -->
+  <div class="aside-card">
+    <p class="aside-card__title">Eventos recientes</p>
+    <div class="event-list">
+      <% eventos.forEach(ev => { %>
+        <div class="event-item">
+          <div class="event-dot <%= ev.tipo === 'warning' ? 'event-dot--yellow' : ev.tipo === 'info' ? 'event-dot--muted' : '' %>"></div>
+          <span class="event-item__text"><%= ev.texto %></span>
+          <span class="event-item__time"><%= ev.hora %></span>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Navegación de pasos -->
+  <div class="aside-card">
+    <p class="aside-card__title">Navegación de pasos</p>
+    <div class="nav-step-list">
+      <% pasos.forEach(p => {
+           const isDone   = p.n < paso;
+           const isActive = p.n === paso;
+      %>
+        <a href="/lotes/<%= lote.id %>/paso/<%= p.n %>"
+           class="nav-step-item <%= isActive ? 'nav-step-item--active' : isDone ? 'nav-step-item--done' : '' %>">
+          <div class="nav-step-dot <%= isActive ? 'nav-step-dot--active' : isDone ? 'nav-step-dot--done' : '' %>"></div>
+          <span>Paso <%= p.n %> — <%= p.nombre %><%= isDone ? ' ✓' : isActive ? ' ←' : '' %></span>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+
+</aside>

@@ -1,0 +1,78 @@
+<%# views/lotes/paso5.ejs — Controles de calidad %>
+<div class="step-page">
+  <%- include('../partials/stepper-topbar') %>
+
+  <div class="step-layout">
+    <div class="step-main">
+
+      <div class="step-header">
+        <div class="step-header__meta">
+          <span>Paso 5/9 · <%= lote.numeroLote %> · <%= lote.medicamento %> · Operario: <%= operario.nombre %></span>
+          <span class="step-header__badge step-header__badge--readonly">🔒 Solo lectura · D.T.</span>
+          <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+        </div>
+        <h1 class="step-header__title">Controles de calidad</h1>
+      </div>
+
+      <div class="readonly-notice">🔒 Vista de solo lectura — Director Técnico. Este paso fue completado por el Operario.</div>
+
+      <div class="step-card">
+        <p class="step-card__title">Controles de calidad intermedios — resultados registrados</p>
+        <div class="info-notice" style="margin-bottom:10px">
+          📋 Resultados registrados por operario. Una desviación detectada y resuelta con justificación documentada.
+        </div>
+        <table class="step-table">
+          <thead>
+            <tr>
+              <th>Parámetro</th>
+              <th>Espec. Mín.</th>
+              <th>Espec. Máx.</th>
+              <th>Valor obtenido</th>
+              <th>Resultado</th>
+              <th>Reporte</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% controles.forEach(c => { %>
+              <tr>
+                <td><%= c.parametro %></td>
+                <td><%= c.especMin %></td>
+                <td><%= c.especMax %></td>
+                <td><%= c.valor %></td>
+                <td><span class="result-ok"><%= c.resultado %> ✓</span></td>
+                <td><% if (c.reporte) { %><span class="result-ok">PDF ✓</span><% } %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <% if (ncInfo) { %>
+          <div class="info-notice" style="margin-top:10px">📋 <%= ncInfo %></div>
+        <% } %>
+        <div style="margin-top:12px">
+          <p class="obs-label">Observaciones del operario</p>
+          <div class="field-value field-value--wide"><%= observaciones %></div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <p class="step-card__title">Checklist completado</p>
+        <div class="checklist-grid">
+          <% checklist.forEach(item => { %>
+            <div class="check-row">
+              <div class="check-box"></div>
+              <span><%= item %></span>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <p class="obs-label">Observaciones del operario (solo lectura)</p>
+        <div class="field-value field-value--wide" style="color:var(--muted)">Sin observaciones adicionales registradas en este paso.</div>
+      </div>
+
+    </div>
+    <%- include('../partials/stepper-aside') %>
+  </div>
+  <%- include('../partials/stepper-footer') %>
+</div>

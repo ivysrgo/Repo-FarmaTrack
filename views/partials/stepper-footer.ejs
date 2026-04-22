@@ -1,0 +1,15 @@
+<%# partials/stepper-footer.ejs — barra de acciones fija %>
+<div class="step-footer">
+  <div class="step-footer__left">
+    <span>Solo lectura · D.T.</span>
+  </div>
+  <div class="step-footer__right">
+    <% if (paso > 1) { %>
+      <a href="/lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--ghost">← Paso anterior</a>
+    <% } %>
+    <a href="/lotes/<%= lote.id %>/paso/<%= paso < 9 ? paso + 1 : 9 %>"
+       class="btn-step btn-step--<%= paso < 9 ? 'primary' : 'secondary' %>">
+      <%= paso < 9 ? 'Paso siguiente →' : 'Ver resumen' %>
+    </a>
+  </div>
+</div>

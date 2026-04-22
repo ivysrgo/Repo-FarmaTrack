@@ -1,290 +1,995 @@
-/* ============================================================
-   FARMATRACK — Design Tokens
-   Generado desde farmatrack-tokens.json
-   Estructura: Global → Semantic → Components
-   ============================================================ */
+/**
+ * tokens.css
+ * Variables CSS generadas desde farmatrack-tokens.json
+ * Orden: global → semántico → componentes
+ * Uso: importar en el <head> o en style.css con @import './tokens.css';
+ */
 
-/* ------------------------------------------------------------
-   GLOBAL — Valores primitivos
-   ------------------------------------------------------------ */
 :root {
 
-  /* --- Colores primitivos --- */
+  /* ═══════════════════════════════════════════════════
+     GLOBAL — Colores primitivos
+  ═══════════════════════════════════════════════════ */
+
   --color-mint-400: #5DCAA5;       /* Verde menta medio — paso activo, borde completado, badge activo */
   --color-mint-700: #1A5C3A;       /* Verde oscuro profundo — botón primario, paso completado */
   --color-blue-300: #7EC8E3;       /* Azul claro — avatares, iconos de acceso rápido, hover */
   --color-nude-100: #F5EFE6;       /* Crema / nude claro — topbar, fondo stepper, fondo contextual */
-  --color-white:    #FFFFFF;       /* Blanco puro — fondo de cards, inputs activos, panel principal */
+  --color-yellow-400: #E8F055;     /* Amarillo alerta — botón no conformidad, alertas de desviación */
+  --color-white: #FFFFFF;          /* Blanco puro — fondo de cards, inputs activos, panel principal */
   --color-gray-200: #D3D1C7;       /* Gris claro — pasos pendientes, checkboxes vacíos, bordes */
   --color-gray-800: #444441;       /* Gris oscuro — texto principal */
-  --color-red-500:  #E24B4A;       /* Rojo error — campos fuera de rango BPM, validación crítica */
-  --color-yellow-400: #E8F055;     /* Amarillo alerta — botón no conformidad, alertas de desviación */
-  --color-amber-600: #633806;      /* Ocre oscuro — texto sobre badge amarillo */
+  --color-red-500: #E24B4A;        /* Rojo error — campos fuera de rango, validación crítica */
+  --color-amber-600: #633806;      /* Ocre oscuro — texto sobre badge amarillo (pendiente) */
 
-  /* --- Espaciado (px) --- */
+  /* ═══════════════════════════════════════════════════
+     GLOBAL — Espaciado
+  ═══════════════════════════════════════════════════ */
+
   --space-1: 4px;    /* Gap mínimo entre elementos inline */
-  --space-2: 8px;    /* Gap ícono/texto en botones, entre checkboxes */
-  --space-3: 12px;   /* Padding interno de campos de texto, gap entre cards aside */
+  --space-2: 8px;    /* Gap entre ícono y texto en botones, gap entre checkboxes */
+  --space-3: 12px;   /* Padding interno de campos de texto, gap entre cards del aside */
   --space-4: 14px;   /* Padding lateral del panel principal, gap entre botones */
-  --space-5: 16px;   /* Padding interno de cards, margen entre secciones */
+  --space-5: 16px;   /* Padding interno de cards, margen entre secciones del formulario */
   --space-6: 18px;   /* Padding del topbar y stepper */
   --space-8: 28px;   /* Separación entre bloques mayores */
 
-  /* --- Border Radius (px / %) --- */
-  --radius-sm:     4px;   /* Checkboxes, badges pequeños, hints */
-  --radius-md:     8px;   /* Inputs, botones, badges de estado */
-  --radius-lg:     12px;  /* Cards del aside */
-  --radius-pill:   20px;  /* Badges de paso activo, badge de estado del lote */
-  --radius-circle: 50%;   /* Círculos del stepper, avatares */
+  /* ═══════════════════════════════════════════════════
+     GLOBAL — Border Radius
+  ═══════════════════════════════════════════════════ */
 
-  /* --- Border Width (px) --- */
-  --border-default: 0.5px;  /* Bordes de inputs sin foco, separadores, topbar */
-  --border-focus:   1.5px;  /* Input en estado focus */
-  --border-accent:  2px;    /* Borde izquierdo de tarjetas en espera */
+  --radius-sm: 4px;     /* Checkboxes, badges pequeños, hints */
+  --radius-md: 8px;     /* Inputs, botones, badges de estado */
+  --radius-lg: 12px;    /* Cards del aside */
+  --radius-pill: 20px;  /* Badges de paso activo, badge de estado del lote */
+  --radius-circle: 50%; /* Círculos del stepper, avatares */
 
-  /* --- Tipografía — Tamaños (px) --- */
-  --font-size-screen-title:  18px;  /* Título de pantalla — nombre del lote en topbar */
+  /* ═══════════════════════════════════════════════════
+     GLOBAL — Border Width
+  ═══════════════════════════════════════════════════ */
+
+  --border-default: 0.5px;  /* Bordes de inputs sin foco, separadores de tabla, topbar */
+  --border-focus: 1.5px;    /* Input en estado focus */
+  --border-accent: 2px;     /* Borde izquierdo de tarjetas en espera */
+
+  /* ═══════════════════════════════════════════════════
+     GLOBAL — Tipografía
+  ═══════════════════════════════════════════════════ */
+
+  --font-family-base: Inter, "Segoe UI", sans-serif;
+
+  --font-size-screen-title: 18px;   /* Título de pantalla — nombre del lote en topbar */
   --font-size-section-title: 14px;  /* Título de sección — título del paso activo */
-  --font-size-input-text:    13px;  /* Texto de input */
-  --font-size-field-label:   11px;  /* Etiqueta de campo, texto de bitácora */
-  --font-size-hint:          10px;  /* Hint, badge/pill, número de paso en stepper */
-  --font-size-button:        12px;  /* Etiqueta de todos los botones */
-  --font-size-stepper-label: 9px;   /* Label del stepper — nombre del paso */
+  --font-size-input-text: 13px;     /* Texto de input — valores ingresados en formularios */
+  --font-size-field-label: 11px;    /* Etiqueta de campo, texto de bitácora */
+  --font-size-hint: 10px;           /* Hint / ayuda, badge / pill, número de paso en stepper */
+  --font-size-button: 12px;         /* Etiqueta de todos los botones */
+  --font-size-stepper-label: 9px;   /* Label del stepper — nombre del paso debajo del círculo */
 
-  /* --- Tipografía — Pesos --- */
   --font-weight-regular: 400;
-  --font-weight-medium:  500;
+  --font-weight-medium: 500;
 
-  /* --- Tipografía — Familia --- */
-  --font-family-base: Inter, 'Segoe UI', sans-serif;  /* Única familia tipográfica del sistema */
+  /* ═══════════════════════════════════════════════════
+     GLOBAL — Sizing
+  ═══════════════════════════════════════════════════ */
 
-  /* --- Sizing (px) --- */
-  --size-button-height:      34px;  /* Altura de todos los botones */
-  --size-topbar-height:      44px;  /* Altura del topbar */
-  --size-input-height:       34px;  /* Altura de inputs de formulario */
-  --size-stepper-circle:     26px;  /* Diámetro del círculo del stepper */
-  --size-avatar:             28px;  /* Diámetro de los avatares */
-  --size-aside-width:        210px; /* Ancho del panel lateral aside */
-  --size-sidebar-width:      220px; /* Ancho del sidebar de navegación principal */
-  --size-sidebar-collapsed:  56px;  /* Ancho del sidebar en modo compacto */
-  --size-modal-width:        480px; /* Ancho de modales */
-  --size-badge-height:       22px;  /* Altura de badges / pills */
-}
+  --size-button-height: 34px;
+  --size-topbar-height: 44px;
+  --size-input-height: 34px;
+  --size-stepper-circle: 26px;
+  --size-avatar: 28px;
+  --size-aside-width: 210px;
+  --size-sidebar-width: 220px;
+  --size-sidebar-collapsed: 56px;
+  --size-modal-width: 480px;
+  --size-badge-height: 22px;
 
+  /* ═══════════════════════════════════════════════════
+     SEMÁNTICO — Colores de acción
+  ═══════════════════════════════════════════════════ */
 
-/* ------------------------------------------------------------
-   SEMANTIC — Tokens de uso por intención
-   ------------------------------------------------------------ */
-:root {
+  --color-action-primary: var(--color-mint-700);        /* Fondo de botón primario */
+  --color-action-primary-hover: var(--color-mint-400);  /* Hover del botón primario */
 
-  /* --- Acciones --- */
-  --color-action-primary:       var(--color-mint-700);   /* Fondo de botón primario */
-  --color-action-primary-hover: var(--color-mint-400);   /* Hover del botón primario */
+  /* ═══════════════════════════════════════════════════
+     SEMÁNTICO — Colores de estado
+  ═══════════════════════════════════════════════════ */
 
-  /* --- Estados --- */
-  --color-state-active:    var(--color-mint-400);    /* Paso activo en stepper, borde completado */
-  --color-state-completed: var(--color-mint-700);    /* Paso completado, checkbox marcado */
-  --color-state-pending:   var(--color-gray-200);    /* Paso pendiente, checkbox vacío */
-  --color-state-warning:   var(--color-yellow-400);  /* No conformidad, alertas de desviación */
-  --color-state-error:     var(--color-red-500);     /* Campos fuera de rango, errores de validación */
+  --color-state-active: var(--color-mint-400);    /* Paso activo en stepper, borde de campo completado */
+  --color-state-completed: var(--color-mint-700); /* Paso completado en stepper, checkbox marcado */
+  --color-state-pending: var(--color-gray-200);   /* Paso pendiente en stepper, checkbox vacío */
+  --color-state-warning: var(--color-yellow-400); /* Botón de no conformidad, alertas de desviación */
+  --color-state-error: var(--color-red-500);      /* Campos fuera de rango, errores de validación */
 
-  /* --- Superficies --- */
-  --color-surface-base:   var(--color-white);      /* Panel principal, cards, inputs activos */
-  --color-surface-raised: var(--color-nude-100);   /* Topbar, fondo stepper, fondo contextual */
-  --color-surface-info:   var(--color-blue-300);   /* Elementos informativos secundarios */
+  /* ═══════════════════════════════════════════════════
+     SEMÁNTICO — Superficies
+  ═══════════════════════════════════════════════════ */
 
-  /* --- Bordes semánticos --- */
-  --color-border-default: var(--color-gray-200);   /* Inputs sin foco, separadores */
-  --color-border-active:  var(--color-mint-400);   /* Input con valor completado */
-  --color-border-error:   var(--color-red-500);    /* Input con valor fuera de rango */
+  --color-surface-base: var(--color-white);       /* Fondo de panel principal, cards, inputs activos */
+  --color-surface-raised: var(--color-nude-100);  /* Topbar, fondo del stepper, fondo contextual */
+  --color-surface-info: var(--color-blue-300);    /* Elementos informativos secundarios */
 
-  /* --- Texto semántico --- */
-  --color-text-primary:          var(--color-gray-800);   /* Texto principal del sistema */
-  --color-text-secondary:        #888780;                 /* Labels, hints, metadatos */
-  --color-text-on-primary:       var(--color-white);      /* Texto sobre botón primario */
-  --color-text-on-active-badge:  var(--color-mint-700);   /* Texto en badge de estado activo */
-  --color-text-on-warning-badge: var(--color-amber-600);  /* Texto en badge de pendiente verificación */
-}
+  /* ═══════════════════════════════════════════════════
+     SEMÁNTICO — Bordes
+  ═══════════════════════════════════════════════════ */
 
+  --color-border-default: var(--color-gray-200);  /* Bordes de inputs sin foco, separadores */
+  --color-border-active: var(--color-mint-400);   /* Borde de input con valor completado */
+  --color-border-error: var(--color-red-500);     /* Borde de input con valor fuera de rango */
 
-/* ------------------------------------------------------------
-   COMPONENTS — Tokens por componente
-   ------------------------------------------------------------ */
-:root {
+  /* ═══════════════════════════════════════════════════
+     SEMÁNTICO — Texto
+  ═══════════════════════════════════════════════════ */
 
-  /* ---- Botón primario ---- */
-  --btn-primary-bg:              var(--color-action-primary);
-  --btn-primary-text:            var(--color-white);
-  --btn-primary-border:          var(--color-action-primary);
-  --btn-primary-height:          var(--size-button-height);
-  --btn-primary-radius:          var(--radius-md);
-  --btn-primary-font-size:       var(--font-size-button);
-  --btn-primary-font-weight:     var(--font-weight-medium);
-  --btn-primary-padding-x:       var(--space-5);
+  --color-text-primary: var(--color-gray-800);         /* Texto principal del sistema */
+  --color-text-secondary: #888780;                     /* Labels, hints, metadatos */
+  --color-text-on-primary: var(--color-white);         /* Texto sobre botón primario */
+  --color-text-on-active-badge: var(--color-mint-700); /* Texto en badge de estado activo */
+  --color-text-on-warning-badge: var(--color-amber-600); /* Texto en badge pendiente verificación */
+
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Botón primario
+  ═══════════════════════════════════════════════════ */
+
+  --btn-primary-bg: var(--color-action-primary);
+  --btn-primary-text: var(--color-white);
+  --btn-primary-border: var(--color-action-primary);
+  --btn-primary-height: var(--size-button-height);
+  --btn-primary-radius: var(--radius-md);
+  --btn-primary-font-size: var(--font-size-button);
+  --btn-primary-font-weight: var(--font-weight-medium);
+  --btn-primary-padding-x: var(--space-5);
   --btn-primary-disabled-opacity: 0.4;
 
-  /* ---- Botón secundario ---- */
-  --btn-secondary-bg:          var(--color-surface-base);
-  --btn-secondary-text:        var(--color-action-primary);
-  --btn-secondary-border:      var(--color-border-default);
-  --btn-secondary-height:      var(--size-button-height);
-  --btn-secondary-radius:      var(--radius-md);
-  --btn-secondary-font-size:   var(--font-size-button);
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Botón secundario
+  ═══════════════════════════════════════════════════ */
+
+  --btn-secondary-bg: var(--color-surface-base);
+  --btn-secondary-text: var(--color-action-primary);
+  --btn-secondary-border: var(--color-border-default);
+  --btn-secondary-height: var(--size-button-height);
+  --btn-secondary-radius: var(--radius-md);
+  --btn-secondary-font-size: var(--font-size-button);
   --btn-secondary-font-weight: var(--font-weight-medium);
 
-  /* ---- Botón de alerta (no conformidad) ---- */
-  /* Nota: aplicar 22% de opacidad al background en Figma */
-  --btn-alert-bg:          var(--color-state-warning);
-  --btn-alert-border:      var(--color-state-warning);
-  --btn-alert-text:        var(--color-amber-600);
-  --btn-alert-height:      var(--size-button-height);
-  --btn-alert-radius:      var(--radius-md);
-  --btn-alert-font-size:   var(--font-size-button);
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Botón alerta (no conformidad)
+  ═══════════════════════════════════════════════════ */
+
+  --btn-alert-bg: rgba(232, 240, 85, 0.22); /* yellow-400 al 22% */
+  --btn-alert-border: var(--color-yellow-400);
+  --btn-alert-text: var(--color-amber-600);
+  --btn-alert-height: var(--size-button-height);
+  --btn-alert-radius: var(--radius-md);
+  --btn-alert-font-size: var(--font-size-button);
   --btn-alert-font-weight: var(--font-weight-medium);
 
-  /* ---- Input — Vacío ---- */
-  --input-empty-border:     var(--color-border-default);
-  --input-empty-bg:         #F8F7F4;  /* Gris muy claro cuando está vacío */
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Input
+  ═══════════════════════════════════════════════════ */
 
-  /* ---- Input — Completado ---- */
+  --input-height: var(--size-input-height);
+  --input-radius: var(--radius-md);
+  --input-font-size: var(--font-size-input-text);
+  --input-padding-x: var(--space-3);
+
+  --input-empty-border: var(--color-border-default);
+  --input-empty-bg: #F8F7F4;
+
   --input-completed-border: var(--color-border-active);
-  --input-completed-bg:     var(--color-surface-base);
+  --input-completed-bg: var(--color-surface-base);
 
-  /* ---- Input — Error ---- */
-  /* Nota: aplicar 5% de opacidad al background */
-  --input-error-border:     var(--color-border-error);
-  --input-error-bg:         var(--color-red-500);
+  --input-error-border: var(--color-border-error);
+  --input-error-bg: rgba(226, 75, 74, 0.05); /* red-500 al 5% */
 
-  /* ---- Input — Focus ---- */
-  --input-focus-border:       var(--color-border-active);
+  --input-focus-border: var(--color-border-active);
   --input-focus-border-width: var(--border-focus);
-  --input-focus-bg:           var(--color-surface-base);
+  --input-focus-bg: var(--color-surface-base);
 
-  /* ---- Input — Compartido ---- */
-  --input-height:     var(--size-input-height);
-  --input-radius:     var(--radius-md);
-  --input-font-size:  var(--font-size-input-text);
-  --input-padding-x:  var(--space-3);
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Checkbox
+  ═══════════════════════════════════════════════════ */
 
-  /* ---- Checkbox — Vacío ---- */
-  --checkbox-empty-border:       var(--color-border-default);
-  --checkbox-empty-border-width: 1.5px;
-  --checkbox-empty-bg:           var(--color-surface-base);
-  --checkbox-empty-radius:       var(--radius-sm);
-
-  /* ---- Checkbox — En progreso ---- */
-  /* Nota: aplicar 13% de opacidad al background */
-  --checkbox-in-progress-border:       var(--color-state-active);
-  --checkbox-in-progress-border-width: 1.5px;
-  --checkbox-in-progress-bg:           var(--color-mint-400);
-  --checkbox-in-progress-radius:       var(--radius-sm);
-
-  /* ---- Checkbox — Marcado ---- */
-  --checkbox-checked-bg:       var(--color-state-completed);
-  --checkbox-checked-checkmark: var(--color-white);
-  --checkbox-checked-radius:   var(--radius-sm);
-
-  /* ---- Checkbox — Compartido ---- */
   --checkbox-size: 16px;
+  --checkbox-radius: var(--radius-sm);
 
-  /* ---- Badge — Activo ---- */
-  /* Nota: aplicar 13% de opacidad al background + borde mint sólido */
-  --badge-active-bg:     var(--color-mint-400);
+  --checkbox-empty-border: var(--color-border-default);
+  --checkbox-empty-border-width: 1.5px;
+  --checkbox-empty-bg: var(--color-surface-base);
+
+  --checkbox-in-progress-border: var(--color-state-active);
+  --checkbox-in-progress-border-width: 1.5px;
+  --checkbox-in-progress-bg: rgba(93, 202, 165, 0.13); /* mint-400 al 13% */
+
+  --checkbox-checked-bg: var(--color-state-completed);
+  --checkbox-checked-checkmark: var(--color-white);
+
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Badge / Pill
+  ═══════════════════════════════════════════════════ */
+
+  --badge-height: var(--size-badge-height);
+  --badge-radius: var(--radius-pill);
+  --badge-font-size: var(--font-size-hint);
+  --badge-font-weight: var(--font-weight-medium);
+  --badge-padding-x: 10px;
+
+  --badge-active-bg: rgba(93, 202, 165, 0.13);  /* mint-400 al 13% */
   --badge-active-border: var(--color-mint-400);
-  --badge-active-text:   var(--color-mint-700);
+  --badge-active-text: var(--color-mint-700);
 
-  /* ---- Badge — Advertencia ---- */
-  /* Nota: aplicar 13% de opacidad al background + borde amarillo sólido */
-  --badge-warning-bg:     var(--color-yellow-400);
+  --badge-warning-bg: rgba(232, 240, 85, 0.13); /* yellow-400 al 13% */
   --badge-warning-border: var(--color-yellow-400);
-  --badge-warning-text:   var(--color-amber-600);
+  --badge-warning-text: var(--color-amber-600);
 
-  /* ---- Badge — Liberado ---- */
-  /* Nota: aplicar 10% de opacidad al background, sin borde */
-  --badge-liberated-bg:   var(--color-mint-400);
+  --badge-liberated-bg: rgba(93, 202, 165, 0.10); /* mint-400 al 10% */
   --badge-liberated-text: var(--color-mint-700);
 
-  /* ---- Badge — Compartido ---- */
-  --badge-height:       var(--size-badge-height);
-  --badge-radius:       var(--radius-pill);
-  --badge-font-size:    var(--font-size-hint);
-  --badge-font-weight:  var(--font-weight-medium);
-  --badge-padding-x:    10px;
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Avatar
+  ═══════════════════════════════════════════════════ */
 
-  /* ---- Avatar ---- */
-  --avatar-size:        var(--size-avatar);
-  --avatar-bg:          var(--color-blue-300);
-  --avatar-text:        var(--color-mint-700);
-  --avatar-radius:      var(--radius-circle);
-  --avatar-font-size:   10px;
+  --avatar-size: var(--size-avatar);
+  --avatar-bg: var(--color-blue-300);
+  --avatar-text: var(--color-mint-700);
+  --avatar-radius: var(--radius-circle);
+  --avatar-font-size: 10px;
   --avatar-font-weight: var(--font-weight-medium);
 
-  /* ---- Topbar ---- */
-  --topbar-bg:              var(--color-surface-raised);
-  --topbar-height:          var(--size-topbar-height);
-  --topbar-border-bottom:   var(--color-border-default);
-  --topbar-padding-x:       var(--space-6);
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Topbar
+  ═══════════════════════════════════════════════════ */
+
+  --topbar-bg: var(--color-surface-raised);
+  --topbar-height: var(--size-topbar-height);
+  --topbar-border-bottom: var(--color-border-default);
+  --topbar-padding-x: var(--space-6);
   --topbar-title-font-size: 13px;
   --topbar-title-font-weight: var(--font-weight-medium);
   --topbar-subtitle-font-size: var(--font-size-field-label);
 
-  /* ---- Stepper ---- */
-  --stepper-bg:      var(--color-surface-raised);
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Stepper
+  ═══════════════════════════════════════════════════ */
+
+  --stepper-bg: var(--color-surface-raised);
   --stepper-padding: var(--space-6);
 
-  --stepper-circle-size:               var(--size-stepper-circle);
-  --stepper-circle-radius:             var(--radius-circle);
-  --stepper-circle-active-bg:          var(--color-state-active);
-  --stepper-circle-completed-bg:       var(--color-state-completed);
-  --stepper-circle-pending-border:     var(--color-state-pending);
-  --stepper-circle-pending-bg:         var(--color-surface-base);
-  --stepper-circle-text-on-active:     var(--color-white);
-  --stepper-circle-text-on-pending:    #888780;
+  --stepper-circle-size: var(--size-stepper-circle);
+  --stepper-circle-radius: var(--radius-circle);
+  --stepper-circle-active-bg: var(--color-state-active);
+  --stepper-circle-completed-bg: var(--color-state-completed);
+  --stepper-circle-pending-border: var(--color-state-pending);
+  --stepper-circle-pending-bg: var(--color-surface-base);
+  --stepper-circle-text-on-active: var(--color-white);
+  --stepper-circle-text-on-pending: #888780;
 
-  --stepper-connector-height:  1.5px;
-  --stepper-connector-done:    var(--color-mint-700);
-  --stepper-connector-active:  var(--color-mint-400);
+  --stepper-connector-height: 1.5px;
+  --stepper-connector-done: var(--color-mint-700);
+  --stepper-connector-active: var(--color-mint-400);
   --stepper-connector-pending: var(--color-gray-200);
 
   --stepper-label-font-size: var(--font-size-stepper-label);
-  --stepper-label-color:     #888780;
+  --stepper-label-color: #888780;
 
-  /* ---- Card del aside ---- */
-  --aside-card-bg:      var(--color-surface-base);
-  --aside-card-border:  var(--color-border-default);
-  --aside-card-radius:  var(--radius-lg);
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Aside Card
+  ═══════════════════════════════════════════════════ */
+
+  --aside-card-bg: var(--color-surface-base);
+  --aside-card-border: var(--color-border-default);
+  --aside-card-radius: var(--radius-lg);
   --aside-card-padding: var(--space-3);
 
-  /* ---- Card de lote ---- */
-  --lote-card-bg:               var(--color-surface-base);
-  --lote-card-border:           var(--color-border-default);
-  --lote-card-radius:           var(--radius-lg);
-  --lote-card-padding:          var(--space-4);
-  --lote-card-waiting-accent:   var(--color-yellow-400);  /* Borde izquierdo 2px en lotes bloqueados */
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Lote Card
+  ═══════════════════════════════════════════════════ */
 
-  --lote-progress-pill-height: 5px;
-  --lote-progress-pill-radius: 10px;
-  --lote-progress-pill-done:   var(--color-mint-700);
-  --lote-progress-pill-active: var(--color-mint-400);
-  --lote-progress-pill-pending: var(--color-gray-200);
+  --lote-card-bg: var(--color-surface-base);
+  --lote-card-border: var(--color-border-default);
+  --lote-card-radius: var(--radius-lg);
+  --lote-card-padding: var(--space-4);
+  --lote-card-waiting-accent: var(--color-yellow-400); /* Borde izquierdo 2px en lotes bloqueados */
 
-  /* ---- Modal ---- */
-  --modal-width:   var(--size-modal-width);
-  --modal-bg:      var(--color-surface-base);
-  --modal-radius:  var(--radius-lg);
+  --lote-card-progress-height: 5px;
+  --lote-card-progress-radius: 10px;
+  --lote-card-progress-done: var(--color-mint-700);
+  --lote-card-progress-active: var(--color-mint-400);
+  --lote-card-progress-pending: var(--color-gray-200);
+
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Modal
+  ═══════════════════════════════════════════════════ */
+
+  --modal-width: var(--size-modal-width);
+  --modal-bg: var(--color-surface-base);
+  --modal-radius: var(--radius-lg);
   --modal-padding: var(--space-5);
-  /* Nota: overlay negro con 35% de opacidad */
-  --modal-overlay: #000000;
+  --modal-overlay: rgba(0, 0, 0, 0.35);
 
-  /* ---- Divider ---- */
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Divider
+  ═══════════════════════════════════════════════════ */
+
   --divider-color: var(--color-border-default);
   --divider-width: 0.5px;
 
-  /* ---- Sidebar ---- */
-  --sidebar-bg:               var(--color-surface-raised);
-  --sidebar-width:            var(--size-sidebar-width);
-  --sidebar-collapsed-width:  var(--size-sidebar-collapsed);
-  --sidebar-active-bg:        var(--color-surface-base);
-  --sidebar-active-border:    var(--color-border-default);
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES — Sidebar
+  ═══════════════════════════════════════════════════ */
+
+  --sidebar-bg: var(--color-surface-raised);
+  --sidebar-width: var(--size-sidebar-width);
+  --sidebar-collapsed-width: var(--size-sidebar-collapsed);
+  --sidebar-active-bg: var(--color-surface-base);
+  --sidebar-active-border: var(--color-border-default);
   --sidebar-active-font-weight: var(--font-weight-medium);
 }
+
+/* ════════════════════════════════════════════════════════════
+   FARMATRACK — Estilos de aplicación
+   Usan exclusivamente las CSS custom properties del design
+   system (tokens.css / style.css :root ya cargado arriba).
+════════════════════════════════════════════════════════════ */
+
+/* ── Reset base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-input-text);
+  color: var(--color-text-primary);
+  background: var(--color-surface-raised);
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Layout raíz ─────────────────────────────────────────── */
+.main-wrapper {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ════════════════════════════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════════════════════════════ */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  border-right: var(--border-default) solid var(--color-border-default);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-4);
+  border-bottom: var(--border-default) solid var(--color-border-default);
+}
+
+.sidebar__avatar {
+  width: var(--size-avatar);
+  height: var(--size-avatar);
+  border-radius: var(--radius-md);
+  background: var(--color-action-primary);
+  color: var(--color-white);
+  font-size: var(--font-size-hint);
+  font-weight: var(--font-weight-medium);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar__brand-name {
+  display: block;
+  font-size: var(--topbar-title-font-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.sidebar__brand-sub {
+  display: block;
+  font-size: var(--font-size-stepper-label);
+  color: var(--color-text-secondary);
+}
+
+.sidebar__nav {
+  flex: 1;
+  padding: var(--space-3) 0;
+  overflow-y: auto;
+}
+
+.sidebar__section-label {
+  font-size: var(--font-size-stepper-label);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.06em;
+  padding: var(--space-3) var(--space-4) var(--space-1);
+}
+
+.sidebar__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-button);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  border-radius: 0;
+  gap: var(--space-2);
+  transition: background 0.15s;
+}
+
+.sidebar__item:hover {
+  background: rgba(93,202,165,0.08);
+}
+
+.sidebar__item--active {
+  background: var(--sidebar-active-bg);
+  font-weight: var(--sidebar-active-font-weight);
+  border-right: 2px solid var(--color-action-primary);
+}
+
+.sidebar__badge {
+  font-size: var(--font-size-hint);
+  font-weight: var(--font-weight-medium);
+  background: var(--badge-active-bg);
+  color: var(--badge-active-text);
+  border: 1px solid var(--badge-active-border);
+  border-radius: var(--radius-pill);
+  padding: 1px 7px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.sidebar__badge--warning {
+  background: var(--badge-warning-bg);
+  color: var(--badge-warning-text);
+  border-color: var(--badge-warning-border);
+}
+
+.sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-default) solid var(--color-border-default);
+}
+
+.sidebar__user-name {
+  font-size: var(--font-size-button);
+  color: var(--color-text-primary);
+}
+
+/* ════════════════════════════════════════════════════════════
+   AVATAR
+════════════════════════════════════════════════════════════ */
+.avatar {
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: var(--avatar-radius);
+  background: var(--avatar-bg);
+  color: var(--avatar-text);
+  font-size: var(--avatar-font-size);
+  font-weight: var(--avatar-font-weight);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ════════════════════════════════════════════════════════════
+   TOPBAR
+════════════════════════════════════════════════════════════ */
+.topbar {
+  height: var(--topbar-height);
+  background: var(--topbar-bg);
+  border-bottom: var(--border-default) solid var(--topbar-border-bottom);
+  padding: 0 var(--topbar-padding-x);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+.topbar__left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 180px;
+  flex: 1;
+}
+
+.topbar__center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.topbar__title {
+  font-size: var(--font-size-section-title);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.topbar__date {
+  font-size: var(--font-size-field-label);
+  color: var(--color-text-secondary);
+}
+
+.topbar__avatar { flex-shrink: 0; }
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--font-size-field-label);
+  color: var(--color-text-secondary);
+  margin-bottom: 2px;
+}
+
+.breadcrumb__link {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+.breadcrumb__link:hover { color: var(--color-action-primary); }
+
+.breadcrumb__sep { color: var(--color-border-default); }
+.breadcrumb__current { color: var(--color-text-primary); }
+
+/* Lote info en topbar */
+.lote-topbar-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.lote-topbar-info__lote {
+  font-size: var(--topbar-title-font-size);
+  font-weight: var(--topbar-title-font-weight);
+  color: var(--color-text-primary);
+}
+
+/* ════════════════════════════════════════════════════════════
+   BADGE / PILL
+════════════════════════════════════════════════════════════ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: var(--badge-height);
+  border-radius: var(--badge-radius);
+  font-size: var(--badge-font-size);
+  font-weight: var(--badge-font-weight);
+  padding: 0 var(--badge-padding-x);
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.badge--active {
+  background: var(--badge-active-bg);
+  border-color: var(--badge-active-border);
+  color: var(--badge-active-text);
+}
+
+.badge--warning {
+  background: var(--badge-warning-bg);
+  border-color: var(--badge-warning-border);
+  color: var(--badge-warning-text);
+}
+
+.badge--liberated {
+  background: var(--badge-liberated-bg);
+  color: var(--badge-liberated-text);
+}
+
+/* ════════════════════════════════════════════════════════════
+   LAYOUT NO CONFORMIDAD
+════════════════════════════════════════════════════════════ */
+.nc-layout {
+  display: flex;
+  flex: 1;
+  gap: 0;
+  align-items: flex-start;
+  padding: var(--space-5);
+  gap: var(--space-4);
+}
+
+/* ── Panel central ───────────────────────────────────────── */
+.nc-form-panel {
+  flex: 1;
+  background: var(--color-surface-base);
+  border-radius: var(--radius-lg);
+  border: var(--border-default) solid var(--color-border-default);
+  padding: var(--space-5);
+  min-width: 0;
+}
+
+.nc-form-header { margin-bottom: var(--space-5); }
+
+.nc-form-title {
+  font-size: var(--font-size-screen-title);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.nc-form-subtitle {
+  font-size: var(--font-size-field-label);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+
+/* ── Secciones del formulario ────────────────────────────── */
+.nc-section { margin-bottom: var(--space-5); }
+
+.nc-section__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-section-title);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-action-primary);
+  margin-bottom: var(--space-3);
+}
+
+.nc-section__subtitle {
+  font-size: var(--font-size-field-label);
+  color: var(--color-text-secondary);
+  margin-top: calc(var(--space-1) * -1);
+  margin-bottom: var(--space-3);
+}
+
+.nc-section__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px; height: 20px;
+  border-radius: var(--radius-circle);
+  background: var(--color-action-primary);
+  color: var(--color-white);
+  font-size: var(--font-size-hint);
+  font-weight: var(--font-weight-medium);
+  flex-shrink: 0;
+}
+
+.nc-divider {
+  border: none;
+  border-top: var(--divider-width) solid var(--divider-color);
+  margin: var(--space-5) 0;
+}
+
+/* ── Filas del formulario ────────────────────────────────── */
+.form-row {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.form-row--2 { grid-template-columns: 1fr 1fr; }
+.form-row--3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.field-group { display: flex; flex-direction: column; gap: var(--space-1); }
+
+.field-label {
+  font-size: var(--font-size-field-label);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.required { color: var(--color-state-error); }
+
+/* ── Inputs ──────────────────────────────────────────────── */
+.input {
+  height: var(--input-height);
+  border-radius: var(--input-radius);
+  border: var(--border-default) solid var(--input-empty-border);
+  background: var(--input-empty-bg);
+  font-family: var(--font-family-base);
+  font-size: var(--input-font-size);
+  color: var(--color-text-primary);
+  padding: 0 var(--input-padding-x);
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.input:focus {
+  border: var(--input-focus-border-width) solid var(--input-focus-border);
+  background: var(--input-focus-bg);
+}
+
+.input--completed {
+  border-color: var(--input-completed-border);
+  background: var(--input-completed-bg);
+}
+
+.input--error {
+  border-color: var(--input-error-border);
+  background: var(--input-error-bg);
+}
+
+.input[readonly] {
+  color: var(--color-text-secondary);
+  cursor: default;
+}
+
+.textarea {
+  height: auto;
+  padding: var(--space-2) var(--input-padding-x);
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* ── Toggle (tipo de NC) ─────────────────────────────────── */
+.toggle-group {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.toggle-btn {
+  flex: 1;
+  height: var(--size-button-height);
+  border-radius: var(--radius-md);
+  border: var(--border-default) solid var(--color-border-default);
+  background: var(--color-surface-base);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-button);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.toggle-btn:hover {
+  border-color: var(--color-border-active);
+  color: var(--color-action-primary);
+}
+
+.toggle-btn--active {
+  background: rgba(93, 202, 165, 0.10);
+  border-color: var(--color-border-active);
+  color: var(--color-action-primary);
+}
+
+/* ── Severidad ───────────────────────────────────────────── */
+.severity-group {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.severity-btn {
+  flex: 1;
+  height: var(--size-button-height);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border-default);
+  background: var(--color-surface-base);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-button);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  transition: all 0.15s;
+}
+
+.severity-btn--critico { color: var(--color-red-500); border-color: var(--color-red-500); }
+.severity-btn--critico.severity-btn--selected { background: rgba(226,75,74,0.08); }
+
+.severity-btn--mayor { color: var(--color-amber-600); border-color: var(--color-yellow-400); }
+.severity-btn--mayor.severity-btn--selected { background: rgba(232,240,85,0.18); }
+
+.severity-btn--menor { color: var(--color-action-primary); border-color: var(--color-mint-400); }
+.severity-btn--menor.severity-btn--selected { background: rgba(93,202,165,0.12); }
+
+.severity-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--color-action-primary);
+  display: inline-block;
+}
+
+/* ── Checkboxes ──────────────────────────────────────────── */
+.checkbox-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-3);
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0; height: 0;
+}
+
+.checkbox-custom {
+  width: var(--checkbox-size);
+  height: var(--checkbox-size);
+  border-radius: var(--checkbox-radius);
+  border: var(--checkbox-empty-border-width) solid var(--checkbox-empty-border);
+  background: var(--checkbox-empty-bg);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.checkbox-custom--checked {
+  background: var(--checkbox-checked-bg);
+  border-color: var(--checkbox-checked-bg);
+}
+
+.checkbox-custom--checked::after {
+  content: '';
+  width: 4px; height: 7px;
+  border: 2px solid var(--color-white);
+  border-top: none; border-left: none;
+  transform: rotate(45deg) translateY(-1px);
+  display: block;
+}
+
+.checkbox-label {
+  font-size: var(--font-size-button);
+  color: var(--color-text-primary);
+}
+
+/* ── Botones de acción ───────────────────────────────────── */
+.nc-actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: var(--divider-width) solid var(--divider-color);
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--btn-primary-height);
+  border-radius: var(--btn-primary-radius);
+  font-family: var(--font-family-base);
+  font-size: var(--btn-primary-font-size);
+  font-weight: var(--btn-primary-font-weight);
+  padding: 0 var(--btn-primary-padding-x);
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: opacity 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.btn--primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border-color: var(--btn-primary-border);
+}
+
+.btn--primary:hover { opacity: 0.88; }
+.btn--primary:disabled { opacity: var(--btn-primary-disabled-opacity); cursor: not-allowed; }
+
+.btn--secondary {
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border-color: var(--btn-secondary-border);
+}
+
+.btn--secondary:hover { background: rgba(93,202,165,0.06); }
+
+.btn--alert {
+  background: var(--btn-alert-bg);
+  color: var(--btn-alert-text);
+  border-color: var(--btn-alert-border);
+}
+
+.btn--alert:hover { opacity: 0.85; }
+
+/* ════════════════════════════════════════════════════════════
+   ASIDE DERECHO — No conformidad
+════════════════════════════════════════════════════════════ */
+.nc-aside {
+  width: var(--size-aside-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.aside-card {
+  background: var(--aside-card-bg);
+  border: var(--border-default) solid var(--aside-card-border);
+  border-radius: var(--aside-card-radius);
+  padding: var(--aside-card-padding);
+}
+
+.aside-card--alert {
+  background: rgba(226, 75, 74, 0.04);
+  border-color: var(--color-red-500);
+}
+
+.aside-card__title {
+  font-size: var(--font-size-button);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.aside-card__title--alert { color: var(--color-red-500); }
+
+/* Protocolo */
+.protocol-list {
+  list-style: decimal;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.protocol-list li {
+  font-size: var(--font-size-field-label);
+  color: var(--color-red-500);
+  line-height: 1.4;
+}
+
+/* Historial NC */
+.nc-history-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.nc-history-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-field-label);
+  color: var(--color-text-secondary);
+}
+
+.nc-history-item__label { color: var(--color-text-primary); }
+.nc-history-item__value { color: var(--color-text-secondary); }
+
+/* ════════════════════════════════════════════════════════════
+   ALERTA — Mensajes de error de validación
+════════════════════════════════════════════════════════════ */
+.alert {
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-button);
+}
+
+.alert--error {
+  background: var(--input-error-bg);
+  border: 1px solid var(--color-border-error);
+  color: var(--color-state-error);
+}
+
+.alert ul { padding-left: 18px; }
+.alert li { margin-top: var(--space-1); }
+

@@ -1,30 +1,75 @@
-import express from 'express';
-import { resolve } from "path";
-import ejs from 'ejs';
-import appRouter from "./routes/router.js";
- 
+/**
+ * src/app.js — FarmaTrack
+ * Punto de entrada principal.
+ * Integra: Login (bahos) + Panel/Lotes (base + sergio) + No-conformidades (base)
+ */
+'use strict';
+
+const express        = require('express');
+const path           = require('path');
+const morgan         = require('morgan');
+const session        = require('express-session');
+const flash          = require('connect-flash');
+const methodOverride = require('method-override');
+const expressLayouts = require('express-ejs-layouts');
+
+const config = require('../config/app');
+const router = require('./routes/index');
+const { notFound, errorHandler } = require('./middlewares/errorHandler');
+
 const app = express();
-const port = 3000;
- 
-app.set("view engine", 'ejs');
-app.set("views", resolve("./views"));
-app.use(express.static(resolve("./public")));
+
+// ── Motor de plantillas ─────────────────────────────────────────
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '..', 'views'));
+app.use(expressLayouts);
+app.set('layout', 'layouts/main');        // layout principal con sidebar
+app.set('layout extractScripts', true);
+app.set('layout extractStyles', true);
+
+// ── Middlewares generales ───────────────────────────────────────
+app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
- 
-// Middleware de layout: inyecta cada vista dentro de views/layouts/main.ejs
+app.use(express.json());
+app.use(methodOverride('_method'));
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// ── Sesión ──────────────────────────────────────────────────────
+app.use(session({
+  secret:            config.session.secret,
+  resave:            false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge:   config.session.maxAge,
+    httpOnly: true,
+  },
+}));
+
+// ── Flash messages ──────────────────────────────────────────────
+app.use(flash());
+
+// ── Variables globales para todas las vistas ───────────────────
 app.use((req, res, next) => {
-    const originalRender = res.render.bind(res);
-    res.render = function(view, options = {}) {
-        ejs.renderFile(resolve(`./views/${view}.ejs`), options, {}, (err, body) => {
-            if (err) return next(err);
-            originalRender('layouts/main', { ...options, body });
-        });
-    };
-    next();
+  res.locals.appName     = config.app.name;
+  res.locals.currentPath = req.path;
+  res.locals.currentUser = req.session.usuario || null;
+  next();
 });
- 
-app.use("/", appRouter);
- 
+
+// ── Rutas ───────────────────────────────────────────────────────
+app.use('/', router);
+
+// ── Manejo de errores ───────────────────────────────────────────
+app.use(notFound);
+app.use(errorHandler);
+
+// ── Arranque ────────────────────────────────────────────────────
+const { port, host } = config.server;
 app.listen(port, () => {
-    console.log(`FarmaTrack 🚀  http://localhost:${port}`);
+  console.log(`\n🚀 FarmaTrack corriendo en: http://${host}:${port}`);
+  console.log(`🔐 Login:  http://${host}:${port}/auth/login`);
+  console.log(`📋 Panel:  http://${host}:${port}/panel`);
+  console.log(`🏭 Lotes:  http://${host}:${port}/lotes\n`);
 });
+
+module.exports = app;

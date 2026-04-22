@@ -1,0 +1,30 @@
+<%# partials/stepper-topbar.ejs — topbar + barra de 9 pasos %>
+
+<!-- Topbar del paso -->
+<div class="step-topbar">
+  <div class="step-topbar__breadcrumb">
+    <a href="/lotes">← Panel de lotes</a>
+    <span>/</span>
+    <span><%= lote.numeroLote %></span>
+    <span>/</span>
+    <span>Paso <%= paso %> — Solo lectura</span>
+  </div>
+  <div class="step-topbar__right">
+    <span><%= fechaHoy %></span>
+    <div class="step-topbar__avatar"><%= usuario.iniciales %></div>
+  </div>
+</div>
+
+<!-- Stepper visual de 9 pasos -->
+<div class="stepper-bar">
+  <% pasos.forEach(p => {
+       let cls = '';
+       if (p.n < paso)  cls = 'stepper-bar__step--done';
+       if (p.n === paso) cls = 'stepper-bar__step--active';
+  %>
+    <a href="/lotes/<%= lote.id %>/paso/<%= p.n %>" class="stepper-bar__step <%= cls %>">
+      <div class="stepper-bar__circle"><span><%= p.n %></span></div>
+      <span class="stepper-bar__label"><%= p.nombre %></span>
+    </a>
+  <% }) %>
+</div>

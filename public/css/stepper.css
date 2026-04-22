@@ -1,0 +1,660 @@
+/* ════════════════════════════════════════════════════════════
+   STEPPER DE LOTE — FarmaTrack
+   Layout de los 9 pasos del proceso de producción
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Topbar del paso ─────────────────────────────────────── */
+.step-topbar {
+  height: 44px;
+  background: var(--nude);
+  border-bottom: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--sp5);
+  flex-shrink: 0;
+}
+
+.step-topbar__breadcrumb {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.step-topbar__breadcrumb a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.step-topbar__breadcrumb a:hover { color: var(--green-dark); }
+
+.step-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.step-topbar__date { font-size: 11px; color: var(--muted); }
+.step-topbar__avatar {
+  width: 28px; height: 28px;
+  background: var(--blue-av);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 500; color: var(--green-dark);
+}
+
+/* ── Stepper visual ──────────────────────────────────────── */
+.stepper-bar {
+  background: var(--nude);
+  border-bottom: 0.5px solid var(--border);
+  padding: 10px var(--sp5);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+}
+
+.stepper-bar__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.stepper-bar__step::before {
+  content: '';
+  position: absolute;
+  top: 13px;
+  left: calc(-50% + 13px);
+  right: calc(50% + 13px);
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+
+.stepper-bar__step:first-child::before { display: none; }
+
+.stepper-bar__step--done::before  { background: var(--green-dark); }
+.stepper-bar__step--active::before { background: var(--green-mid); }
+
+.stepper-bar__circle {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  position: relative;
+  z-index: 1;
+  transition: all 0.15s;
+}
+
+.stepper-bar__step--done .stepper-bar__circle {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: var(--white);
+}
+
+.stepper-bar__step--active .stepper-bar__circle {
+  background: var(--white);
+  border-color: var(--green-mid);
+  border-width: 2.5px;
+  color: var(--green-dark);
+  font-weight: 600;
+}
+
+/* checkmark for done steps */
+.stepper-bar__step--done .stepper-bar__circle::after {
+  content: '✓';
+  font-size: 11px;
+}
+
+.stepper-bar__step--done .stepper-bar__circle span { display: none; }
+
+.stepper-bar__label {
+  font-size: 9px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70px;
+}
+
+.stepper-bar__step--active .stepper-bar__label { color: var(--green-dark); font-weight: 500; }
+.stepper-bar__step--done .stepper-bar__label   { color: var(--green-dark); }
+
+/* ── Layout principal del paso ───────────────────────────── */
+.step-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.step-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp4);
+  min-width: 0;
+}
+
+.step-aside {
+  width: 210px;
+  flex-shrink: 0;
+  background: var(--nude);
+  border-left: 0.5px solid var(--border);
+  overflow-y: auto;
+  padding: var(--sp4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp3);
+}
+
+/* ── Header del paso ─────────────────────────────────────── */
+.step-header {
+  background: var(--white);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: var(--sp4);
+}
+
+.step-header__meta {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-header__badge {
+  background: rgba(93,202,165,0.12);
+  border: 0.5px solid var(--green-mid);
+  border-radius: 20px;
+  padding: 1px 8px;
+  font-size: 10px;
+  color: var(--green-dark);
+  font-weight: 500;
+}
+
+.step-header__badge--readonly {
+  background: rgba(136,135,128,0.1);
+  border-color: var(--border);
+  color: var(--muted);
+}
+
+.step-header__timer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.step-header__title {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+/* ── Aviso solo lectura ──────────────────────────────────── */
+.readonly-notice {
+  background: rgba(136,135,128,0.08);
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Cards de contenido ──────────────────────────────────── */
+.step-card {
+  background: var(--white);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: var(--sp4);
+}
+
+.step-card__title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: var(--sp3);
+}
+
+/* ── Grid de campos ──────────────────────────────────────── */
+.field-grid {
+  display: grid;
+  gap: var(--sp3);
+}
+
+.field-grid--2 { grid-template-columns: 1fr 1fr; }
+.field-grid--3 { grid-template-columns: 1fr 1fr 1fr; }
+.field-grid--4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.field-value {
+  height: 34px;
+  background: var(--input-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 13px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+}
+
+.field-value--wide {
+  height: auto;
+  min-height: 34px;
+  padding: 8px 10px;
+}
+
+input.field-value, select.field-value, textarea.field-value {
+  width: 100%;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+input.field-value:focus, select.field-value:focus, textarea.field-value:focus {
+  border-color: var(--green-mid);
+  border-width: 1.5px;
+  background: var(--white);
+}
+
+input.field-value:read-only,
+input.field-value[disabled] {
+  background: var(--nude);
+  color: var(--text);
+  cursor: default;
+}
+
+textarea.field-value {
+  resize: vertical;
+  height: 64px;
+  line-height: 1.4;
+  display: block;
+}
+
+/* ── Tabla de datos ──────────────────────────────────────── */
+.step-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.step-table th {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.step-table td {
+  padding: 8px 10px;
+  border-bottom: 0.5px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.step-table tr:last-child td { border-bottom: none; }
+
+.step-table input[type="text"],
+.step-table input[type="number"] {
+  height: 28px;
+  border: 0.5px solid var(--border);
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--input-bg);
+  width: 100%;
+  outline: none;
+}
+
+.step-table input:focus {
+  border-color: var(--green-mid);
+  background: var(--white);
+}
+
+.step-table input:read-only {
+  background: var(--nude);
+  cursor: default;
+}
+
+/* Resultado OK / Error */
+.result-ok    { color: var(--green-dark); font-weight: 500; font-size: 11px; }
+.result-error { color: #E24B4A; font-weight: 500; font-size: 11px; }
+.result-adj   { color: var(--muted); font-size: 11px; }
+
+/* Badge conforme */
+.badge-conforme {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: rgba(93,202,165,0.12);
+  border-radius: 20px; padding: 1px 8px;
+  font-size: 10px; color: var(--green-dark);
+}
+
+.badge-si {
+  font-size: 11px; color: var(--green-dark); font-weight: 500;
+}
+
+/* ── Checklist en el aside ───────────────────────────────── */
+.aside-card {
+  background: var(--white);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: var(--sp3);
+}
+
+.aside-card__title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: var(--sp2);
+}
+
+.aside-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.aside-check-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text);
+}
+
+.aside-check-item .check-dot {
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  background: var(--green-dark);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.aside-check-item .check-dot::after {
+  content: '✓';
+  font-size: 9px;
+  color: var(--white);
+}
+
+/* Eventos recientes */
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.event-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.event-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green-mid);
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.event-dot--yellow { background: var(--yellow); }
+.event-dot--muted  { background: var(--muted); }
+
+.event-item__text  { color: var(--text); flex: 1; }
+.event-item__time  { color: var(--muted); white-space: nowrap; }
+
+/* Navegación de pasos */
+.nav-step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-step-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--muted);
+  padding: 2px 0;
+  text-decoration: none;
+}
+
+.nav-step-item--active { color: var(--green-dark); font-weight: 500; }
+.nav-step-item--done   { color: var(--green-dark); }
+
+.nav-step-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.nav-step-dot--done   { background: var(--green-dark); }
+.nav-step-dot--active { background: var(--green-mid); }
+
+/* ── Barra de acciones fija abajo ────────────────────────── */
+.step-footer {
+  height: 52px;
+  background: var(--white);
+  border-top: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--sp5);
+  flex-shrink: 0;
+}
+
+.step-footer__left  { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); }
+.step-footer__right { display: flex; align-items: center; gap: 8px; }
+
+/* Botones del footer */
+.btn-step {
+  height: 34px;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0 16px;
+  cursor: pointer;
+  border: 0.5px solid transparent;
+  display: inline-flex; align-items: center; gap: 6px;
+  text-decoration: none;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+.btn-step--primary {
+  background: var(--green-dark);
+  color: var(--white);
+  border-color: var(--green-dark);
+}
+.btn-step--primary:hover { opacity: 0.88; }
+
+.btn-step--alert {
+  background: var(--yellow);
+  color: #333;
+  border-color: var(--yellow);
+}
+.btn-step--alert:hover { opacity: 0.85; }
+
+.btn-step--secondary {
+  background: var(--white);
+  color: var(--green-dark);
+  border-color: var(--border);
+}
+.btn-step--secondary:hover { background: var(--input-bg); }
+
+.btn-step--ghost {
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--border);
+}
+.btn-step--ghost:hover { color: var(--text); }
+
+/* ── Barra de progreso visual (rendimiento) ──────────────── */
+.progress-bar-wrap {
+  background: var(--border);
+  border-radius: 20px;
+  height: 8px;
+  overflow: hidden;
+  flex: 1;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--green-mid);
+  border-radius: 20px;
+  transition: width 0.3s;
+}
+
+.progress-bar-label {
+  font-size: 11px;
+  color: var(--green-dark);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ── Barra de rango BPM (temperatura, humedad) ───────────── */
+.range-bar-wrap {
+  position: relative;
+  height: 20px;
+  background: var(--input-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 20px;
+  overflow: visible;
+  flex: 1;
+}
+
+.range-bar-ok {
+  position: absolute;
+  top: 0; bottom: 0;
+  background: rgba(93,202,165,0.25);
+  border-radius: 20px;
+}
+
+.range-bar-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px; height: 20px;
+  background: var(--green-mid);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: var(--white); font-weight: 600;
+  border: 2px solid var(--white);
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+  z-index: 2;
+}
+
+/* ── Aviso informativo (NC resuelta, etc.) ───────────────── */
+.info-notice {
+  background: rgba(93,202,165,0.08);
+  border: 0.5px solid var(--green-mid);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--green-dark);
+  display: flex; align-items: center; gap: 6px;
+}
+
+.info-notice--warning {
+  background: rgba(232,240,85,0.12);
+  border-color: #c5c930;
+  color: #555800;
+}
+
+/* ── Checklist final (2 columnas en main) ────────────────── */
+.checklist-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 24px;
+  margin-top: var(--sp2);
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.check-box {
+  width: 16px; height: 16px;
+  border-radius: 4px;
+  background: var(--green-dark);
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.check-box::after {
+  content: '✓';
+  font-size: 10px;
+  color: var(--white);
+}
+
+/* ── Control de línea — tabla empaque ────────────────────── */
+.control-linea-table { margin-top: 8px; }
+
+/* ── Observaciones ───────────────────────────────────────── */
+.obs-label {
+  font-size: 11px; color: var(--muted); margin-bottom: 4px;
+}
+
+/* ── Wrappers de layout del body del paso ────────────────── */
+.step-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 44px); /* descontar sidebar topbar si existe */
+  overflow: hidden;
+}
+
+/* Cuando está dentro del layout con sidebar el main-wrapper maneja el height */
+.main-wrapper .step-page {
+  height: 100%;
+}

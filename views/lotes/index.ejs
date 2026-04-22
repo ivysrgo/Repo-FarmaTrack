@@ -1,6 +1,6 @@
 <%# views/lotes/index.ejs — Panel de Lotes Activos %>
 
-<!-- Encabezado de página -->
+<!-- Encabezado -->
 <div class="page-header">
   <div>
     <h1 class="page-title">Lotes Activos</h1>
@@ -9,59 +9,55 @@
   <a href="/lotes/nuevo" class="btn btn--primary">+ Nueva Orden</a>
 </div>
 
-<!-- Estadísticas rápidas -->
-<div class="stats-grid">
-  <div class="stat-card">
-    <span class="stat-card__icon">🏭</span>
-    <div>
-      <p class="stat-card__label">En Producción</p>
-      <p class="stat-card__value"><%= stats.enProduccion %></p>
+<!-- KPI cards -->
+<div class="kpi-row">
+  <div class="kpi-card">
+    <span class="kpi-icon">🏭</span>
+    <div class="kpi-body">
+      <p class="kpi-label">En Producción</p>
+      <p class="kpi-value"><%= stats.enProduccion %></p>
     </div>
   </div>
-  <div class="stat-card">
-    <span class="stat-card__icon">⚠️</span>
-    <div>
-      <p class="stat-card__label">Bloqueados</p>
-      <p class="stat-card__value stat-card__value--warning"><%= stats.bloqueados %></p>
+  <div class="kpi-card kpi-card--warning">
+    <span class="kpi-icon">⚠️</span>
+    <div class="kpi-body">
+      <p class="kpi-label">Bloqueados</p>
+      <p class="kpi-value kpi-value--warning"><%= stats.bloqueados %></p>
     </div>
   </div>
-  <div class="stat-card">
-    <span class="stat-card__icon">✅</span>
-    <div>
-      <p class="stat-card__label">Liberados Hoy</p>
-      <p class="stat-card__value stat-card__value--success"><%= stats.liberadosHoy %></p>
+  <div class="kpi-card kpi-card--success">
+    <span class="kpi-icon">✅</span>
+    <div class="kpi-body">
+      <p class="kpi-label">Liberados Hoy</p>
+      <p class="kpi-value kpi-value--success"><%= stats.liberadosHoy %></p>
     </div>
   </div>
-  <div class="stat-card">
-    <span class="stat-card__icon">🔬</span>
-    <div>
-      <p class="stat-card__label">Total Activos</p>
-      <p class="stat-card__value"><%= stats.total %></p>
+  <div class="kpi-card">
+    <span class="kpi-icon">🔬</span>
+    <div class="kpi-body">
+      <p class="kpi-label">Total Activos</p>
+      <p class="kpi-value"><%= stats.total %></p>
     </div>
   </div>
 </div>
 
 <!-- Barra de búsqueda y filtros -->
-<div class="card filter-bar">
+<div class="filter-bar">
   <form method="GET" action="/lotes" class="filter-form">
     <div class="filter-form__search">
-      <span class="filter-form__search-icon">🔍</span>
-      <input
-        type="text"
-        name="q"
-        class="form-control filter-form__input"
+      <span class="filter-form__icon">🔍</span>
+      <input type="text" name="q" class="input filter-form__input"
         placeholder="Buscar por N.º lote, medicamento u operario…"
-        value="<%= typeof query !== 'undefined' ? query : '' %>"
-      />
+        value="<%= typeof query !== 'undefined' ? query : '' %>"/>
     </div>
-    <div class="filter-form__selects">
-      <select name="estado" class="form-control filter-form__select">
+    <div class="filter-form__right">
+      <select name="estado" class="input filter-form__select">
         <option value="">Todos los estados</option>
-        <option value="en_produccion"  <%= typeof estadoFiltro !== 'undefined' && estadoFiltro === 'en_produccion'  ? 'selected' : '' %>>En producción</option>
-        <option value="bloqueado"      <%= typeof estadoFiltro !== 'undefined' && estadoFiltro === 'bloqueado'      ? 'selected' : '' %>>Bloqueado</option>
-        <option value="en_espera"      <%= typeof estadoFiltro !== 'undefined' && estadoFiltro === 'en_espera'      ? 'selected' : '' %>>En espera</option>
-        <option value="liberado"       <%= typeof estadoFiltro !== 'undefined' && estadoFiltro === 'liberado'       ? 'selected' : '' %>>Liberado</option>
-        <option value="rechazado"      <%= typeof estadoFiltro !== 'undefined' && estadoFiltro === 'rechazado'      ? 'selected' : '' %>>Rechazado</option>
+        <option value="en_produccion" <%= typeof estadoFiltro !== 'undefined' && estadoFiltro === 'en_produccion' ? 'selected':'' %>>En producción</option>
+        <option value="bloqueado"     <%= typeof estadoFiltro !== 'undefined' && estadoFiltro === 'bloqueado'     ? 'selected':'' %>>Bloqueado</option>
+        <option value="en_espera"     <%= typeof estadoFiltro !== 'undefined' && estadoFiltro === 'en_espera'     ? 'selected':'' %>>En espera</option>
+        <option value="liberado"      <%= typeof estadoFiltro !== 'undefined' && estadoFiltro === 'liberado'      ? 'selected':'' %>>Liberado</option>
+        <option value="rechazado"     <%= typeof estadoFiltro !== 'undefined' && estadoFiltro === 'rechazado'     ? 'selected':'' %>>Rechazado</option>
       </select>
       <button type="submit" class="btn btn--secondary">Filtrar</button>
       <a href="/lotes" class="btn btn--ghost">Limpiar</a>
@@ -69,7 +65,7 @@
   </form>
 </div>
 
-<!-- Tabla de lotes -->
+<!-- Lista de lotes -->
 <% if (lotes.length === 0) { %>
   <div class="empty-state">
     <p class="empty-state__icon">🔬</p>
@@ -78,108 +74,150 @@
     <a href="/lotes/nuevo" class="btn btn--primary">Crear orden de producción</a>
   </div>
 <% } else { %>
-  <div class="card">
-    <div class="table-wrapper">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>N.º Lote</th>
-            <th>Medicamento</th>
-            <th>Operario</th>
-            <th>Estado</th>
-            <th>Paso</th>
-            <th>Progreso</th>
-            <th>Inicio</th>
-            <th class="text-right">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% lotes.forEach(lote => { %>
-            <tr class="<%= lote.estado === 'bloqueado' ? 'table__row--warning' : '' %>">
 
-              <!-- N.º Lote -->
-              <td>
-                <a href="/lotes/<%= lote.id %>" class="table__link table__link--mono">
-                  <%= lote.numeroLote %>
-                </a>
-              </td>
+  <div class="lotes-grid">
+    <% 
+      const estadoClases = {
+        en_produccion: 'badge--active',
+        bloqueado:     'badge--warning',
+        en_espera:     'badge--pending',
+        liberado:      'badge--liberated',
+        rechazado:     'badge--error'
+      };
+      const estadoLabels = {
+        en_produccion: 'En producción',
+        bloqueado:     'Bloqueado',
+        en_espera:     'En espera',
+        liberado:      'Liberado',
+        rechazado:     'Rechazado'
+      };
 
-              <!-- Medicamento -->
-              <td>
-                <p class="table__main"><%= lote.medicamento %></p>
-                <p class="table__sub"><%= lote.cantidadPlanificada %> unid. planificadas</p>
-              </td>
+      lotes.forEach(lote => {
+    %>
+      <div class="lote-card-sup lote-card-sup--<%= lote.estado %>">
 
-              <!-- Operario -->
-              <td>
-                <div class="cell-user">
-                  <div class="avatar avatar--sm"><%= lote.operarioInicial %></div>
-                  <span class="cell-user__name"><%= lote.operario %></span>
-                </div>
-              </td>
+        <!-- Cabecera de la card -->
+        <div class="lote-card-sup__head">
+          <div class="lote-card-sup__info">
+            <span class="lote-card-sup__id"><%= lote.numeroLote %></span>
+            <h3 class="lote-card-sup__nombre"><%= lote.medicamento %></h3>
+            <span class="lote-card-sup__cantidad"><%= lote.cantidadPlanificada.toLocaleString('es-CO') %> unid. planificadas</span>
+          </div>
+          <span class="badge <%= estadoClases[lote.estado] || '' %>">
+            <%= lote.estado === 'bloqueado' ? '⚠ ' : '' %><%= estadoLabels[lote.estado] || lote.estado %>
+          </span>
+        </div>
 
-              <!-- Estado -->
-              <td>
-                <% 
-                  const estadoClases = {
-                    en_produccion: 'badge--active',
-                    bloqueado:     'badge--warning',
-                    en_espera:     'badge--pending',
-                    liberado:      'badge--liberated',
-                    rechazado:     'badge--error'
-                  };
-                  const estadoLabels = {
-                    en_produccion: 'En producción',
-                    bloqueado:     'Bloqueado',
-                    en_espera:     'En espera',
-                    liberado:      'Liberado',
-                    rechazado:     'Rechazado'
-                  };
-                %>
-                <span class="badge <%= estadoClases[lote.estado] || '' %>">
-                  <%= lote.estado === 'bloqueado' ? '⚠ ' : '' %><%= estadoLabels[lote.estado] || lote.estado %>
-                </span>
-              </td>
+        <!-- Barra de progreso stepper -->
+        <div class="lote-card-sup__stepper">
+          <% for (let i = 1; i <= 9; i++) { %>
+            <div class="sup-step
+              <%= i < lote.pasoActual  ? 'sup-step--done'   : '' %>
+              <%= i === lote.pasoActual ? 'sup-step--active' : '' %>
+              <%= i > lote.pasoActual  ? 'sup-step--pending': '' %>
+            "></div>
+          <% } %>
+        </div>
+        <div class="lote-card-sup__paso-label">Paso <%= lote.pasoActual %> / 9</div>
 
-              <!-- Paso actual -->
-              <td class="text-center">
-                <span class="step-pill">
-                  Paso <%= lote.pasoActual %> / 9
-                </span>
-              </td>
+        <!-- Operario y fecha -->
+        <div class="lote-card-sup__meta">
+          <div class="lote-card-sup__operario">
+            <div class="avatar avatar--sm"><%= lote.operarioInicial %></div>
+            <span class="lote-card-sup__op-nombre"><%= lote.operario %></span>
+          </div>
+          <span class="lote-card-sup__fecha">
+            <%= new Date(lote.fechaInicio).toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' }) %>
+          </span>
+        </div>
 
-              <!-- Progreso visual -->
-              <td>
-                <div class="progress-track">
-                  <% for (let i = 1; i <= 9; i++) { %>
-                    <div class="progress-track__dot
-                      <%= i < lote.pasoActual  ? 'progress-track__dot--done'    : '' %>
-                      <%= i === lote.pasoActual ? 'progress-track__dot--active'  : '' %>
-                      <%= i > lote.pasoActual  ? 'progress-track__dot--pending' : '' %>
-                    "></div>
-                  <% } %>
-                </div>
-              </td>
+        <!-- Acciones -->
+        <div class="lote-card-sup__actions">
+          <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoActual %>" class="btn btn--secondary btn--sm">Ver detalle →</a>
+          <% if (lote.estado === 'bloqueado') { %>
+            <a href="/lotes/<%= lote.id %>/no-conformidades" class="btn btn--alert btn--sm">⚠ NC pendiente</a>
+          <% } %>
+          <% if (lote.estado === 'liberado') { %>
+            <span class="lote-card-sup__liberado">✓ Lote liberado</span>
+          <% } %>
+        </div>
 
-              <!-- Fecha inicio -->
-              <td class="text-muted text-sm">
-                <%= new Date(lote.fechaInicio).toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' }) %>
-              </td>
-
-              <!-- Acciones -->
-              <td class="text-right">
-                <div class="actions">
-                  <a href="/lotes/<%= lote.id %>" class="btn btn--sm btn--ghost" title="Ver detalle">👁</a>
-                  <% if (lote.estado === 'bloqueado') { %>
-                    <a href="/lotes/<%= lote.id %>/no-conformidades" class="btn btn--sm btn--alert" title="Revisar no conformidad">⚠️</a>
-                  <% } %>
-                </div>
-              </td>
-
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
+      </div>
+    <% }) %>
   </div>
+
 <% } %>
+
+<style>
+/* KPI */
+.kpi-row        { display:grid; grid-template-columns:repeat(4,1fr); gap:var(--space-3); margin-bottom:var(--space-4); }
+.kpi-card       { background:var(--color-surface-base); border:var(--border-default) solid var(--color-border-default); border-radius:var(--radius-lg); padding:var(--space-4); display:flex; align-items:center; gap:var(--space-3); }
+.kpi-card--warning { border-left:3px solid var(--color-yellow-400); }
+.kpi-card--success { border-left:3px solid var(--color-mint-400); }
+.kpi-icon       { font-size:20px; flex-shrink:0; }
+.kpi-label      { font-size:var(--font-size-field-label); color:var(--color-text-secondary); margin-bottom:2px; }
+.kpi-value      { font-size:24px; font-weight:var(--font-weight-medium); color:var(--color-text-primary); line-height:1; }
+.kpi-value--warning { color:var(--color-amber-600); }
+.kpi-value--success { color:var(--color-mint-700); }
+
+/* Filtros */
+.filter-bar     { background:var(--color-surface-base); border:var(--border-default) solid var(--color-border-default); border-radius:var(--radius-lg); padding:var(--space-3) var(--space-4); margin-bottom:var(--space-4); }
+.filter-form    { display:flex; align-items:center; gap:var(--space-3); flex-wrap:wrap; }
+.filter-form__search { position:relative; flex:1; min-width:200px; display:flex; align-items:center; }
+.filter-form__icon   { position:absolute; left:10px; font-size:12px; }
+.filter-form__input  { padding-left:28px; width:100%; }
+.filter-form__right  { display:flex; align-items:center; gap:var(--space-2); flex-shrink:0; }
+.filter-form__select { width:160px; cursor:pointer; }
+.btn--ghost     { background:transparent; color:var(--color-text-secondary); border-color:transparent; }
+.btn--ghost:hover { color:var(--color-action-primary); }
+
+/* Grid de lotes */
+.lotes-grid     { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:var(--space-3); }
+
+/* Lote card supervisión */
+.lote-card-sup  { background:var(--color-surface-base); border:var(--border-default) solid var(--color-border-default); border-radius:var(--radius-lg); padding:var(--space-4); display:flex; flex-direction:column; gap:var(--space-3); transition:box-shadow 0.15s; }
+.lote-card-sup:hover { box-shadow:0 2px 10px rgba(0,0,0,0.07); }
+.lote-card-sup--bloqueado { border-left:3px solid var(--color-yellow-400); }
+.lote-card-sup--rechazado { border-left:3px solid var(--color-red-500); }
+.lote-card-sup--liberado  { border-left:3px solid var(--color-mint-400); opacity:0.85; }
+
+.lote-card-sup__head   { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-2); }
+.lote-card-sup__id     { display:block; font-size:var(--font-size-hint); color:var(--color-text-secondary); margin-bottom:2px; font-family:monospace; }
+.lote-card-sup__nombre { font-size:var(--font-size-section-title); font-weight:var(--font-weight-medium); color:var(--color-text-primary); font-style:italic; margin-bottom:2px; }
+.lote-card-sup__cantidad{ font-size:var(--font-size-hint); color:var(--color-text-secondary); }
+
+/* Stepper mini */
+.lote-card-sup__stepper { display:flex; gap:3px; }
+.sup-step               { flex:1; height:4px; border-radius:2px; }
+.sup-step--done         { background:var(--color-mint-700); }
+.sup-step--active       { background:var(--color-mint-400); }
+.sup-step--pending      { background:var(--color-gray-200); }
+.lote-card-sup__paso-label { font-size:var(--font-size-hint); color:var(--color-text-secondary); margin-top:-6px; }
+
+/* Meta */
+.lote-card-sup__meta     { display:flex; align-items:center; justify-content:space-between; }
+.lote-card-sup__operario { display:flex; align-items:center; gap:var(--space-2); }
+.lote-card-sup__op-nombre{ font-size:var(--font-size-button); color:var(--color-text-primary); }
+.lote-card-sup__fecha    { font-size:var(--font-size-hint); color:var(--color-text-secondary); }
+
+/* Acciones */
+.lote-card-sup__actions  { display:flex; gap:var(--space-2); align-items:center; flex-wrap:wrap; }
+.btn--sm                 { height:28px; font-size:var(--font-size-hint); padding:0 var(--space-3); }
+.lote-card-sup__liberado { font-size:var(--font-size-hint); color:var(--color-mint-700); font-weight:var(--font-weight-medium); }
+
+/* Badge extra */
+.badge--pending { background:rgba(211,209,199,0.25); border:1px solid var(--color-gray-200); color:var(--color-text-secondary); }
+.badge--error   { background:rgba(226,75,74,0.10); border:1px solid var(--color-red-500); color:var(--color-red-500); }
+
+/* Avatar pequeño */
+.avatar--sm { width:22px; height:22px; font-size:var(--font-size-hint); }
+
+/* Encabezado de página */
+.page-header    { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--space-4); }
+.page-title     { font-size:var(--font-size-screen-title); font-weight:var(--font-weight-medium); color:var(--color-text-primary); }
+.page-subtitle  { font-size:var(--font-size-field-label); color:var(--color-text-secondary); margin-top:2px; }
+
+/* Empty state */
+.empty-state       { text-align:center; padding:var(--space-8) var(--space-5); background:var(--color-surface-base); border:var(--border-default) solid var(--color-border-default); border-radius:var(--radius-lg); }
+.empty-state__icon { font-size:32px; margin-bottom:var(--space-3); }
+</style>

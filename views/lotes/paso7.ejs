@@ -1,0 +1,113 @@
+<%# views/lotes/paso7.ejs — Empaque y tapado %>
+<div class="step-page">
+  <%- include('../partials/stepper-topbar') %>
+
+  <div class="step-layout">
+    <div class="step-main">
+
+      <div class="step-header">
+        <div class="step-header__meta">
+          <span>Paso 7/9 · <%= lote.numeroLote %> · <%= lote.medicamento %> · Operario: <%= operario.nombre %></span>
+          <span class="step-header__badge step-header__badge--readonly">🔒 Solo lectura · D.T.</span>
+          <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+        </div>
+        <h1 class="step-header__title">Empaque y tapado</h1>
+      </div>
+
+      <div class="readonly-notice">🔒 Vista de solo lectura — Director Técnico. Este paso fue completado por el Operario.</div>
+
+      <div class="step-card">
+        <p class="step-card__title">Empaque y tapado — registro completado por operario</p>
+        <div class="field-grid field-grid--3">
+          <div class="field-group">
+            <span class="field-label">Tipo de envase</span>
+            <div class="field-value"><%= tipoEnvase %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Lote de envases</span>
+            <div class="field-value"><%= loteEnvases %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Lote de etiquetas</span>
+            <div class="field-value"><%= loteEtiquetas %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Unidades planificadas</span>
+            <div class="field-value"><%= unidadesPlanificadas %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Unidades empacadas</span>
+            <div class="field-value"><%= unidadesEmpacadas %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Unidades descartadas</span>
+            <div class="field-value"><%= unidadesDescartadas %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Hora de inicio</span>
+            <div class="field-value"><%= horaInicio %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Hora de fin</span>
+            <div class="field-value"><%= horaFin %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Operario de empaque</span>
+            <div class="field-value"><%= operarioEmpaque %></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control de línea -->
+      <div class="step-card">
+        <p class="step-card__title">Control de línea — resultados</p>
+        <table class="step-table control-linea-table">
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Revisadas</th>
+              <th>Conformes</th>
+              <th>No conformes</th>
+              <th>Observación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% controlLinea.forEach(cl => { %>
+              <tr>
+                <td><%= cl.hora %></td>
+                <td><%= cl.revisadas %></td>
+                <td><%= cl.conformes %></td>
+                <td><%= cl.noConformes > 0 ? cl.noConformes : '0' %></td>
+                <td <%= cl.noConformes > 0 ? 'style="color:var(--muted)"' : 'style="color:var(--text)"' %>><%= cl.obs %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <div style="margin-top:12px">
+          <p class="obs-label">Observaciones del operario</p>
+          <div class="field-value field-value--wide"><%= observaciones %></div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <p class="step-card__title">Checklist completado</p>
+        <div class="checklist-grid">
+          <% checklist.forEach(item => { %>
+            <div class="check-row">
+              <div class="check-box"></div>
+              <span><%= item %></span>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <p class="obs-label">Observaciones del operario (solo lectura)</p>
+        <div class="field-value field-value--wide" style="color:var(--muted)">Sin observaciones adicionales registradas en este paso.</div>
+      </div>
+
+    </div>
+    <%- include('../partials/stepper-aside') %>
+  </div>
+  <%- include('../partials/stepper-footer') %>
+</div>

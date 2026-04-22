@@ -1,0 +1,253 @@
+<%# views/lotes/nuevo.ejs — Crear nueva orden de producción (RQF-01) %>
+
+<!-- Topbar -->
+<div class="step-topbar">
+  <div class="step-topbar__breadcrumb">
+    <a href="/lotes">← Panel de lotes</a>
+    <span>/</span>
+    <span>Nueva orden de producción</span>
+  </div>
+  <div class="step-topbar__right">
+    <span><%= fechaHoy %></span>
+    <div class="step-topbar__avatar"><%= usuario.iniciales %></div>
+  </div>
+</div>
+
+<div class="nuevo-layout">
+
+  <!-- ── Formulario principal ── -->
+  <div class="nuevo-main">
+
+    <div class="nuevo-cabecera">
+      <div class="nuevo-cabecera__icono">📋</div>
+      <div>
+        <h1 class="nuevo-cabecera__titulo">Nueva orden de producción</h1>
+        <p class="nuevo-cabecera__sub">Complete los campos para registrar el lote en el sistema. El número de lote se asignará automáticamente al guardar.</p>
+      </div>
+    </div>
+
+    <% if (typeof errores !== 'undefined' && errores.length > 0) { %>
+      <div class="alert alert--error">
+        <strong>Corrige los siguientes errores:</strong>
+        <ul><% errores.forEach(e => { %><li><%= e %></li><% }) %></ul>
+      </div>
+    <% } %>
+
+    <form action="/lotes/nuevo" method="POST" novalidate>
+
+      <!-- S1: Producto -->
+      <div class="nuevo-seccion">
+        <div class="nuevo-seccion__head">
+          <span class="nuevo-seccion__num">1</span>
+          <div>
+            <h2 class="nuevo-seccion__titulo">Producto a fabricar</h2>
+            <p class="nuevo-seccion__sub">Seleccione el medicamento e ingrese la cantidad planificada para este lote.</p>
+          </div>
+        </div>
+        <div class="field-grid field-grid--2">
+          <div class="field-group">
+            <label class="field-label" for="medicamento">Medicamento <span class="required">*</span></label>
+            <select class="input" id="medicamento" name="medicamento" required onchange="actualizarPreview()">
+              <option value="">— Seleccionar medicamento —</option>
+              <option value="Amoxicilina 500mg Cáps."  <%= typeof values !== 'undefined' && values.medicamento === 'Amoxicilina 500mg Cáps.'  ? 'selected':'' %>>Amoxicilina 500mg Cáps.</option>
+              <option value="Ibuprofeno 400mg Tab."     <%= typeof values !== 'undefined' && values.medicamento === 'Ibuprofeno 400mg Tab.'     ? 'selected':'' %>>Ibuprofeno 400mg Tab.</option>
+              <option value="Metformina 850mg Tab."     <%= typeof values !== 'undefined' && values.medicamento === 'Metformina 850mg Tab.'     ? 'selected':'' %>>Metformina 850mg Tab.</option>
+              <option value="Loratadina 10mg Tab."      <%= typeof values !== 'undefined' && values.medicamento === 'Loratadina 10mg Tab.'      ? 'selected':'' %>>Loratadina 10mg Tab.</option>
+              <option value="Enalapril 10mg Tab."       <%= typeof values !== 'undefined' && values.medicamento === 'Enalapril 10mg Tab.'       ? 'selected':'' %>>Enalapril 10mg Tab.</option>
+              <option value="Ciprofloxacina 500mg Tab." <%= typeof values !== 'undefined' && values.medicamento === 'Ciprofloxacina 500mg Tab.' ? 'selected':'' %>>Ciprofloxacina 500mg Tab.</option>
+              <option value="Atorvastatina 20mg Tab."   <%= typeof values !== 'undefined' && values.medicamento === 'Atorvastatina 20mg Tab.'   ? 'selected':'' %>>Atorvastatina 20mg Tab.</option>
+              <option value="Omeprazol 20mg Cáps."      <%= typeof values !== 'undefined' && values.medicamento === 'Omeprazol 20mg Cáps.'      ? 'selected':'' %>>Omeprazol 20mg Cáps.</option>
+            </select>
+            <span class="field-hint">Producto registrado en el sistema con fórmula validada</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="cantidadPlanificada">Cantidad planificada (unidades) <span class="required">*</span></label>
+            <input type="number" class="input" id="cantidadPlanificada" name="cantidadPlanificada"
+              placeholder="Ej: 50000" min="100" max="500000"
+              value="<%= typeof values !== 'undefined' ? values.cantidadPlanificada : '' %>"
+              required oninput="actualizarPreview()"/>
+            <span class="field-hint">Entre 100 y 500 000 unidades por lote</span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="nuevo-divider"/>
+
+      <!-- S2: Planificación -->
+      <div class="nuevo-seccion">
+        <div class="nuevo-seccion__head">
+          <span class="nuevo-seccion__num">2</span>
+          <div>
+            <h2 class="nuevo-seccion__titulo">Planificación del proceso</h2>
+            <p class="nuevo-seccion__sub">Indique cuándo inicia la producción y en qué área de la planta se realizará.</p>
+          </div>
+        </div>
+        <div class="field-grid field-grid--3">
+          <div class="field-group">
+            <label class="field-label" for="fechaInicio">Fecha de inicio <span class="required">*</span></label>
+            <input type="date" class="input" id="fechaInicio" name="fechaInicio"
+              value="<%= typeof values !== 'undefined' ? values.fechaInicio : new Date().toISOString().split('T')[0] %>" required/>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="turno">Turno de producción <span class="required">*</span></label>
+            <select class="input" id="turno" name="turno" required>
+              <option value="">— Seleccionar —</option>
+              <option value="Mañana (06:00–14:00)" <%= typeof values !== 'undefined' && values.turno === 'Mañana (06:00–14:00)' ? 'selected':'' %>>Mañana (06:00–14:00)</option>
+              <option value="Tarde (14:00–22:00)"  <%= typeof values !== 'undefined' && values.turno === 'Tarde (14:00–22:00)'  ? 'selected':'' %>>Tarde (14:00–22:00)</option>
+              <option value="Noche (22:00–06:00)"  <%= typeof values !== 'undefined' && values.turno === 'Noche (22:00–06:00)'  ? 'selected':'' %>>Noche (22:00–06:00)</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="area">Área / Línea <span class="required">*</span></label>
+            <select class="input" id="area" name="area" required>
+              <option value="">— Seleccionar —</option>
+              <option value="Manufactura sólidos — Línea 1"  <%= typeof values !== 'undefined' && values.area === 'Manufactura sólidos — Línea 1'  ? 'selected':'' %>>Sólidos — Línea 1</option>
+              <option value="Manufactura sólidos — Línea 2"  <%= typeof values !== 'undefined' && values.area === 'Manufactura sólidos — Línea 2'  ? 'selected':'' %>>Sólidos — Línea 2</option>
+              <option value="Manufactura líquidos — Línea 1" <%= typeof values !== 'undefined' && values.area === 'Manufactura líquidos — Línea 1' ? 'selected':'' %>>Líquidos — Línea 1</option>
+              <option value="Semisólidos — Línea 1"          <%= typeof values !== 'undefined' && values.area === 'Semisólidos — Línea 1'          ? 'selected':'' %>>Semisólidos — Línea 1</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <hr class="nuevo-divider"/>
+
+      <!-- S3: Operario -->
+      <div class="nuevo-seccion">
+        <div class="nuevo-seccion__head">
+          <span class="nuevo-seccion__num">3</span>
+          <div>
+            <h2 class="nuevo-seccion__titulo">Operario responsable</h2>
+            <p class="nuevo-seccion__sub">Asigne el operario que ejecutará los 9 pasos de producción de este lote.</p>
+          </div>
+        </div>
+        <div class="field-grid field-grid--2">
+          <div class="field-group">
+            <label class="field-label" for="operario">Operario asignado <span class="required">*</span></label>
+            <select class="input" id="operario" name="operario" required>
+              <option value="">— Seleccionar operario —</option>
+              <option value="Carlos Rodríguez" <%= typeof values !== 'undefined' && values.operario === 'Carlos Rodríguez' ? 'selected':'' %>>Carlos Rodríguez</option>
+              <option value="Luisa Martínez"   <%= typeof values !== 'undefined' && values.operario === 'Luisa Martínez'   ? 'selected':'' %>>Luisa Martínez</option>
+              <option value="Andrés Gómez"     <%= typeof values !== 'undefined' && values.operario === 'Andrés Gómez'     ? 'selected':'' %>>Andrés Gómez</option>
+              <option value="María Torres"     <%= typeof values !== 'undefined' && values.operario === 'María Torres'     ? 'selected':'' %>>María Torres</option>
+              <option value="Felipe Díaz"      <%= typeof values !== 'undefined' && values.operario === 'Felipe Díaz'      ? 'selected':'' %>>Felipe Díaz</option>
+              <option value="Valentina Cruz"   <%= typeof values !== 'undefined' && values.operario === 'Valentina Cruz'   ? 'selected':'' %>>Valentina Cruz</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="ordenCompra">Número de orden de compra <span class="required">*</span></label>
+            <input type="text" class="input" id="ordenCompra" name="ordenCompra"
+              placeholder="Ej: OC-2026-142"
+              value="<%= typeof values !== 'undefined' ? values.ordenCompra : '' %>" required/>
+            <span class="field-hint">Orden de compra física que origina este lote</span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="nuevo-divider"/>
+
+      <!-- S4: Observaciones -->
+      <div class="nuevo-seccion">
+        <div class="nuevo-seccion__head">
+          <span class="nuevo-seccion__num">4</span>
+          <div>
+            <h2 class="nuevo-seccion__titulo">Observaciones iniciales</h2>
+            <p class="nuevo-seccion__sub">Opcional. Cualquier nota relevante antes de iniciar el proceso productivo.</p>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="observaciones">Observaciones</label>
+          <textarea class="input textarea" id="observaciones" name="observaciones" rows="3"
+            placeholder="Ej: Producción urgente, prioridad por desabastecimiento..."
+          ><%= typeof values !== 'undefined' ? values.observaciones : '' %></textarea>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="nuevo-actions">
+        <a href="/lotes" class="btn btn--secondary">← Cancelar</a>
+        <button type="submit" class="btn btn--primary">Crear orden de producción →</button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- ── Aside ── -->
+  <aside class="nuevo-aside">
+    <div class="aside-card">
+      <p class="aside-card__title">Vista previa del lote</p>
+      <div class="prev-row"><span class="prev-label">Número de lote</span><span class="prev-val prev-val--auto">Auto asignado</span></div>
+      <div class="prev-row"><span class="prev-label">Medicamento</span><span class="prev-val" id="prevMed">—</span></div>
+      <div class="prev-row"><span class="prev-label">Cantidad</span><span class="prev-val" id="prevQty">—</span></div>
+      <div class="prev-row"><span class="prev-label">Estado inicial</span><span class="badge badge--pending">En espera</span></div>
+      <div class="prev-row"><span class="prev-label">Pasos</span><span class="prev-val">9 pasos</span></div>
+    </div>
+
+    <div class="aside-card">
+      <p class="aside-card__title">¿Qué ocurre al crear?</p>
+      <ul class="info-ul">
+        <li class="info-li"><span class="info-dot"></span>Se genera un número de lote único automáticamente</li>
+        <li class="info-li"><span class="info-dot"></span>El lote aparece en el panel con estado <strong>En espera</strong></li>
+        <li class="info-li"><span class="info-dot"></span>El operario asignado puede verlo en su lista</li>
+        <li class="info-li"><span class="info-dot"></span>Se registra el evento de creación en la bitácora</li>
+      </ul>
+    </div>
+
+    <div class="aside-card aside-card--muted">
+      <p class="aside-card__title">Campos obligatorios</p>
+      <p class="aside-muted">Los campos marcados con <span class="required">*</span> son requeridos. No podrás guardar hasta completarlos todos.</p>
+    </div>
+  </aside>
+
+</div>
+
+<style>
+.nuevo-layout { display:flex; gap:var(--space-4); padding:var(--space-5); align-items:flex-start; flex:1; }
+.nuevo-main   { flex:1; min-width:0; display:flex; flex-direction:column; }
+.nuevo-aside  { width:var(--size-aside-width); flex-shrink:0; display:flex; flex-direction:column; gap:var(--space-3); }
+
+.nuevo-cabecera        { display:flex; align-items:flex-start; gap:var(--space-3); margin-bottom:var(--space-5); }
+.nuevo-cabecera__icono { font-size:22px; flex-shrink:0; margin-top:2px; }
+.nuevo-cabecera__titulo{ font-size:var(--font-size-screen-title); font-weight:var(--font-weight-medium); color:var(--color-text-primary); margin-bottom:var(--space-1); }
+.nuevo-cabecera__sub   { font-size:var(--font-size-field-label); color:var(--color-text-secondary); line-height:1.5; }
+
+.nuevo-seccion        { padding:var(--space-4) 0; }
+.nuevo-seccion__head  { display:flex; align-items:flex-start; gap:var(--space-3); margin-bottom:var(--space-3); }
+.nuevo-seccion__num   { width:22px; height:22px; border-radius:var(--radius-circle); background:var(--color-action-primary); color:var(--color-white); font-size:var(--font-size-hint); font-weight:var(--font-weight-medium); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.nuevo-seccion__titulo{ font-size:var(--font-size-section-title); font-weight:var(--font-weight-medium); color:var(--color-text-primary); margin-bottom:2px; }
+.nuevo-seccion__sub   { font-size:var(--font-size-field-label); color:var(--color-text-secondary); }
+.nuevo-divider        { border:none; border-top:var(--border-default) solid var(--color-border-default); margin:0; }
+
+.field-grid     { display:grid; gap:var(--space-3); margin-bottom:var(--space-3); }
+.field-grid--2  { grid-template-columns:1fr 1fr; }
+.field-grid--3  { grid-template-columns:1fr 1fr 1fr; }
+.field-hint     { font-size:var(--font-size-hint); color:var(--color-text-secondary); }
+.required       { color:var(--color-red-500); }
+select.input    { cursor:pointer; }
+.textarea       { height:auto; padding:var(--space-2) var(--input-padding-x); resize:vertical; line-height:1.5; }
+
+.nuevo-actions  { display:flex; justify-content:flex-end; gap:var(--space-3); padding:var(--space-5) 0 var(--space-3); border-top:var(--border-default) solid var(--color-border-default); margin-top:var(--space-3); }
+
+.prev-row       { display:flex; justify-content:space-between; align-items:center; gap:var(--space-2); padding:var(--space-1) 0; border-bottom:var(--border-default) solid var(--color-border-default); font-size:var(--font-size-field-label); }
+.prev-row:last-child { border-bottom:none; }
+.prev-label     { color:var(--color-text-secondary); }
+.prev-val       { color:var(--color-text-primary); font-weight:var(--font-weight-medium); }
+.prev-val--auto { color:var(--color-text-secondary); font-style:italic; font-weight:var(--font-weight-regular); font-size:var(--font-size-hint); }
+
+.info-ul        { list-style:none; display:flex; flex-direction:column; gap:var(--space-2); }
+.info-li        { display:flex; align-items:flex-start; gap:var(--space-2); font-size:var(--font-size-field-label); color:var(--color-text-secondary); line-height:1.4; }
+.info-dot       { width:7px; height:7px; border-radius:var(--radius-circle); background:var(--color-mint-400); flex-shrink:0; margin-top:3px; }
+
+.aside-card--muted { background:var(--color-surface-raised); }
+.aside-muted       { font-size:var(--font-size-field-label); color:var(--color-text-secondary); line-height:1.5; }
+.badge--pending    { background:rgba(211,209,199,0.3); border-color:var(--color-gray-200); color:var(--color-text-secondary); }
+</style>
+
+<script>
+function actualizarPreview() {
+  const med = document.getElementById('medicamento').value;
+  const qty = document.getElementById('cantidadPlanificada').value;
+  document.getElementById('prevMed').textContent = med || '—';
+  document.getElementById('prevQty').textContent = qty ? parseInt(qty).toLocaleString('es-CO') + ' unidades' : '—';
+}
+</script>

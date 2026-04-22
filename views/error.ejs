@@ -1,0 +1,277 @@
+<%- /* views/panel/index.ejs — Panel de lotes activos (Director Técnico) RQF-06 */ %>
+
+<!-- ── Topbar ──────────────────────────────────────────────────────── -->
+<header class="topbar">
+  <div class="topbar__left">
+    <nav class="breadcrumb">
+      <span class="breadcrumb__link">Inicio</span>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">Panel de lotes activos</span>
+    </nav>
+  </div>
+
+  <div class="topbar__right">
+    <a href="/lotes/nuevo" class="btn btn--primary">+ Nuevo lote</a>
+    <div class="topbar__date"><%= fechaHoy %></div>
+    <div class="avatar topbar__avatar"><%= usuario.iniciales %></div>
+  </div>
+</header>
+
+<!-- ── Cuerpo principal ────────────────────────────────────────────── -->
+<div class="panel-layout">
+
+  <!-- ── Columna izquierda ──────────────────────────────────────── -->
+  <div class="panel-main">
+
+    <!-- KPI cards -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <span class="kpi-card__label">Lotes activos hoy</span>
+        <span class="kpi-card__value"><%= stats.totalActivos %></span>
+        <span class="kpi-card__delta kpi-card__delta--up">↑ <%= stats.deltaVsAyer %> vs ayer</span>
+      </div>
+      <div class="kpi-card kpi-card--warning">
+        <span class="kpi-card__label">Pendientes de liberar</span>
+        <div class="kpi-card__row">
+          <span class="kpi-card__value kpi-card__value--warning"><%= stats.pendientesFirma %></span>
+          <span class="kpi-card__tag">requieren firma</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-card--alert">
+        <span class="kpi-card__label">Alertas activas</span>
+        <div class="kpi-card__row">
+          <span class="kpi-card__value kpi-card__value--alert"><%= stats.alertasBPM %></span>
+          <span class="kpi-card__tag">desviaciones BPM</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-card--success">
+        <span class="kpi-card__label">Tasa de cumplimiento</span>
+        <span class="kpi-card__value kpi-card__value--success"><%= stats.tasaBPM %>%</span>
+        <span class="kpi-card__delta">BPM este mes</span>
+      </div>
+    </div>
+
+    <!-- Filtros y búsqueda -->
+    <div class="panel-toolbar">
+      <div class="search-box">
+        <input
+          type="text"
+          class="search-box__input"
+          placeholder="Buscar lote, producto..."
+          id="buscarLote"
+          oninput="filtrarLotes(this.value)"
+        />
+      </div>
+      <div class="filter-tabs" id="filterTabs">
+        <button class="filter-tab filter-tab--active" data-filter="todos" onclick="setFiltro(this, 'todos')">
+          Todos (<%= lotes.length %>)
+        </button>
+        <button class="filter-tab" data-filter="en_produccion" onclick="setFiltro(this, 'en_produccion')">
+          En producción
+        </button>
+        <button class="filter-tab" data-filter="en_calidad" onclick="setFiltro(this, 'en_calidad')">
+          En calidad
+        </button>
+        <button class="filter-tab" data-filter="pendiente_firma" onclick="setFiltro(this, 'pendiente_firma')">
+          Pendiente lib.
+        </button>
+        <button class="filter-tab" data-filter="liberado" onclick="setFiltro(this, 'liberado')">
+          Liberados
+        </button>
+      </div>
+      <div class="sort-control">
+        <span class="sort-control__label">Ordenar por:</span>
+        <select class="sort-control__select" onchange="ordenarLotes(this.value)">
+          <option value="fecha">Fecha</option>
+          <option value="nombre">Nombre</option>
+          <option value="paso">Paso</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Lista de lotes -->
+    <section class="lotes-section">
+      <div class="lotes-section__header">
+        <h2 class="lotes-section__title">Lotes en curso</h2>
+        <span class="lotes-section__meta" id="lotesCount"><%= lotes.length %> lotes · actualizado hace 2 min</span>
+      </div>
+
+      <div class="lotes-list" id="lotesLista">
+        <% lotes.forEach(function(lote) { %>
+          <div class="lote-card lote-card--<%= lote.estadoSlug %>" data-estado="<%= lote.estadoSlug %>" data-nombre="<%= lote.producto.toLowerCase() %>" data-id="<%= lote.id.toLowerCase() %>">
+
+            <!-- Cabecera de la card -->
+            <div class="lote-card__header">
+              <div class="lote-card__info">
+                <span class="lote-card__id"><%= lote.id %></span>
+                <h3 class="lote-card__nombre"><%= lote.producto %></h3>
+              </div>
+              <span class="badge badge--<%= lote.estadoSlug %>">
+                <% if (lote.estadoSlug === 'alerta_bpm') { %>⚠ <% } %>
+                <%= lote.estadoLabel %>
+              </span>
+            </div>
+
+            <!-- Progreso del stepper -->
+            <div class="lote-card__progress">
+              <% for (let i = 1; i <= 9; i++) { %>
+                <div class="progress-step progress-step--<%= i < lote.pasoActual ? 'done' : (i === lote.pasoActual ? 'active' : 'pending') %>"></div>
+              <% } %>
+            </div>
+
+            <!-- Meta info -->
+            <div class="lote-card__meta">
+              <div class="lote-card__operario">
+                <div class="avatar avatar--sm"><%= lote.operarioIniciales %></div>
+                <span class="lote-card__operario-nombre"><%= lote.operario %></span>
+                <span class="lote-card__paso">Paso <%= lote.pasoActual %>/9</span>
+                <span class="lote-card__tiempo"><%= lote.tiempoTranscurrido %></span>
+              </div>
+              <% if (lote.estadoSlug === 'alerta_bpm') { %>
+                <span class="lote-card__alerta-label">⚠ Desviación BPM detectada · Paso <%= lote.pasoActual %>/9</span>
+              <% } %>
+            </div>
+
+            <!-- Acciones -->
+            <div class="lote-card__actions">
+              <% if (lote.estadoSlug === 'en_produccion') { %>
+                <a href="/lotes/<%= lote.id %>/stepper" class="btn btn--primary btn--sm">Continuar lote</a>
+              <% } else if (lote.estadoSlug === 'pendiente_firma') { %>
+                <a href="/lotes/<%= lote.id %>/firma" class="btn btn--primary btn--sm">Revisar lote</a>
+              <% } else if (lote.estadoSlug === 'en_calidad') { %>
+                <a href="/lotes/<%= lote.id %>/calidad" class="btn btn--secondary btn--sm">Ver resultados</a>
+              <% } else if (lote.estadoSlug === 'alerta_bpm') { %>
+                <a href="/lotes/<%= lote.id %>/alerta" class="btn btn--alert btn--sm">Ver alerta</a>
+              <% } else { %>
+                <a href="/lotes/<%= lote.id %>" class="btn btn--secondary btn--sm">Ver detalle</a>
+              <% } %>
+              <a href="/lotes/<%= lote.id %>" class="btn btn--ghost btn--sm">Más detalles</a>
+            </div>
+
+          </div>
+        <% }); %>
+      </div>
+
+      <% if (lotes.length > 4) { %>
+        <button class="ver-todos-btn" onclick="verTodos()">
+          + <%= lotes.length - 4 %> lotes adicionales · Ver todos →
+        </button>
+      <% } %>
+    </section>
+
+  </div><!-- /panel-main -->
+
+  <!-- ── Columna derecha ────────────────────────────────────────── -->
+  <aside class="panel-aside">
+
+    <!-- Resumen del día -->
+    <div class="aside-card">
+      <h3 class="aside-card__title">Resumen del día</h3>
+      <ul class="resumen-list">
+        <li class="resumen-item">
+          <span class="resumen-item__label">Lotes iniciados hoy</span>
+          <span class="resumen-item__value"><%= resumen.lotesIniciados %></span>
+        </li>
+        <li class="resumen-item">
+          <span class="resumen-item__label">Lotes pendientes de firma</span>
+          <span class="resumen-item__value resumen-item__value--warning"><%= resumen.pendientesFirma %></span>
+        </li>
+        <li class="resumen-item">
+          <span class="resumen-item__label">Alertas BPM activas</span>
+          <span class="resumen-item__value resumen-item__value--alert"><%= resumen.alertasBPM %></span>
+        </li>
+        <li class="resumen-item">
+          <span class="resumen-item__label">Lotes liberados este mes</span>
+          <span class="resumen-item__value"><%= resumen.liberadosMes %></span>
+        </li>
+        <li class="resumen-item resumen-item--divider">
+          <span class="resumen-item__label">Tasa BPM mensual</span>
+          <span class="resumen-item__value resumen-item__value--success"><%= resumen.tasaBPM %>% ✓</span>
+        </li>
+      </ul>
+      <a href="/reportes" class="aside-link">Ver reporte completo →</a>
+    </div>
+
+    <!-- Pendiente de tu atención -->
+    <div class="aside-card">
+      <h3 class="aside-card__title">Pendiente de tu atención</h3>
+      <ul class="atencion-list">
+        <% pendientes.forEach(function(p) { %>
+          <li class="atencion-item atencion-item--<%= p.tipo %>">
+            <div class="atencion-item__body">
+              <span class="atencion-item__label"><%= p.label %></span>
+              <span class="atencion-item__lote"><%= p.loteId %> · <%= p.producto %></span>
+            </div>
+            <a href="<%= p.href %>" class="atencion-item__accion"><%= p.accion %> →</a>
+          </li>
+        <% }); %>
+      </ul>
+    </div>
+
+    <!-- Bitácora reciente -->
+    <div class="aside-card">
+      <h3 class="aside-card__title">Bitácora reciente</h3>
+      <ul class="bitacora-list">
+        <% bitacora.forEach(function(ev) { %>
+          <li class="bitacora-item">
+            <span class="bitacora-item__dot bitacora-item__dot--<%= ev.tipo %>"></span>
+            <div class="bitacora-item__body">
+              <span class="bitacora-item__texto"><%= ev.texto %></span>
+              <span class="bitacora-item__meta"><%= ev.tiempo %> · <%= ev.usuario %></span>
+            </div>
+          </li>
+        <% }); %>
+      </ul>
+      <a href="/bitacora" class="aside-link">Ver bitácora completa →</a>
+    </div>
+
+  </aside><!-- /panel-aside -->
+
+</div><!-- /panel-layout -->
+
+<!-- ── Script de filtrado y búsqueda (RQF-07) ─────────────────────── -->
+<script>
+  let filtroActivo = 'todos';
+
+  function filtrarLotes(query) {
+    const cards = document.querySelectorAll('.lote-card');
+    const q = query.toLowerCase().trim();
+    cards.forEach(card => {
+      const nombre = card.dataset.nombre || '';
+      const id     = card.dataset.id     || '';
+      const estado = card.dataset.estado || '';
+      const coincideTexto  = !q || nombre.includes(q) || id.includes(q);
+      const coincideFiltro = filtroActivo === 'todos' || estado === filtroActivo;
+      card.style.display = (coincideTexto && coincideFiltro) ? '' : 'none';
+    });
+    actualizarContador();
+  }
+
+  function setFiltro(btn, filtro) {
+    filtroActivo = filtro;
+    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('filter-tab--active'));
+    btn.classList.add('filter-tab--active');
+    filtrarLotes(document.getElementById('buscarLote').value);
+  }
+
+  function ordenarLotes(criterio) {
+    const lista = document.getElementById('lotesLista');
+    const cards = Array.from(lista.querySelectorAll('.lote-card'));
+    cards.sort((a, b) => {
+      if (criterio === 'nombre') return a.dataset.nombre.localeCompare(b.dataset.nombre);
+      return 0;
+    });
+    cards.forEach(c => lista.appendChild(c));
+  }
+
+  function actualizarContador() {
+    const visibles = document.querySelectorAll('.lote-card:not([style*="display: none"])').length;
+    document.getElementById('lotesCount').textContent = visibles + ' lotes · actualizado hace 2 min';
+  }
+
+  function verTodos() {
+    document.querySelectorAll('.lote-card').forEach(c => c.style.display = '');
+    document.querySelector('.ver-todos-btn')?.remove();
+    actualizarContador();
+  }
+</script>

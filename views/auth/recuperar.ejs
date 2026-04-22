@@ -1,0 +1,126 @@
+<%# Frame 2 — Forgot Password %>
+<div class="auth-page">
+
+  <!-- Panel izquierdo -->
+  <div class="auth-left">
+    <div class="auth-logo">
+      <div class="auth-logo__mark"><span class="auth-logo__mark-text">Ft</span></div>
+      <div>
+        <span class="auth-logo__name">FarmaTrack</span>
+        <span class="auth-logo__sub">Sistema de Gestión de Lotes</span>
+      </div>
+    </div>
+
+    <div class="auth-headline">
+      <h1 class="auth-headline__title">¿Olvidaste tu<br/>contraseña?</h1>
+      <p class="auth-headline__desc">
+        No te preocupes. Te enviaremos<br/>
+        instrucciones seguras a tu correo.
+      </p>
+
+      <!-- Ilustración sobre — del SVG frame2 -->
+      <div style="margin-top:32px; position:relative; width:280px; height:200px;">
+        <!-- Sobre base -->
+        <div style="position:absolute; top:50px; left:40px; width:200px; height:140px; border-radius:10px; border:1.5px solid var(--border); background:var(--white);"></div>
+        <!-- Flap visual -->
+        <div style="position:absolute; top:50px; left:40px; width:200px; height:80px; border-bottom:1.5px solid var(--border); background:linear-gradient(to bottom, var(--nude) 0%, transparent 100%); border-radius:10px 10px 0 0;"></div>
+        <!-- Candado encima -->
+        <div style="position:absolute; top:28px; left:130px; width:52px; height:52px; border-radius:50%; background:var(--nude); border:1.5px solid var(--green-mid); display:flex; align-items:center; justify-content:center; font-size:20px;">🔒</div>
+        <!-- Puntos decorativos -->
+        <div style="position:absolute; top:0; right:20px; width:10px; height:10px; border-radius:50%; background:var(--yellow);"></div>
+        <div style="position:absolute; top:20px; left:20px; width:8px; height:8px; border-radius:50%; background:var(--green-mid);"></div>
+        <div style="position:absolute; bottom:30px; right:0; width:6px; height:6px; border-radius:50%; background:var(--green-mid);"></div>
+      </div>
+
+      <!-- Pasos del proceso -->
+      <div style="margin-top:20px;">
+        <p style="font-size:var(--fs-label); color:var(--muted); font-weight:var(--fw-medium); margin-bottom:12px;">
+          Pasos para recuperar tu acceso:
+        </p>
+        <div class="process-steps">
+          <div class="process-step">
+            <div class="process-step__num process-step__num--done">1</div>
+            <span class="process-step__text process-step__text--done">Ingresa tu correo institucional</span>
+          </div>
+          <div class="process-step">
+            <div class="process-step__num process-step__num--pend">2</div>
+            <span class="process-step__text process-step__text--pend">Revisa tu bandeja de entrada</span>
+          </div>
+          <div class="process-step">
+            <div class="process-step__num process-step__num--pend">3</div>
+            <span class="process-step__text process-step__text--pend">Sigue el enlace para crear nueva clave</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-badge">✓ &nbsp; Certificado BPM · INVIMA Compliant</div>
+  </div>
+
+  <!-- Panel derecho -->
+  <div class="auth-right">
+    <div class="auth-right__nav">
+      <span class="auth-right__nav-left">Portal interno · FarmaTrack</span>
+      <a href="/auth/login" class="auth-right__nav-right">← Volver al inicio</a>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-card__inner">
+
+        <div class="auth-avatar"><span class="auth-avatar__icon">✉️</span></div>
+        <p class="auth-card__title">Recuperar contraseña</p>
+        <p class="auth-card__subtitle">Te enviaremos un enlace seguro a tu correo institucional</p>
+
+        <% const errMsg = locals.error && locals.error.length ? locals.error[0] : null; %>
+        <% const okMsg  = locals.ok    && locals.ok.length    ? locals.ok[0]    : null; %>
+
+        <% if (errMsg) { %>
+        <div class="auth-alert">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
+          <%= errMsg %>
+        </div>
+        <% } %>
+
+        <% if (okMsg) { %>
+        <div style="display:flex; align-items:flex-start; gap:8px; padding:12px; background:rgba(93,202,165,.10); border:.5px solid var(--green-mid); border-radius:8px; margin-bottom:20px; font-size:11px; color:var(--green-dark); font-weight:500;">
+          <span>✅</span> <%= okMsg %>
+        </div>
+        <% } %>
+
+        <form action="/auth/recuperar" method="POST" id="forgotForm" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="r-email">Correo electrónico</label>
+            <div class="input-wrap">
+              <span class="input-wrap__icon">
+                <svg width="14" height="11" viewBox="0 0 16 12" fill="none" stroke="#BBBAAF" stroke-width="1.2"><rect width="16" height="12" rx="2"/><polyline points="0,0 8,7 16,0"/></svg>
+              </span>
+              <input type="email" id="r-email" name="email" class="ft-input"
+                placeholder="Escribe tu correo institucional..."
+                value="<%= locals.emailVal || '' %>"
+                autocomplete="email" autofocus />
+            </div>
+          </div>
+
+          <button type="submit" class="ft-btn ft-btn--primary" style="margin-top:8px;">
+            Enviar instrucciones
+          </button>
+        </form>
+
+        <div style="margin-top:20px; text-align:center;">
+          <a href="/auth/login" class="ft-btn ft-btn--ghost">← Volver al inicio de sesión</a>
+        </div>
+
+        <div class="auth-note" style="margin-top:16px;">
+          🔒 &nbsp;El enlace de recuperación es válido por 15 minutos y solo puede usarse una vez.
+          Si no ves el correo, revisa tu carpeta de spam.
+        </div>
+
+        <div class="auth-footer">
+          Acceso restringido · Solo personal autorizado · FarmaTrack v1.0<br/>
+          Planta de Producción Farmacéutica · Colombia
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

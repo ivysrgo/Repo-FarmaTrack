@@ -1,0 +1,129 @@
+<%# views/lotes/paso8.ejs — Área de acondicionamiento %>
+<div class="step-page">
+  <%- include('../partials/stepper-topbar') %>
+
+  <div class="step-layout">
+    <div class="step-main">
+
+      <div class="step-header">
+        <div class="step-header__meta">
+          <span>Paso 8/9 · <%= lote.numeroLote %> · <%= lote.medicamento %> · Operario: <%= operario.nombre %></span>
+          <span class="step-header__badge step-header__badge--readonly">🔒 Solo lectura · D.T.</span>
+          <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+        </div>
+        <h1 class="step-header__title">Área de acondicionamiento</h1>
+      </div>
+
+      <div class="readonly-notice">🔒 Vista de solo lectura — Director Técnico. Este paso fue completado por el Operario.</div>
+
+      <div class="step-card">
+        <p class="step-card__title">Condiciones del área de acondicionamiento — registrado</p>
+        <div class="field-grid field-grid--3">
+          <div class="field-group">
+            <span class="field-label">Hora de ingreso al área</span>
+            <div class="field-value"><%= horaIngreso %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Operario responsable</span>
+            <div class="field-value"><%= operarioArea %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Código del área</span>
+            <div class="field-value"><%= codigoArea %></div>
+          </div>
+        </div>
+
+        <!-- Temperatura con barra de rango -->
+        <div style="margin-top:14px">
+          <div class="field-grid field-grid--2" style="align-items:end; gap:10px;">
+            <div class="field-group">
+              <span class="field-label">Temperatura registrada</span>
+              <div class="field-value"><%= temperatura %> °C</div>
+            </div>
+            <div class="field-group">
+              <span class="field-label">Rango BPM: <%= tempMin %>–<%= tempMax %> °C</span>
+              <div style="display:flex; align-items:center; gap:8px; height:34px;">
+                <div class="range-bar-wrap" style="flex:1; position:relative;">
+                  <div class="range-bar-ok js-range-ok"
+                       data-left="<%= ((tempMin) / (tempMax + 5)) * 100 %>"
+                       data-width="<%= ((tempMax - tempMin) / (tempMax + 5)) * 100 %>"></div>
+                  <div class="range-bar-marker js-range-marker"
+                       data-left="<%= Math.min(Math.max(((parseFloat(temperatura) / (tempMax + 5)) * 100), 5), 95) %>"><%= temperatura.split('.')[0] %></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Humedad con barra de rango -->
+        <div style="margin-top:14px">
+          <div class="field-grid field-grid--2" style="align-items:end; gap:10px;">
+            <div class="field-group">
+              <span class="field-label">Humedad relativa registrada</span>
+              <div class="field-value"><%= humedad %> HR</div>
+            </div>
+            <div class="field-group">
+              <span class="field-label">Rango BPM: <%= humMin %>–<%= humMax %>% HR</span>
+              <div style="display:flex; align-items:center; gap:8px; height:34px;">
+                <div class="range-bar-wrap" style="flex:1; position:relative;">
+                  <div class="range-bar-ok js-range-ok"
+                       data-left="<%= (humMin / 100) * 100 %>"
+                       data-width="<%= ((humMax - humMin) / 100) * 100 %>"></div>
+                  <div class="range-bar-marker js-range-marker"
+                       data-left="<%= Math.min(Math.max(parseFloat(humedad), 5), 95) %>"><%= humedad.split('.')[0] %></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <div class="field-group">
+            <span class="field-label">Condición del área</span>
+            <div class="field-value"><%= condicion %></div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <p class="obs-label">Observaciones del operario</p>
+          <div class="field-value field-value--wide"><%= observaciones %></div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <p class="step-card__title">Checklist completado</p>
+        <div class="checklist-grid">
+          <% checklist.forEach(item => { %>
+            <div class="check-row">
+              <div class="check-box"></div>
+              <span><%= item %></span>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <p class="obs-label">Observaciones del operario (solo lectura)</p>
+        <div class="field-value field-value--wide" style="color:var(--muted)">Sin observaciones adicionales registradas en este paso.</div>
+      </div>
+
+    </div>
+    <%- include('../partials/stepper-aside') %>
+  </div>
+
+  <script>
+    document.querySelectorAll('.js-range-ok').forEach((el) => {
+      const left = Number(el.dataset.left || 0);
+      const width = Number(el.dataset.width || 0);
+      el.style.left = `${left}%`;
+      el.style.width = `${width}%`;
+    });
+
+    document.querySelectorAll('.js-range-marker').forEach((el) => {
+      const left = Number(el.dataset.left || 0);
+      el.style.left = `${left}%`;
+    });
+  </script>
+
+  <%- include('../partials/stepper-footer') %>
+</div>

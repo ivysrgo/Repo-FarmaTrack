@@ -1,0 +1,512 @@
+
+/* ════════════════════════════════════════════════════════════
+   PANEL DE LOTES ACTIVOS — Director Técnico
+   Todos los estilos usan las custom properties ya definidas
+   en el :root del style.css existente.
+════════════════════════════════════════════════════════════ */
+
+/* ── Layout general del panel ────────────────────────────── */
+.panel-layout {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  align-items: flex-start;
+  flex: 1;
+}
+
+.panel-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.panel-aside {
+  width: var(--size-aside-width);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── KPI cards ───────────────────────────────────────────── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+}
+
+.kpi-card {
+  background: var(--color-surface-base);
+  border: var(--border-default) solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.kpi-card--warning { border-left: 3px solid var(--color-yellow-400); }
+.kpi-card--alert   { border-left: 3px solid var(--color-red-500); }
+.kpi-card--success { border-left: 3px solid var(--color-mint-400); }
+
+.kpi-card__label {
+  font-size: var(--font-size-field-label);
+  color: var(--color-text-secondary);
+}
+
+.kpi-card__value {
+  font-size: 28px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.kpi-card__value--warning { color: var(--color-amber-600); }
+.kpi-card__value--alert   { color: var(--color-red-500); }
+.kpi-card__value--success { color: var(--color-action-primary); }
+
+.kpi-card__delta {
+  font-size: var(--font-size-hint);
+  color: var(--color-text-secondary);
+}
+
+.kpi-card__delta--up { color: var(--color-mint-400); }
+
+.kpi-card__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.kpi-card__tag {
+  font-size: var(--font-size-hint);
+  color: var(--color-text-secondary);
+}
+
+/* ── Toolbar (búsqueda + filtros + orden) ────────────────── */
+.panel-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.search-box {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.search-box__input {
+  height: var(--input-height);
+  border-radius: var(--input-radius);
+  border: var(--border-default) solid var(--input-empty-border);
+  background: var(--input-empty-bg);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-input-text);
+  color: var(--color-text-primary);
+  padding: 0 var(--input-padding-x);
+  width: 200px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.search-box__input:focus {
+  border: var(--input-focus-border-width) solid var(--input-focus-border);
+  background: var(--input-focus-bg);
+}
+
+.filter-tabs {
+  display: flex;
+  gap: var(--space-1);
+  flex: 1;
+}
+
+.filter-tab {
+  height: var(--size-button-height);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  border: var(--border-default) solid var(--color-border-default);
+  background: var(--color-surface-base);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-button);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.filter-tab:hover {
+  border-color: var(--color-border-active);
+  color: var(--color-action-primary);
+}
+
+.filter-tab--active {
+  background: rgba(93, 202, 165, 0.12);
+  border-color: var(--color-border-active);
+  color: var(--color-action-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.sort-control__label {
+  font-size: var(--font-size-field-label);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.sort-control__select {
+  height: var(--size-button-height);
+  border-radius: var(--radius-md);
+  border: var(--border-default) solid var(--color-border-default);
+  background: var(--color-surface-base);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-button);
+  color: var(--color-text-primary);
+  padding: 0 var(--space-3);
+  outline: none;
+  cursor: pointer;
+}
+
+/* ── Sección de lotes ────────────────────────────────────── */
+
+
+.lotes-section__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.lotes-section__title {
+  font-size: var(--font-size-section-title);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.lotes-section__meta {
+  font-size: var(--font-size-field-label);
+  color: var(--color-text-secondary);
+}
+
+.lotes-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── Lote card ───────────────────────────────────────────── */
+.lote-card {
+  background: var(--color-surface-base);
+  border: var(--border-default) solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition: box-shadow 0.15s;
+}
+
+.lote-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.lote-card--alerta_bpm {
+  border-left: 3px solid var(--color-red-500);
+  background: var(--color-surface-base);
+}
+
+.lote-card--pendiente_firma {
+  border-left: 3px solid var(--color-yellow-400);
+}
+
+.lote-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.lote-card__id {
+  display: block;
+  font-size: var(--font-size-field-label);
+  color: var(--color-text-secondary);
+  margin-bottom: 2px;
+}
+
+.lote-card__nombre {
+  font-size: var(--font-size-section-title);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  font-style: italic;
+}
+
+/* ── Barra de progreso del stepper ──────────────────────── */
+.lote-card__progress {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.progress-step {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.progress-step--done    { background: var(--color-mint-700); }
+.progress-step--active  { background: var(--color-mint-400); }
+.progress-step--pending { background: var(--color-gray-200); }
+
+/* ── Meta info del lote ─────────────────────────────────── */
+.lote-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.lote-card__operario {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.lote-card__operario-nombre {
+  font-size: var(--font-size-button);
+  color: var(--color-text-primary);
+}
+
+.lote-card__paso,
+.lote-card__tiempo {
+  font-size: var(--font-size-field-label);
+  color: var(--color-text-secondary);
+}
+
+.lote-card__alerta-label {
+  font-size: var(--font-size-field-label);
+  color: var(--color-red-500);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ── Acciones de la card ─────────────────────────────────── */
+.lote-card__actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.btn--sm {
+  height: 30px;
+  font-size: var(--font-size-hint);
+  padding: 0 var(--space-3);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-color: transparent;
+  font-size: var(--font-size-hint);
+}
+
+.btn--ghost:hover {
+  color: var(--color-action-primary);
+}
+
+/* Badges de estado del lote */
+.badge--en_produccion {
+  background: rgba(93,202,165,0.12);
+  border-color: var(--color-mint-400);
+  color: var(--color-mint-700);
+}
+
+.badge--pendiente_firma {
+  background: rgba(232,240,85,0.20);
+  border-color: var(--color-yellow-400);
+  color: var(--color-amber-600);
+}
+
+.badge--en_calidad {
+  background: rgba(126,200,227,0.15);
+  border-color: var(--color-blue-300);
+  color: #2a6b85;
+}
+
+.badge--alerta_bpm {
+  background: rgba(226,75,74,0.10);
+  border-color: var(--color-red-500);
+  color: var(--color-red-500);
+}
+
+.badge--liberado {
+  background: rgba(26,92,58,0.08);
+  border-color: var(--color-mint-700);
+  color: var(--color-mint-700);
+}
+
+/* ── Ver todos ───────────────────────────────────────────── */
+.ver-todos-btn {
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  background: transparent;
+  border: var(--border-default) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-button);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ver-todos-btn:hover {
+  background: rgba(93,202,165,0.06);
+  color: var(--color-action-primary);
+}
+
+/* ── Aside resumen del día ───────────────────────────────── */
+.resumen-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.resumen-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-field-label);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-default) solid var(--color-border-default);
+}
+
+.resumen-item:last-child { border-bottom: none; padding-bottom: 0; }
+.resumen-item--divider { margin-top: var(--space-1); }
+
+.resumen-item__label { color: var(--color-text-secondary); }
+.resumen-item__value { font-weight: var(--font-weight-medium); color: var(--color-text-primary); }
+.resumen-item__value--warning { color: var(--color-amber-600); }
+.resumen-item__value--alert   { color: var(--color-red-500); }
+.resumen-item__value--success { color: var(--color-mint-700); }
+
+.aside-link {
+  display: block;
+  margin-top: var(--space-3);
+  font-size: var(--font-size-field-label);
+  color: var(--color-action-primary);
+  text-decoration: none;
+}
+
+.aside-link:hover { text-decoration: underline; }
+
+/* ── Pendiente de atención ───────────────────────────────── */
+.atencion-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.atencion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: var(--border-default) solid var(--color-border-default);
+  background: var(--color-surface-raised);
+}
+
+.atencion-item--firma   { border-left: 2px solid var(--color-mint-400); }
+.atencion-item--alerta  { border-left: 2px solid var(--color-red-500); }
+.atencion-item--calidad { border-left: 2px solid var(--color-blue-300); }
+
+.atencion-item__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.atencion-item__label {
+  font-size: var(--font-size-field-label);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.atencion-item__lote {
+  font-size: var(--font-size-hint);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.atencion-item__accion {
+  font-size: var(--font-size-hint);
+  color: var(--color-action-primary);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Bitácora reciente ───────────────────────────────────── */
+.bitacora-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.bitacora-item {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.bitacora-item__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-circle);
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.bitacora-item__dot--ok      { background: var(--color-mint-400); }
+.bitacora-item__dot--warning { background: var(--color-yellow-400); }
+.bitacora-item__dot--alert   { background: var(--color-red-500); }
+.bitacora-item__dot--info    { background: var(--color-blue-300); }
+
+.bitacora-item__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.bitacora-item__texto {
+  font-size: var(--font-size-field-label);
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+
+.bitacora-item__meta {
+  font-size: var(--font-size-hint);
+  color: var(--color-text-secondary);
+}
+
+/* ── Avatar pequeño ─────────────────────────────────────── */
+.avatar--sm {
+  width: 22px;
+  height: 22px;
+  font-size: var(--font-size-hint);
+}
