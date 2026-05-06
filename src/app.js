@@ -17,6 +17,9 @@ const config = require('../config/app');
 const router = require('./routes/index');
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
 
+require('dotenv').config();
+const connectDB = require('../config/db');
+
 const app = express();
 
 // ── Motor de plantillas ─────────────────────────────────────────
@@ -64,7 +67,10 @@ app.use(notFound);
 app.use(errorHandler);
 
 // ── Arranque ────────────────────────────────────────────────────
+connectDB();
+
 const { port, host } = config.server;
+
 app.listen(port, () => {
   console.log(`\n🚀 FarmaTrack corriendo en: http://${host}:${port}`);
   console.log(`🔐 Login:  http://${host}:${port}/auth/login`);
