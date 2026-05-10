@@ -1,0 +1,87 @@
+<%# views/lotes/paso3.ejs — Verificación de pesos %>
+<div class="step-page">
+  <%- include('../partials/stepper-topbar') %>
+
+  <div class="step-layout">
+    <div class="step-main">
+
+      <div class="step-header">
+        <div class="step-header__meta">
+          <span>Paso 3/9 · <%= lote.numeroLote %> · <%= lote.medicamento %> · Operario: <%= operario.nombre %></span>
+          <span class="step-header__badge step-header__badge--readonly">🔒 Solo lectura · D.T.</span>
+          <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+        </div>
+        <h1 class="step-header__title">Verificación de pesos</h1>
+      </div>
+
+      <div class="readonly-notice">🔒 Vista de solo lectura — Director Técnico. Este paso fue completado por el Operario.</div>
+
+      <!-- Tabla de pesos -->
+      <div class="step-card">
+        <p class="step-card__title">Registro de verificación de pesos — completado por operario</p>
+        <div class="info-notice" style="margin-bottom:10px">
+          📋 Pesos registrados por <%= operario.nombre %>. Todas las desviaciones BPM fueron resueltas antes de continuar.
+        </div>
+        <table class="step-table">
+          <thead>
+            <tr>
+              <th>Materia prima</th>
+              <th>P. teórico</th>
+              <th>Mín (g)</th>
+              <th>Máx (g)</th>
+              <th>Peso registrado</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% pesos.forEach(p => { %>
+              <tr>
+                <td><%= p.nombre %></td>
+                <td><%= p.teorico %></td>
+                <td><%= p.min %></td>
+                <td><%= p.max %></td>
+                <td><%= p.registrado %></td>
+                <td>
+                  <span class="result-ok"><%= p.resultado %> ✓</span>
+                  <% if (p.nota) { %><span class="result-adj"> <%= p.nota %></span><% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <% if (ncInfo) { %>
+          <div class="info-notice" style="margin-top:10px">
+            📋 <%= ncInfo %>
+          </div>
+        <% } %>
+        <div style="margin-top:12px">
+          <p class="obs-label">Observaciones del operario</p>
+          <div class="field-value field-value--wide"><%= observaciones %></div>
+        </div>
+      </div>
+
+      <!-- Checklist -->
+      <div class="step-card">
+        <p class="step-card__title">Checklist completado</p>
+        <div class="checklist-grid">
+          <% checklist.forEach(item => { %>
+            <div class="check-row">
+              <div class="check-box"></div>
+              <span><%= item %></span>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <p class="obs-label">Observaciones del operario (solo lectura)</p>
+        <div class="field-value field-value--wide" style="color:var(--muted)">Sin observaciones adicionales registradas en este paso.</div>
+      </div>
+
+    </div>
+
+    <%- include('../partials/stepper-aside') %>
+  </div>
+
+  <%- include('../partials/stepper-footer') %>
+</div>

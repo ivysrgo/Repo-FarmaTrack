@@ -1,0 +1,98 @@
+<%# views/error.ejs — Página de error genérica.
+     Se renderiza con `layout: false` desde errorHandler, así que esta vista
+     debe ser un documento HTML completo y no depender de variables del layout. %>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= typeof title !== 'undefined' ? title : 'Error' %> | FarmaTrack</title>
+  <link rel="stylesheet" href="/css/farmatrack.css" />
+  <style>
+    .error-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--nude, #F5EFE6);
+    }
+    .error-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 44px rgba(0,0,0,.08);
+      max-width: 520px;
+      width: 100%;
+      padding: 48px 44px;
+      text-align: center;
+    }
+    .error-card__code {
+      font-size: 64px;
+      font-weight: 700;
+      color: var(--green-dark, #1A5C3A);
+      line-height: 1;
+      margin: 0 0 12px;
+    }
+    .error-card__title {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0 0 12px;
+      color: #111;
+    }
+    .error-card__msg {
+      color: #555;
+      margin: 0 0 28px;
+      line-height: 1.5;
+    }
+    .error-card__actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .error-card__btn {
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+    .error-card__btn--primary {
+      background: var(--green-dark, #1A5C3A);
+      color: #fff;
+    }
+    .error-card__btn--ghost {
+      background: transparent;
+      color: var(--green-dark, #1A5C3A);
+      border-color: var(--green-dark, #1A5C3A);
+    }
+  </style>
+</head>
+<body>
+  <div class="error-wrap">
+    <div class="error-card">
+      <p class="error-card__code"><%= typeof status !== 'undefined' ? status : 500 %></p>
+      <h1 class="error-card__title">
+        <% if (typeof status !== 'undefined' && status === 404) { %>
+          Página no encontrada
+        <% } else { %>
+          Ocurrió un error
+        <% } %>
+      </h1>
+      <p class="error-card__msg">
+        <%= typeof message !== 'undefined' ? message : 'Algo salió mal procesando tu solicitud.' %>
+      </p>
+      <div class="error-card__actions">
+        <%# error.ejs se renderiza con layout:false, así que dashboardPath
+             puede estar undefined. Cae a /panel si no hay sesión. %>
+        <a href="<%= (typeof dashboardPath !== 'undefined' && dashboardPath) ? dashboardPath : '/panel' %>"
+           class="error-card__btn error-card__btn--primary">
+          Volver
+        </a>
+        <a href="javascript:history.back()" class="error-card__btn error-card__btn--ghost">← Volver atrás</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

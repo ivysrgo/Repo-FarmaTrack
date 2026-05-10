@@ -1,0 +1,454 @@
+<%# views/operario/dashboard.ejs — Dashboard del Operario (Frame 10 — Mis lotes asignados)
+     Dos columnas: lista de "Mis lotes activos" + sección "Completados hoy" a la
+     izquierda, aside con turno + alerta + reportar NC a la derecha. %>
+
+<!-- ── Topbar (breadcrumb + fecha + avatar) ───────────────────────── -->
+<header class="topbar op-topbar">
+  <div class="topbar__left">
+    <nav class="breadcrumb">
+      <span class="breadcrumb__link">Inicio</span>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">Mis lotes</span>
+    </nav>
+    <h1 class="op-page-title">Mis lotes asignados</h1>
+  </div>
+  <div class="topbar__right">
+    <span class="topbar__date"><%= fechaHoy %></span>
+    <div class="avatar topbar__avatar"><%= usuario.iniciales %></div>
+  </div>
+</header>
+
+<% if (typeof modoDemo !== 'undefined' && modoDemo) { %>
+  <div class="op-demo-note">
+    <strong>Modo demostración:</strong> el usuario logueado (<%= usuario.nombre %>) no
+    tiene lotes asignados en el repositorio; mostrando los lotes activos del seed
+    como referencia. La asignación real vendrá de MongoDB.
+  </div>
+<% } %>
+
+<div class="op-layout">
+
+  <!-- ════════════ Columna principal ════════════ -->
+  <div class="op-main">
+
+    <!-- Card del operario / turno -->
+    <section class="op-info-card">
+      <div class="op-info-card__avatar"><%= usuario.iniciales %></div>
+      <div class="op-info-card__body">
+        <p class="op-info-card__name"><%= usuario.nombre %> — <%= usuario.cargo %></p>
+        <p class="op-info-card__meta">
+          Turno activo · Área de <%= turno.area %> · Hoy <%= new Date().toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' }) %>
+        </p>
+      </div>
+      <span class="badge-turno">● Turno activo</span>
+    </section>
+
+    <!-- Mis lotes activos -->
+    <section class="op-section">
+      <header class="op-section__head">
+        <h2 class="op-section__title">Mis lotes activos</h2>
+        <span class="op-section__meta"><%= activos.length %> lotes asignados</span>
+      </header>
+
+      <% if (activos.length === 0) { %>
+        <div class="op-empty">
+          No tienes lotes activos en este momento.
+        </div>
+      <% } %>
+
+      <% activos.forEach(function(lote) { %>
+        <%
+          // Color del thin strip superior según estado del lote
+          var stripClass = 'strip--' + lote.estado;
+          // Color del fill de la barra de progreso (mint para activos, amarillo para pendientes, etc.)
+          var fillClass  = 'fill--' + lote.estado;
+          // Color del badge
+          var badgeClass = 'op-badge--' + lote.estado;
+        %>
+        <article class="op-lote-card">
+          <div class="op-lote-card__strip <%= stripClass %>"></div>
+
+          <div class="op-lote-card__body">
+            <div class="op-lote-card__header">
+              <div>
+                <span class="op-lote-card__id"><%= lote.numeroLote %></span>
+                <h3 class="op-lote-card__nombre"><%= lote.producto %></h3>
+                <p class="op-lote-card__meta">Paso <%= lote.pasoActual %>/9 · ⏱ <%= lote.tiempoTranscurrido %> transcurrido</p>
+              </div>
+              <span class="op-badge <%= badgeClass %>">● <%= lote.estadoLabel %></span>
+            </div>
+
+            <div class="op-progress">
+              <div class="op-progress__bar">
+                <div class="op-progress__fill <%= fillClass %>" style="width: <%= lote.progresoPct %>%;"></div>
+              </div>
+              <span class="op-progress__label"><%= lote.progresoPct %>% completado</span>
+            </div>
+
+            <div class="op-lote-card__actions">
+              <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoActual %>"
+                 class="op-btn op-btn--<%= lote.accion.variante %>">
+                <%= lote.accion.label %>
+              </a>
+            </div>
+          </div>
+        </article>
+      <% }); %>
+    </section>
+
+    <!-- Completados hoy -->
+    <% if (completadosHoy.length > 0) { %>
+      <section class="op-section">
+        <header class="op-section__head">
+          <h2 class="op-section__title op-section__title--sm">Completados hoy</h2>
+        </header>
+
+        <% completadosHoy.forEach(function(lote) { %>
+          <article class="op-lote-card op-lote-card--done">
+            <div class="op-lote-card__body op-lote-card__body--compact">
+              <div class="op-lote-card__header">
+                <div>
+                  <span class="op-lote-card__id"><%= lote.numeroLote %> · <%= lote.producto %></span>
+                  <p class="op-lote-card__meta">Completado hace <%= lote.completadoHace %> · 9/9 pasos</p>
+                </div>
+                <span class="op-badge op-badge--liberado">✓ Completado</span>
+              </div>
+            </div>
+          </article>
+        <% }); %>
+      </section>
+    <% } %>
+
+  </div><!-- /op-main -->
+
+  <!-- ════════════ Aside derecho ════════════ -->
+  <aside class="op-aside">
+
+    <!-- Mi turno hoy -->
+    <div class="op-card op-card--turno">
+      <p class="op-card__title">Mi turno hoy</p>
+      <ul class="op-turno-list">
+        <li><span>Turno</span>             <strong><%= turno.horario %></strong></li>
+        <li><span>Lotes asignados</span>   <strong><%= turno.lotesAsignados %></strong></li>
+        <li><span>Pasos completados</span> <strong><%= turno.pasosCompletados %></strong></li>
+        <li><span>No conformidades</span>  <strong><%= turno.noConformidades %></strong></li>
+        <li><span>Paso actual</span>       <strong><%= turno.pasoActual %></strong></li>
+      </ul>
+    </div>
+
+    <!-- Pendiente de verificación del DT -->
+    <% if (pendienteDT) { %>
+      <div class="op-card op-card--alert">
+        <p class="op-card__title op-card__title--alert">▲ Pendiente: <%= pendienteDT.numeroLote %></p>
+        <p class="op-card__text">
+          Verificación de paso <%= pendienteDT.pasoActual %> esperando confirmación del D.T.
+          <a href="/lotes/<%= pendienteDT.id %>/paso/<%= pendienteDT.pasoActual %>" class="op-card__link">· Revisar ya</a>
+        </p>
+      </div>
+    <% } %>
+
+    <!-- Reportar no conformidad -->
+    <a href="/noconformidad/nueva" class="op-card op-card--report">
+      <p class="op-card__title op-card__title--report">Reportar no conformidad</p>
+      <p class="op-card__text op-card__text--report">¿Encontraste algo fuera de rango? →</p>
+    </a>
+
+  </aside><!-- /op-aside -->
+
+</div><!-- /op-layout -->
+
+
+<style>
+  /* ══════════════════════════════════════════════════════════════
+     OPERARIO DASHBOARD (Frame 10)
+     Estilos scoped a esta vista — extraidos al <head> por
+     express-ejs-layouts gracias a layout extractStyles + el
+     placeholder de style en el layout main.ejs.
+     ══════════════════════════════════════════════════════════════ */
+
+  /* ── Topbar ─────────────────────────────────────────────────── */
+  .op-topbar {
+    background: var(--nude);
+    border-bottom: 0.5px solid var(--border);
+    padding: 12px var(--sp5);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--sp4);
+  }
+  .op-topbar .topbar__left { display: flex; flex-direction: column; gap: 4px; }
+  .op-topbar .breadcrumb {
+    font-size: var(--fs-hint); color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .op-topbar .breadcrumb__sep    { color: var(--placeholder); }
+  .op-topbar .breadcrumb__current{ color: var(--text); }
+  .op-page-title {
+    font-size: 18px; font-weight: var(--fw-medium);
+    color: var(--text); line-height: 1.2;
+  }
+  .op-topbar .topbar__right { display: flex; align-items: center; gap: 12px; }
+  .op-topbar .topbar__date  { font-size: var(--fs-label); color: var(--muted); }
+  .op-topbar .topbar__avatar{
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--blue-av); color: var(--green-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-size: var(--fs-label); font-weight: var(--fw-medium);
+  }
+
+  /* Aviso modo demo */
+  .op-demo-note {
+    margin: 10px var(--sp5) 0;
+    padding: 8px 12px;
+    background: rgba(232, 240, 85, 0.18);
+    border: 0.5px solid #c5c930;
+    border-radius: 8px;
+    font-size: var(--fs-label);
+    color: #555800;
+  }
+
+  /* ── Layout 2 columnas ──────────────────────────────────────── */
+  .op-layout {
+    display: flex;
+    gap: var(--sp5);
+    padding: var(--sp5);
+    align-items: flex-start;
+    flex: 1;
+  }
+  .op-main  { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--sp4); }
+  .op-aside {
+    width: 290px; flex-shrink: 0;
+    display: flex; flex-direction: column; gap: var(--sp3);
+  }
+
+  /* ── Card "Operario / Turno activo" ─────────────────────────── */
+  .op-info-card {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: var(--sp4);
+    display: flex;
+    align-items: center;
+    gap: var(--sp3);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+  }
+  .op-info-card__avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--blue-av); color: var(--green-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: var(--fw-medium); flex-shrink: 0;
+  }
+  .op-info-card__body { flex: 1; }
+  .op-info-card__name {
+    font-size: 14px; font-weight: var(--fw-medium); color: var(--text);
+    margin-bottom: 2px;
+  }
+  .op-info-card__meta {
+    font-size: var(--fs-label); color: var(--muted);
+  }
+  .badge-turno {
+    background: rgba(93, 202, 165, 0.18);
+    color: var(--green-dark);
+    border: 0.5px solid var(--green-mid);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: var(--fs-hint);
+    font-weight: var(--fw-medium);
+    white-space: nowrap;
+  }
+
+  /* ── Sección (header de "Mis lotes activos" / "Completados hoy") ── */
+  .op-section { display: flex; flex-direction: column; gap: var(--sp3); }
+  .op-section__head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-bottom: 4px;
+  }
+  .op-section__title {
+    font-size: 14px; font-weight: var(--fw-medium); color: var(--text);
+  }
+  .op-section__title--sm { font-size: 13px; }
+  .op-section__meta {
+    font-size: var(--fs-label); color: var(--muted);
+  }
+  .op-empty {
+    background: var(--white);
+    border: 0.5px dashed var(--border);
+    border-radius: 10px;
+    padding: 22px;
+    text-align: center;
+    font-size: var(--fs-label);
+    color: var(--muted);
+  }
+
+  /* ── Card de cada lote ──────────────────────────────────────── */
+  .op-lote-card {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+  }
+  .op-lote-card--done { opacity: 0.85; }
+  .op-lote-card__strip { height: 4px; width: 100%; }
+
+  .strip--en_produccion   { background: var(--green-dark); }
+  .strip--en_espera       { background: var(--green-mid); }
+  .strip--pendiente_firma { background: var(--yellow); }
+  .strip--alerta_bpm      { background: #E24B4A; }
+  .strip--en_calidad      { background: var(--blue-av); }
+  .strip--bloqueado       { background: #C42E2D; }
+  .strip--liberado        { background: var(--green-mid); }
+
+  .op-lote-card__body { padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+  .op-lote-card__body--compact { padding: 12px 18px; }
+
+  .op-lote-card__header {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+  }
+  .op-lote-card__id {
+    font-size: var(--fs-hint); color: var(--muted); font-weight: var(--fw-medium);
+    letter-spacing: 0.4px;
+  }
+  .op-lote-card__nombre {
+    font-size: 16px; font-weight: var(--fw-medium); color: var(--text);
+    margin: 2px 0;
+  }
+  .op-lote-card__meta {
+    font-size: var(--fs-label); color: var(--muted);
+  }
+
+  .op-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: var(--fs-hint); font-weight: var(--fw-medium);
+    border: 0.5px solid transparent; white-space: nowrap;
+  }
+  .op-badge--en_produccion {
+    background: rgba(93, 202, 165, 0.16); border-color: var(--green-mid); color: var(--green-dark);
+  }
+  .op-badge--en_espera {
+    background: rgba(126, 200, 227, 0.18); border-color: var(--blue-av); color: var(--green-dark);
+  }
+  .op-badge--pendiente_firma {
+    background: rgba(232, 240, 85, 0.30); border-color: #c5c930; color: #555800;
+  }
+  .op-badge--en_calidad {
+    background: rgba(126, 200, 227, 0.18); border-color: var(--blue-av); color: var(--green-dark);
+  }
+  .op-badge--alerta_bpm {
+    background: rgba(226, 75, 74, 0.10); border-color: #E24B4A; color: #C42E2D;
+  }
+  .op-badge--bloqueado {
+    background: rgba(196, 46, 45, 0.12); border-color: #C42E2D; color: #C42E2D;
+  }
+  .op-badge--liberado {
+    background: rgba(93, 202, 165, 0.16); border-color: var(--green-mid); color: var(--green-dark);
+  }
+
+  /* ── Barra de progreso del lote ─────────────────────────────── */
+  .op-progress {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .op-progress__bar {
+    flex: 1; height: 6px; background: var(--input-bg);
+    border-radius: 20px; overflow: hidden;
+  }
+  .op-progress__fill {
+    height: 100%; border-radius: 20px; transition: width 0.3s;
+    background: var(--green-mid);
+  }
+  .fill--en_produccion   { background: var(--green-mid); }
+  .fill--en_espera       { background: var(--placeholder); }
+  .fill--pendiente_firma { background: #d6df40; }
+  .fill--alerta_bpm      { background: #E24B4A; }
+  .fill--en_calidad      { background: var(--blue-av); }
+  .fill--bloqueado       { background: #C42E2D; }
+  .fill--liberado        { background: var(--green-mid); }
+
+  .op-progress__label {
+    font-size: var(--fs-hint); color: var(--muted);
+    white-space: nowrap; min-width: 90px; text-align: right;
+  }
+
+  /* ── Botón de acción del lote (centrado) ────────────────────── */
+  .op-lote-card__actions { display: flex; justify-content: center; }
+
+  .op-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 36px; padding: 0 22px;
+    border-radius: 8px;
+    font-size: 12px; font-weight: var(--fw-medium);
+    text-decoration: none; cursor: pointer;
+    border: 0.5px solid transparent;
+    transition: opacity 0.15s, background 0.15s;
+    min-width: 240px;
+  }
+  .op-btn--primary {
+    background: var(--green-dark); color: var(--white); border-color: var(--green-dark);
+  }
+  .op-btn--primary:hover  { opacity: 0.92; }
+  .op-btn--warning {
+    background: var(--yellow); color: #555800; border-color: #c5c930;
+  }
+  .op-btn--warning:hover  { opacity: 0.88; }
+  .op-btn--alert {
+    background: #E24B4A; color: var(--white); border-color: #C42E2D;
+  }
+  .op-btn--alert:hover    { opacity: 0.92; }
+  .op-btn--secondary {
+    background: var(--white); color: var(--green-dark); border-color: var(--border);
+  }
+  .op-btn--secondary:hover{ background: var(--input-bg); }
+
+  /* ── Aside cards ────────────────────────────────────────────── */
+  .op-card {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: var(--sp4);
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .op-card__title {
+    font-size: 12px; font-weight: var(--fw-medium); color: var(--text);
+    margin-bottom: var(--sp2);
+  }
+  .op-card__text {
+    font-size: var(--fs-label); color: var(--text);
+    line-height: 1.45;
+  }
+
+  .op-turno-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .op-turno-list li {
+    display: flex; justify-content: space-between; gap: 8px;
+    font-size: var(--fs-label);
+  }
+  .op-turno-list li span    { color: var(--muted); }
+  .op-turno-list li strong  { color: var(--text); font-weight: var(--fw-medium); text-align: right; }
+
+  .op-card--alert {
+    background: rgba(232, 240, 85, 0.16);
+    border-color: #c5c930;
+  }
+  .op-card__title--alert { color: #555800; }
+  .op-card--alert .op-card__text { color: #555800; }
+  .op-card__link { color: #555800; font-weight: var(--fw-medium); text-decoration: underline; }
+
+  .op-card--report {
+    background: rgba(226, 75, 74, 0.06);
+    border-color: rgba(226, 75, 74, 0.4);
+    transition: background 0.15s;
+  }
+  .op-card--report:hover { background: rgba(226, 75, 74, 0.10); }
+  .op-card__title--report  { color: #C42E2D; }
+  .op-card__text--report   { color: #C42E2D; font-weight: var(--fw-medium); }
+
+  /* ── Responsivo ─────────────────────────────────────────────── */
+  @media (max-width: 1100px) {
+    .op-layout { flex-direction: column; }
+    .op-aside  { width: 100%; }
+    .op-progress__label { min-width: 70px; }
+    .op-btn { min-width: unset; width: 100%; }
+  }
+</style>

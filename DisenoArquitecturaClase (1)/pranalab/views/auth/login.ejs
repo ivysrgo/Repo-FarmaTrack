@@ -1,0 +1,351 @@
+<%# Frame 1 — Login | Frame 5 — Sign Up (tabs) %>
+<div class="auth-page">
+
+  <!-- ══ PANEL IZQUIERDO (nude #F5EFE6) ══ -->
+  <div class="auth-left">
+
+    <!-- Logo — igual al SVG -->
+    <div class="auth-logo">
+      <div class="auth-logo__mark">
+        <span class="auth-logo__mark-text">Ft</span>
+      </div>
+      <div>
+        <span class="auth-logo__name">FarmaTrack</span>
+        <span class="auth-logo__sub">Sistema de Gestión de Lotes</span>
+      </div>
+    </div>
+
+    <!-- Headline -->
+    <div class="auth-headline">
+      <h1 class="auth-headline__title">
+        Gestión farmacéutica<br/>inteligente.
+      </h1>
+      <p class="auth-headline__desc">
+        Trazabilidad completa, validación automática<br/>
+        y firma electrónica para cumplimiento INVIMA.
+      </p>
+
+      <!-- Features — círculos verdes con ✓ -->
+      <div class="auth-features">
+        <div class="auth-feat">
+          <div class="auth-feat__dot">✓</div>
+          <span class="auth-feat__text">Trazabilidad digital de lotes en tiempo real</span>
+        </div>
+        <div class="auth-feat">
+          <div class="auth-feat__dot">✓</div>
+          <span class="auth-feat__text">Validación automática de batch records</span>
+        </div>
+        <div class="auth-feat">
+          <div class="auth-feat__dot">✓</div>
+          <span class="auth-feat__text">Firma electrónica de liberación de lotes</span>
+        </div>
+        <div class="auth-feat">
+          <div class="auth-feat__dot">✓</div>
+          <span class="auth-feat__text">Alertas de cumplimiento BPM y USP</span>
+        </div>
+      </div>
+
+      <!-- Pills decorativas -->
+      <div class="auth-pills">
+        <div class="auth-pill auth-pill--1"></div>
+        <div class="auth-pill auth-pill--2"></div>
+        <div class="auth-pill auth-pill--3"></div>
+        <div class="auth-pill auth-pill--4"></div>
+        <div class="auth-pill auth-pill--5"></div>
+      </div>
+    </div>
+
+    <!-- Badge BPM -->
+    <div class="auth-badge">✓ &nbsp; Certificado BPM · INVIMA Compliant</div>
+
+  </div>
+
+  <!-- ══ PANEL DERECHO (blanco) ══ -->
+  <div class="auth-right">
+
+    <!-- Nav superior -->
+    <div class="auth-right__nav">
+      <span class="auth-right__nav-left">Portal interno · FarmaTrack</span>
+      <a href="#" class="auth-right__nav-right">¿Necesitas soporte?</a>
+    </div>
+
+    <div class="auth-card">
+
+      <!-- Accent top bar -->
+      <div class="auth-card__inner">
+
+        <!-- Avatar icon -->
+        <div class="auth-avatar">
+          <span class="auth-avatar__icon">🔐</span>
+        </div>
+
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">
+            Iniciar sesión
+          </button>
+          <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">
+            Registrarse
+          </button>
+        </div>
+
+        <!-- ═══ PANEL LOGIN ═══ -->
+        <div id="panel-login">
+
+          <p class="auth-card__title">Bienvenido de nuevo</p>
+          <p class="auth-card__subtitle">Ingresa tus credenciales para acceder al sistema</p>
+
+          <% const errMsg = locals.error && locals.error.length ? locals.error[0] : null; %>
+          <% if (errMsg) { %>
+          <div class="auth-alert">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <%= errMsg %>
+          </div>
+          <% } %>
+
+          <form action="/auth/login" method="POST" id="loginForm" novalidate>
+
+            <!-- Correo -->
+            <div class="form-group">
+              <label class="form-label" for="email">Correo electrónico</label>
+              <div class="input-wrap">
+                <span class="input-wrap__icon">
+                  <svg width="14" height="11" viewBox="0 0 16 12" fill="none" stroke="#BBBAAF" stroke-width="1.2"><rect width="16" height="12" rx="2"/><polyline points="0,0 8,7 16,0"/></svg>
+                </span>
+                <input type="email" id="email" name="email" class="ft-input <%= errMsg ? 'ft-input--error' : '' %>"
+                  placeholder="Escribe tu correo institucional..."
+                  value="<%= (locals.email && locals.email.length) ? locals.email[0] : '' %>"
+                  autocomplete="email" autofocus />
+              </div>
+            </div>
+
+            <!-- Contraseña -->
+            <div class="form-group">
+              <div class="form-label-row">
+                <label class="form-label" for="password">Contraseña</label>
+                <a href="/auth/recuperar" class="form-link">¿Olvidaste tu contraseña?</a>
+              </div>
+              <div class="input-wrap">
+                <span class="input-wrap__icon">
+                  <svg width="14" height="16" viewBox="0 0 16 20" fill="none" stroke="#BBBAAF" stroke-width="1.2"><rect x="0" y="8" width="16" height="12" rx="3"/><path d="M3,8 L3,5 Q8,-1 13,5 L13,8"/><circle cx="8" cy="14" r="2" fill="#BBBAAF"/><line x1="8" y1="14" x2="8" y2="18" stroke="#BBBAAF" stroke-width="1.2"/></svg>
+                </span>
+                <input type="password" id="password" name="password" class="ft-input <%= errMsg ? 'ft-input--error' : '' %>"
+                  placeholder="Escribe tu contraseña..."
+                  autocomplete="current-password" />
+                <button type="button" class="input-wrap__toggle" id="togglePwd">
+                  <svg id="eyeIcon" width="14" height="10" viewBox="0 0 18 12" fill="none" stroke="#BBBAAF" stroke-width="1.2"><ellipse cx="9" cy="6" rx="9" ry="6"/><circle cx="9" cy="6" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Recordar -->
+            <div class="form-group" style="margin-bottom:20px;">
+              <label class="ft-check-wrap">
+                <input type="checkbox" name="recordar" />
+                <span class="ft-check-box"></span>
+                Recordar mi usuario en este equipo
+              </label>
+            </div>
+
+            <!-- Botón primario -->
+            <button type="submit" class="ft-btn ft-btn--primary" id="submitLoginBtn">
+              Iniciar sesión
+            </button>
+
+          </form>
+
+          <!-- Separador -->
+          <div class="auth-sep">
+            <span class="auth-sep__text">o accede con</span>
+          </div>
+
+          <!-- SSO -->
+          <button class="ft-btn ft-btn--sso" type="button">
+            <svg width="16" height="16" viewBox="0 0 16 16"><rect width="7" height="7" rx="1" fill="#5DCAA5"/><rect x="9" width="7" height="7" rx="1" fill="#1A5C3A"/><rect y="9" width="7" height="7" rx="1" fill="#1A5C3A"/><rect x="9" y="9" width="7" height="7" rx="1" fill="#5DCAA5"/></svg>
+            Continuar con cuenta corporativa (SSO)
+          </button>
+
+          <!-- Nota 2FA -->
+          <div class="auth-note">
+            🔒 &nbsp;Acceso protegido con autenticación de dos factores (2FA).<br/>
+            Deberás confirmar tu identidad al ingresar al sistema.
+          </div>
+
+          <!-- Demo shortcuts -->
+          <div class="auth-sep"><span class="auth-sep__text">accesos de demostración</span></div>
+          <div class="demo-box">
+            <div class="demo-box__header">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              Contraseña: <strong>1234</strong>
+            </div>
+            <div class="demo-user" onclick="fillLogin('juan.bahos@farmatrack.co','1234')">
+              <div class="demo-user__av">JB</div>
+              <div class="demo-user__info">
+                <div class="demo-user__name">Juan Bahos</div>
+                <div class="demo-user__role">Director Técnico</div>
+              </div>
+              <span class="demo-user__cta">Usar →</span>
+            </div>
+            <div class="demo-user" onclick="fillLogin('sergio.velandia@farmatrack.co','1234')">
+              <div class="demo-user__av">SV</div>
+              <div class="demo-user__info">
+                <div class="demo-user__name">Sergio Velandia</div>
+                <div class="demo-user__role">Operario de Producción</div>
+              </div>
+              <span class="demo-user__cta">Usar →</span>
+            </div>
+            <div class="demo-user" onclick="fillLogin('david.pena@farmatrack.co','1234')">
+              <div class="demo-user__av">DP</div>
+              <div class="demo-user__info">
+                <div class="demo-user__name">David Peña</div>
+                <div class="demo-user__role">Analista de Calidad</div>
+              </div>
+              <span class="demo-user__cta">Usar →</span>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="auth-footer">
+            Acceso restringido · Solo personal autorizado · FarmaTrack v1.0<br/>
+            Planta de Producción Farmacéutica · Colombia
+          </div>
+
+        </div><!-- /panel-login -->
+
+        <!-- ═══ PANEL SIGNUP ═══ -->
+        <div id="panel-signup" style="display:none;">
+
+          <p class="auth-card__title">Crear cuenta</p>
+          <p class="auth-card__subtitle">Completa los datos para registrarte en el sistema</p>
+
+          <% const signupErr = locals.signupError && locals.signupError.length ? locals.signupError[0] : null; %>
+          <% if (signupErr) { %>
+          <div class="auth-alert">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <%= signupErr %>
+          </div>
+          <% } %>
+
+          <form action="/auth/signup" method="POST" id="signupForm" novalidate>
+
+            <!-- Nombre -->
+            <div class="form-group">
+              <label class="form-label" for="su-nombre">Nombre completo</label>
+              <div class="input-wrap">
+                <span class="input-wrap__icon">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#BBBAAF" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                </span>
+                <input type="text" id="su-nombre" name="nombre" class="ft-input"
+                  placeholder="Ej. María Rodríguez" autocomplete="name" />
+              </div>
+            </div>
+
+            <!-- Email + Rol en 2 cols -->
+            <div class="form-row-2">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="su-email">Correo</label>
+                <div class="input-wrap">
+                  <span class="input-wrap__icon">
+                    <svg width="13" height="10" viewBox="0 0 16 12" fill="none" stroke="#BBBAAF" stroke-width="1.2"><rect width="16" height="12" rx="2"/><polyline points="0,0 8,7 16,0"/></svg>
+                  </span>
+                  <input type="email" id="su-email" name="email" class="ft-input"
+                    placeholder="@farmatrack.co" autocomplete="email" />
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="su-rol">Rol</label>
+                <select id="su-rol" name="rol" class="ft-input ft-select">
+                  <option value="">Seleccionar...</option>
+                  <option value="operario">Operario</option>
+                  <option value="calidad">Analista Calidad</option>
+                  <option value="director_tecnico">Director Técnico</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Contraseña -->
+            <div class="form-group" style="margin-top:var(--sp4);">
+              <label class="form-label" for="su-password">Contraseña</label>
+              <div class="input-wrap">
+                <span class="input-wrap__icon">
+                  <svg width="14" height="16" viewBox="0 0 16 20" fill="none" stroke="#BBBAAF" stroke-width="1.2"><rect x="0" y="8" width="16" height="12" rx="3"/><path d="M3,8 L3,5 Q8,-1 13,5 L13,8"/></svg>
+                </span>
+                <input type="password" id="su-password" name="password" class="ft-input"
+                  placeholder="Mínimo 4 caracteres"
+                  oninput="checkStrength(this.value)"
+                  autocomplete="new-password" />
+                <button type="button" class="input-wrap__toggle" id="toggleSuPwd">
+                  <svg width="14" height="10" viewBox="0 0 18 12" fill="none" stroke="#BBBAAF" stroke-width="1.2"><ellipse cx="9" cy="6" rx="9" ry="6"/><circle cx="9" cy="6" r="3"/></svg>
+                </button>
+              </div>
+              <div class="pwd-strength" id="pwdStrength" style="display:none;">
+                <div class="pwd-bar" id="bar1"></div>
+                <div class="pwd-bar" id="bar2"></div>
+                <div class="pwd-bar" id="bar3"></div>
+                <span class="pwd-label" id="pwdLabel"></span>
+              </div>
+            </div>
+
+            <!-- Confirmar -->
+            <div class="form-group">
+              <label class="form-label" for="su-confirm">Confirmar contraseña</label>
+              <div class="input-wrap">
+                <span class="input-wrap__icon">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#BBBAAF" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </span>
+                <input type="password" id="su-confirm" name="confirmPassword" class="ft-input"
+                  placeholder="Repite tu contraseña" autocomplete="new-password"
+                  oninput="checkMatch()" />
+              </div>
+              <div class="form-hint form-hint--error" id="pwdMatchError" style="display:none;">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
+                Las contraseñas no coinciden
+              </div>
+            </div>
+
+            <!-- Términos -->
+            <div class="form-group" style="margin-bottom:20px;">
+              <label class="ft-check-wrap">
+                <input type="checkbox" name="terminos" id="su-terminos" />
+                <span class="ft-check-box"></span>
+                Acepto los términos del sistema farmacéutico BPM
+              </label>
+            </div>
+
+            <button type="submit" class="ft-btn ft-btn--primary" id="submitSignupBtn">
+              Crear cuenta
+            </button>
+
+          </form>
+
+          <div class="auth-footer" style="margin-top:16px;">
+            Acceso restringido · Solo personal autorizado · FarmaTrack v1.0
+          </div>
+
+        </div><!-- /panel-signup -->
+
+      </div><!-- /auth-card__inner -->
+    </div><!-- /auth-card -->
+  </div><!-- /auth-right -->
+
+</div><!-- /auth-page -->
+
+<script>
+  function switchTab(tab) {
+    var panels = { login: document.getElementById('panel-login'), signup: document.getElementById('panel-signup') };
+    var tabs   = { login: document.getElementById('tab-login'),   signup: document.getElementById('tab-signup')  };
+
+    Object.keys(panels).forEach(function(key) {
+      panels[key].style.display = (key === tab) ? '' : 'none';
+      tabs[key].classList.toggle('active', key === tab);
+    });
+  }
+
+  // Al cargar la página, activar el tab correcto según ?tab=signup
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'signup') {
+      switchTab('signup');
+    }
+  })();
+</script>
