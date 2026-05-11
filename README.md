@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #  FarmaTrack — Sistema de Gestión de Lotes Farmacéuticos
  
 Sistema monolítico completo con **Express.js** + **EJS**, implementando el seguimiento de lotes de producción farmacéutica con arquitectura limpia, patrones arquitectónicos y principios SOLID.
@@ -257,3 +258,35 @@ Solo se exporta la segunda definición (la que incluye `fechaHoy` y `usuario`). 
 | `nodemon` | Hot-reload en desarrollo |
 | `jest` | Framework de testing |
  
+=======
+
+# Expre CLI
+
+**Expre CLI** es una herramienta de línea de comandos diseñada para agilizar la creación de proyectos Node.js con estructuras básicas. Con este CLI, puedes generar rápidamente una estructura inicial para tus proyectos, ahorrando tiempo y esfuerzo.
+
+## Características
+
+- Crear automáticamente un nuevo proyecto con un archivo inicial.
+- Configuración rápida y sencilla con un solo comando.
+- Fácil de extender para diferentes estructuras de proyectos.
+
+---
+
+## Instalación
+
+Puedes instalar **Expre CLI** globalmente usando npm:
+
+```bash
+npm install -g expre-cli
+```
+
+## Crear Aplicación
+
+Para crear una nueva aplicación, usa el siguiente comando:
+
+```bash
+expre new <nombreProyecto>
+```
+
+Esto generará una estructura básica para tu proyecto en el directorio actual.
+>>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)

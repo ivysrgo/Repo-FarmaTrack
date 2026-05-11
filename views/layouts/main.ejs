@@ -4,9 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FarmaTrack — <%= typeof title !== 'undefined' ? title : 'Producción' %></title>
+<<<<<<< HEAD
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/panel.css" />
   <link rel="stylesheet" href="/css/stepper.css" />
+=======
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <%# farmatrack.css define los tokens del design system (--nude, --green-dark,
+       --sp4, --sp5, --font, etc.) que panel.css y stepper.css consumen.
+       Debe cargarse PRIMERO para que las variables estén disponibles. %>
+  <link rel="stylesheet" href="/css/farmatrack.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/panel.css" />
+  <link rel="stylesheet" href="/css/stepper.css" />
+  <%# Placeholder para los <style> internos extraídos de cada vista
+       (configurado por app.set('layout extractStyles', true) en app.js).
+       Sin esta línea, los estilos inline de nuevo.ejs, panel/index.ejs, etc.
+       se extraen pero no se inyectan en ningún lado y se pierden. %>
+  <%- style %>
+>>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
 </head>
 <body>
 
@@ -19,10 +37,37 @@
       </div>
     </div>
 
+<<<<<<< HEAD
     <nav class="sidebar__nav">
       <p class="sidebar__section-label">PRODUCCIÓN</p>
       <a href="#" class="sidebar__item sidebar__item--active">
         Panel de lotes <span class="sidebar__badge">8</span>
+=======
+    <%# Sidebar dinámico por rol — usa dashboardPath / dashboardLabel inyectados
+         por el middleware global de app.js. Una sola fuente de verdad para todas
+         las vistas. _isDashActive marca el item como activo cuando el usuario
+         está en /panel, /mis-lotes o navegando lotes/*. %>
+    <%
+      const _path  = (typeof currentPath !== 'undefined' && currentPath) ? currentPath : '';
+      const _dash  = (typeof dashboardPath  !== 'undefined') ? dashboardPath  : '/panel';
+      const _label = (typeof dashboardLabel !== 'undefined') ? dashboardLabel : 'Panel de lotes';
+      const _isDashActive =
+        _path === '/panel' ||
+        _path === '/mis-lotes' ||
+        _path.startsWith('/lotes');
+      // Etiqueta corta para el sidebar (cabe mejor que "Mis lotes asignados")
+      const _sidebarLabel = (_label === 'Mis lotes asignados') ? 'Mis lotes' : _label;
+
+      // Datos del usuario logueado para el widget inferior
+      const _u           = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+      const _userNombre  = _u ? (_u.nombre || 'Usuario') : 'Invitado';
+      const _userInic    = _userNombre.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() || '··';
+    %>
+    <nav class="sidebar__nav">
+      <p class="sidebar__section-label">PRODUCCIÓN</p>
+      <a href="<%= _dash %>" class="sidebar__item <%= _isDashActive ? 'sidebar__item--active' : '' %>">
+        <%= _sidebarLabel %> <span class="sidebar__badge">8</span>
+>>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
       </a>
       <a href="#" class="sidebar__item">
         Batch records <span class="sidebar__badge sidebar__badge--warning">3</span>
@@ -37,8 +82,13 @@
     </nav>
 
     <div class="sidebar__user">
+<<<<<<< HEAD
       <div class="avatar">DP</div>
       <span class="sidebar__user-name">David Peña</span>
+=======
+      <div class="avatar"><%= _userInic %></div>
+      <span class="sidebar__user-name"><%= _userNombre %></span>
+>>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
     </div>
   </aside>
 

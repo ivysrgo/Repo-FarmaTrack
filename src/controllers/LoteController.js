@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 'use strict';
 
 const LOTES_EJEMPLO = [
@@ -8,6 +9,20 @@ const LOTES_EJEMPLO = [
   { id: 5, numeroLote: 'FT-2026-0044', medicamento: 'Enalapril 10 mg Tab.', cantidadPlanificada: 45000, operario: 'Felipe Díaz', operarioInicial: 'FD', estado: 'en_espera', pasoActual: 1, fechaInicio: '2026-04-19T00:00:00' },
 ];
 
+=======
+/**
+ * src/controllers/LoteController.js
+ *
+ * Controlador HTTP de Lotes / Órdenes de Producción.
+ * Toda la persistencia pasa por LoteRepository — este archivo NO mantiene
+ * arrays mock propios.
+ */
+'use strict';
+
+const loteRepo = require('../repositories/LoteRepository');
+
+// ── Definición de los 9 pasos del proceso ───────────────────────
+>>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
 const PASOS = [
   { n: 1, nombre: 'Recepción de la orden' },
   { n: 2, nombre: 'Traslado de materias primas' },
@@ -20,6 +35,7 @@ const PASOS = [
   { n: 9, nombre: 'Etiquetado' },
 ];
 
+<<<<<<< HEAD
 function getDatosPaso(lote, paso) {
   const base = { pasos: PASOS, lote, paso, nombrePaso: PASOS[paso-1].nombre };
   const tiempos = ['0m','20m','48m','1h 30m','2h 15m','3h 40m','4h 10m','5h 20m','6h 00m'];
@@ -36,6 +52,35 @@ function getDatosPaso(lote, paso) {
       area: 'Manufactura sólidos — Línea 2',
       checklist: ['Orden física recibida y en su poder','Datos del sistema coinciden con orden física','Responsable de producción asignado','Observaciones iniciales registradas'],
       observaciones: 'Sin observaciones adicionales.',
+=======
+// ── Datos de presentación específicos por paso ──────────────────
+// Devuelve los campos que cada vista paso{N}.ejs espera ver, derivados
+// del lote real que vive en el repositorio.
+function getDatosPaso(lote, paso) {
+  const base = {
+    pasos: PASOS,
+    lote,
+    paso,
+    nombrePaso: PASOS[paso - 1].nombre,
+  };
+
+  const tiempos = ['0m','20m','48m','1h 30m','2h 15m','3h 40m','4h 10m','5h 20m','6h 00m'];
+  base.tiempoTranscurrido = tiempos[paso - 1];
+
+  const cantidad = lote.cantidadPlanificada || 0;
+
+  const extras = {
+    1: {
+      ordenNumero: lote.numeroOrden || `OP-${new Date().getFullYear()}-${String(lote.id).padStart(3,'0')}`,
+      producto: lote.producto,
+      cantidad: cantidad.toLocaleString('es-CO') + ' unidades',
+      fechaInicio: lote.fechaInicio ? new Date(lote.fechaInicio).toLocaleDateString('es-CO') : '—',
+      responsable: lote.operario,
+      director: lote.directorTecnico || 'David Peña',
+      area: lote.area || 'Manufactura sólidos — Línea 2',
+      checklist: ['Orden física recibida y en su poder','Datos del sistema coinciden con orden física','Responsable de producción asignado','Observaciones iniciales registradas'],
+      observaciones: lote.observaciones || 'Sin observaciones adicionales.',
+>>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
       eventos: [{ texto:'Paso 1 completado', hora:'08:12', tipo:'ok' },{ texto:'Paso 2 iniciado', hora:'08:14', tipo:'ok' }],
     },
     2: {
@@ -92,9 +137,15 @@ function getDatosPaso(lote, paso) {
       eventos: [{ texto:'Paso 5 completado', hora:'13:15', tipo:'ok' },{ texto:'Reporte lab recibido', hora:'13:10', tipo:'ok' },{ texto:'Paso 6 iniciado', hora:'13:18', tipo:'ok' }],
     },
     6: {
+<<<<<<< HEAD
       cantidadPlanificada: lote.cantidadPlanificada.toLocaleString('es-CO') + ' unidades',
       producto: lote.medicamento,
       cantidadObtenida: Math.round(lote.cantidadPlanificada * 0.97).toLocaleString('es-CO') + ' unidades',
+=======
+      cantidadPlanificada: cantidad.toLocaleString('es-CO') + ' unidades',
+      producto: lote.producto,
+      cantidadObtenida: Math.round(cantidad * 0.97).toLocaleString('es-CO') + ' unidades',
+>>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
       rendimiento: '97.0%', rendimientoPct: 97,
       horaRetiro: '14:05',
       destino: 'Área de empaque — Mesa 3',
@@ -106,8 +157,13 @@ function getDatosPaso(lote, paso) {
     7: {
       tipoEnvase: 'Frasco PET 60ml ámbar',
       loteEnvases: 'ENV-2026-044', loteEtiquetas: 'ETQ-2026-088',
+<<<<<<< HEAD
       unidadesPlanificadas: lote.cantidadPlanificada.toLocaleString('es-CO'),
       unidadesEmpacadas: Math.round(lote.cantidadPlanificada * 0.966).toLocaleString('es-CO'),
+=======
+      unidadesPlanificadas: cantidad.toLocaleString('es-CO'),
+      unidadesEmpacadas: Math.round(cantidad * 0.966).toLocaleString('es-CO'),
+>>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
       unidadesDescartadas: '18',
       horaInicio: '14:20', horaFin: '16:45',
       operarioEmpaque: lote.operario,
@@ -131,7 +187,11 @@ function getDatosPaso(lote, paso) {
       eventos: [{ texto:'Paso 8 completado', hora:'17:22', tipo:'ok' },{ texto:'Condiciones OK', hora:'17:20', tipo:'ok' },{ texto:'Paso 9 iniciado', hora:'17:24', tipo:'ok' }],
     },
     9: {
+<<<<<<< HEAD
       unidadesEtiquetadas: Math.round(lote.cantidadPlanificada * 0.966).toLocaleString('es-CO'),
+=======
+      unidadesEtiquetadas: Math.round(cantidad * 0.966).toLocaleString('es-CO'),
+>>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
       checklist: ['Número de lote en etiqueta coincide','Fecha de fabricación correcta','Fecha de vencimiento correcta','Nombre del producto correcto','Concentración correcta','Número de registro sanitario presente'],
       observaciones: 'Etiquetado completado sin novedades. Todas las verificaciones conformes.',
       eventos: [{ texto:'Paso 9 completado', hora:'18:05', tipo:'ok' },{ texto:'Lote marcado como completo', hora:'18:06', tipo:'ok' }],
@@ -141,6 +201,7 @@ function getDatosPaso(lote, paso) {
   return { ...base, ...extras[paso] };
 }
 
+<<<<<<< HEAD
 function getLotesActivos(req, res) {
   const { q, estado } = req.query;
   let lotes = [...LOTES_EJEMPLO];
@@ -268,3 +329,180 @@ function postNuevoLote(req, res) {
 
 
 module.exports = { getLotesActivos, getLoteDetalle, getPaso, postPaso, getNuevoLote, postNuevoLote };
+=======
+// ── Helpers de presentación ─────────────────────────────────────
+function buildUsuarioCtx(res) {
+  const usuario = res.locals.currentUser || { iniciales: 'DT', nombre: 'Director Técnico' };
+  const inic    = usuario.nombre
+    ? usuario.nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+    : 'DT';
+  return { iniciales: inic, nombre: usuario.nombre || 'Director Técnico' };
+}
+
+function buildFechaHoy() {
+  const ahora = new Date();
+  return ahora.toLocaleDateString('es-CO', {
+    weekday: 'long', day: 'numeric', month: 'short', year: 'numeric',
+  }) + ' · ' + ahora.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+}
+
+// ── Routes handlers ─────────────────────────────────────────────
+
+/** GET /lotes (deprecated, redirige al panel desde el router) */
+function getLotesActivos(req, res) {
+  return res.redirect('/panel');
+}
+
+/** GET /lotes/:id → redirige al paso actual del lote */
+function getLoteDetalle(req, res, next) {
+  const lote = loteRepo.findById(req.params.id);
+  if (!lote) {
+    const err = new Error('Lote no encontrado'); err.status = 404; return next(err);
+  }
+  return res.redirect(`/lotes/${lote.id}/paso/${lote.pasoActual}`);
+}
+
+/** GET /lotes/:id/paso/:n → renderiza la vista del paso */
+function getPaso(req, res, next) {
+  const lote = loteRepo.findById(req.params.id);
+  if (!lote) {
+    const err = new Error('Lote no encontrado'); err.status = 404; return next(err);
+  }
+  const n = parseInt(req.params.n, 10);
+  if (Number.isNaN(n) || n < 1 || n > 9) {
+    return res.redirect(`/lotes/${lote.id}/paso/${lote.pasoActual}`);
+  }
+
+  const datos    = getDatosPaso(lote, n);
+  const operario = { nombre: lote.operario, iniciales: lote.operarioIniciales };
+
+  res.render(`lotes/paso${n}`, {
+    layout:      'layouts/main',
+    title:       `Paso ${n}/9 — ${datos.nombrePaso}`,
+    currentPath: '/lotes',
+    fechaHoy:    buildFechaHoy(),
+    usuario:     buildUsuarioCtx(res),
+    operario,
+    ...datos,
+  });
+}
+
+/** POST /lotes/:id/paso/:n/avanzar → siguiente paso (placeholder) */
+function postPaso(req, res) {
+  const lote = loteRepo.findById(req.params.id);
+  if (!lote) return res.redirect('/panel');
+  const n = parseInt(req.params.n, 10);
+  const siguiente = n < 9 ? n + 1 : 9;
+  res.redirect(`/lotes/${lote.id}/paso/${siguiente}`);
+}
+
+/** GET /lotes/nuevo → formulario de nueva orden */
+function getNuevoLote(req, res) {
+  res.render('lotes/nuevo', {
+    layout:      'layouts/main',
+    title:       'Nueva orden de producción',
+    currentPath: '/lotes',
+    fechaHoy:    buildFechaHoy(),
+    usuario:     buildUsuarioCtx(res),
+    errores:     [],
+    values:      {},
+  });
+}
+
+/** POST /lotes/nuevo → crea la orden vía LoteRepository */
+function postNuevoLote(req, res) {
+  const body = req.body || {};
+
+  // Si el usuario pulsó "Guardar borrador", saltamos validación dura y lo
+  // dejamos para una iteración futura — por ahora hacemos un soft redirect.
+  if (body.modoBorrador) {
+    console.log('[postNuevoLote] Borrador recibido (no persistido):', body.numeroOrden);
+    return res.redirect('/panel');
+  }
+
+  // ── Validación ────────────────────────────────────────────
+  const errores = [];
+
+  if (!body.numeroOrden || !body.numeroOrden.trim())
+    errores.push('El número de orden de producción es obligatorio.');
+  if (!body.codigoLote || !body.codigoLote.trim())
+    errores.push('El código de lote asignado es obligatorio.');
+  if (!body.producto || !body.producto.trim())
+    errores.push('El producto a fabricar es obligatorio.');
+
+  const cantidad = parseInt(body.cantidad, 10);
+  if (!cantidad || cantidad < 100)
+    errores.push('La cantidad planificada debe ser un número mayor o igual a 100.');
+
+  if (!body.fechaInicio)
+    errores.push('La fecha de inicio planificada es obligatoria.');
+  if (!body.operario)
+    errores.push('Debes asignar un operario de producción.');
+  if (!body.jefeCalidad)
+    errores.push('Debes asignar un jefe de calidad.');
+  if (!body.area)
+    errores.push('Debes seleccionar el área de producción.');
+
+  // Las tres confirmaciones son obligatorias para iniciar la orden
+  if (!body.confirmFormula)
+    errores.push('Debes confirmar que la fórmula maestra está aprobada y vigente.');
+  if (!body.confirmMaterias)
+    errores.push('Debes confirmar la disponibilidad de materias primas.');
+  if (!body.confirmEquipos)
+    errores.push('Debes confirmar que los equipos están habilitados.');
+
+  if (errores.length > 0) {
+    return res.status(422).render('lotes/nuevo', {
+      layout:      'layouts/main',
+      title:       'Nueva orden de producción',
+      currentPath: '/lotes',
+      fechaHoy:    buildFechaHoy(),
+      usuario:     buildUsuarioCtx(res),
+      errores,
+      values: {
+        ...body,
+        confirmFormula:  !!body.confirmFormula,
+        confirmMaterias: !!body.confirmMaterias,
+        confirmEquipos:  !!body.confirmEquipos,
+      },
+    });
+  }
+
+  // ── Persistencia vía repositorio ─────────────────────────
+  const nuevo = loteRepo.create({
+    numeroOrden:         body.numeroOrden.trim(),
+    numeroLote:          body.codigoLote.trim(),
+    producto:            body.producto.trim(),
+    formaFarmaceutica:   (body.formaFarmaceutica || '').trim(),
+    concentracion:       (body.concentracion || '').trim(),
+    cantidadPlanificada: cantidad,
+    fechaInicio:         new Date(body.fechaInicio).toISOString(),
+    fechaFin:            body.fechaFin ? new Date(body.fechaFin).toISOString() : null,
+    estado:              'en_espera',
+    pasoActual:          1,
+    operario:            body.operario,
+    jefeCalidad:         body.jefeCalidad,
+    directorTecnico:     (body.directorTecnico || '').trim() || (res.locals.currentUser && res.locals.currentUser.nombre) || 'Director Técnico',
+    area:                body.area,
+    observaciones:       (body.observaciones || '').trim(),
+    tiempoTranscurrido:  '0m',
+  });
+
+  console.log(`[LOTE CREADO] ${nuevo.numeroLote} — ${nuevo.producto} — Operario: ${nuevo.operario}`);
+
+  // Flash de éxito: el panel lo recoge y lo muestra como banner verde arriba.
+  req.flash('ok', `Orden ${nuevo.numeroOrden} creada — lote ${nuevo.numeroLote} (${nuevo.producto}) asignado a ${nuevo.operario}.`);
+
+  // RQF-04 (futuro): generar evento de bitácora aquí cuando exista EventoRepository.
+  return res.redirect('/panel');
+}
+
+module.exports = {
+  getLotesActivos,
+  getLoteDetalle,
+  getPaso,
+  postPaso,
+  getNuevoLote,
+  postNuevoLote,
+};
+>>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
