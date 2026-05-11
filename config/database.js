@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
@@ -12,7 +11,6 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
-=======
 /**
  * config/database.js
  * Base de datos en memoria para FarmaTrack.
@@ -54,4 +52,3 @@ const db = {
 };
 
 module.exports = db;
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)

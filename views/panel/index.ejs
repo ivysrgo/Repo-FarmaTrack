@@ -1,54 +1,5 @@
 <%- /* views/panel/index.ejs — Panel de lotes activos (Director Técnico) RQF-06 */ %>
 
-<<<<<<< HEAD
-=======
-<%# ── Mensajes flash (ej. "Orden creada" tras /lotes/nuevo) ─────────── %>
-<% if (typeof flashOk !== 'undefined' && flashOk && flashOk.length) { %>
-  <div class="flash flash--ok" role="status">
-    <span class="flash__icon">✓</span>
-    <span class="flash__text"><%= flashOk[0] %></span>
-  </div>
-<% } %>
-<% if (typeof flashError !== 'undefined' && flashError && flashError.length) { %>
-  <div class="flash flash--err" role="alert">
-    <span class="flash__icon">⚠</span>
-    <span class="flash__text"><%= flashError[0] %></span>
-  </div>
-<% } %>
-
-<style>
-  /* Banner flash que aparece arriba del panel después de un POST exitoso/erróneo */
-  .flash {
-    margin: 10px 16px 0;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border: 0.5px solid transparent;
-  }
-  .flash__icon {
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    display: inline-flex; align-items: center; justify-content: center;
-    font-weight: 600; flex-shrink: 0;
-  }
-  .flash--ok {
-    background: rgba(93, 202, 165, 0.12);
-    border-color: var(--green-mid);
-    color: var(--green-dark);
-  }
-  .flash--ok .flash__icon  { background: var(--green-dark); color: #fff; }
-  .flash--err {
-    background: rgba(226, 75, 74, 0.06);
-    border-color: rgba(226, 75, 74, 0.4);
-    color: #C42E2D;
-  }
-  .flash--err .flash__icon { background: #C42E2D; color: #fff; }
-</style>
-
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
 <!-- ── Topbar ──────────────────────────────────────────────────────── -->
 <header class="topbar">
   <div class="topbar__left">
@@ -147,25 +98,12 @@
 
       <div class="lotes-list" id="lotesLista">
         <% lotes.forEach(function(lote) { %>
-<<<<<<< HEAD
           <div class="lote-card lote-card--<%= lote.estadoSlug %>" data-estado="<%= lote.estadoSlug %>" data-nombre="<%= lote.producto.toLowerCase() %>" data-id="<%= lote.id.toLowerCase() %>">
-=======
-          <%
-            // ID legible para mostrar (ej. "FT-2026-0041") y URL al stepper
-            // (LoteController.getPaso espera parseInt(req.params.id) ⇒ usamos lote.id).
-            var displayId = lote.numeroLote || lote.id;
-          %>
-          <div class="lote-card lote-card--<%= lote.estadoSlug %>" data-estado="<%= lote.estadoSlug %>" data-nombre="<%= lote.producto.toLowerCase() %>" data-id="<%= String(displayId).toLowerCase() %>">
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
 
             <!-- Cabecera de la card -->
             <div class="lote-card__header">
               <div class="lote-card__info">
-<<<<<<< HEAD
                 <span class="lote-card__id"><%= lote.id %></span>
-=======
-                <span class="lote-card__id"><%= displayId %></span>
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
                 <h3 class="lote-card__nombre"><%= lote.producto %></h3>
               </div>
               <span class="badge badge--<%= lote.estadoSlug %>">
@@ -197,7 +135,6 @@
             <!-- Acciones -->
             <div class="lote-card__actions">
               <% if (lote.estadoSlug === 'en_produccion') { %>
-<<<<<<< HEAD
                 <a href="/lotes/<%= lote.id %>/stepper" class="btn btn--primary btn--sm">Continuar lote</a>
               <% } else if (lote.estadoSlug === 'pendiente_firma') { %>
                 <a href="/lotes/<%= lote.id %>/firma" class="btn btn--primary btn--sm">Revisar lote</a>
@@ -205,16 +142,6 @@
                 <a href="/lotes/<%= lote.id %>/calidad" class="btn btn--secondary btn--sm">Ver resultados</a>
               <% } else if (lote.estadoSlug === 'alerta_bpm') { %>
                 <a href="/lotes/<%= lote.id %>/alerta" class="btn btn--alert btn--sm">Ver alerta</a>
-=======
-                <%# RQF-06: el botón "Continuar lote" abre el stepper en el paso donde va el lote %>
-                <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoActual %>" class="btn btn--primary btn--sm">Continuar lote</a>
-              <% } else if (lote.estadoSlug === 'pendiente_firma') { %>
-                <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoActual %>" class="btn btn--primary btn--sm">Revisar lote</a>
-              <% } else if (lote.estadoSlug === 'en_calidad') { %>
-                <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoActual %>" class="btn btn--secondary btn--sm">Ver resultados</a>
-              <% } else if (lote.estadoSlug === 'alerta_bpm') { %>
-                <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoActual %>" class="btn btn--alert btn--sm">Ver alerta</a>
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
               <% } else { %>
                 <a href="/lotes/<%= lote.id %>" class="btn btn--secondary btn--sm">Ver detalle</a>
               <% } %>

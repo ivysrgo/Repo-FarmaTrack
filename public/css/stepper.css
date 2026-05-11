@@ -650,15 +650,6 @@ textarea.field-value {
 .step-page {
   display: flex;
   flex-direction: column;
-<<<<<<< HEAD
-  height: calc(100vh - 44px); /* descontar sidebar topbar si existe */
-  overflow: hidden;
-}
-
-/* Cuando está dentro del layout con sidebar el main-wrapper maneja el height */
-.main-wrapper .step-page {
-  height: 100%;
-=======
   min-height: 100vh;
   overflow: hidden;
 }
@@ -675,5 +666,4 @@ textarea.field-value {
    hijos con flex:1 / overflow:auto funcionen correctamente. */
 .main-wrapper {
   min-height: 100vh;
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
 }

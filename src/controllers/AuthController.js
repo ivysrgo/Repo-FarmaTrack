@@ -14,11 +14,7 @@ class AuthController {
 
   /* GET /auth/login */
   showLogin(req, res) {
-<<<<<<< HEAD
-    if (req.session && req.session.usuario) return res.redirect('/panel');
-=======
     if (req.session && req.session.usuario) return res.redirect('/bienvenida');
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
     res.render('auth/login', {
       layout:      'layouts/auth',
       title:       'Acceso — FarmaTrack',
@@ -35,12 +31,7 @@ class AuthController {
       const usuarioSesion = this._svc.login(email, password);
       req.session.regenerate((err) => {
         req.session.usuario = usuarioSesion;
-<<<<<<< HEAD
         res.redirect('/panel');
-=======
-        // Tras autenticarse, mostrar la vista de bienvenida antes del panel.
-        res.redirect('/bienvenida');
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
       });
     } catch (err) {
       req.flash('error', err.message);
@@ -55,12 +46,7 @@ class AuthController {
       const usuarioSesion = this._svc.signup(req.body);
       req.session.regenerate((err) => {
         req.session.usuario = usuarioSesion;
-<<<<<<< HEAD
         res.redirect('/panel');
-=======
-        // Tras registrarse, también pasamos por la vista de bienvenida.
-        res.redirect('/bienvenida');
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
       });
     } catch (err) {
       req.flash('signupError', err.message);
