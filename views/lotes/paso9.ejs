@@ -138,8 +138,15 @@
       <span>Solo lectura · D.T.</span>
     </div>
     <div class="step-footer__right">
+<<<<<<< HEAD
       <a href="/lotes/<%= lote.id %>/paso/8" class="btn-step btn-step--ghost">← Paso anterior</a>
       <a href="/lotes" class="btn-step btn-step--secondary">Ver todos los lotes</a>
+=======
+      <a href="/lotes/<%= lote.id %>/paso/8" class="btn-step btn-step--secondary">← Paso anterior</a>
+      <a href="<%= typeof dashboardPath !== 'undefined' ? dashboardPath : '/panel' %>" class="btn-step btn-step--secondary">
+        Volver a <%= typeof dashboardLabel !== 'undefined' ? dashboardLabel.toLowerCase() : 'panel' %>
+      </a>
+>>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
     </div>
   </div>
 </div>
