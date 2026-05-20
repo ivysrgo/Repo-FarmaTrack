@@ -1,0 +1,88 @@
+<%# views/operario/pasos/paso3.ejs — Verificación de pesos (editable) %>
+<div class="step-page">
+  <%- include('../partials/op-stepper-topbar') %>
+
+  <form action="/mis-lotes/<%= lote.id %>/paso/<%= paso %>" method="POST" novalidate>
+    <div class="step-layout">
+      <div class="step-main">
+
+        <div class="step-header">
+          <div class="step-header__meta">
+            <span>Paso 3/9 · <%= lote.numeroLote %> · <%= lote.producto %> · Operario: <%= operario.nombre %></span>
+            <span class="step-header__badge" style="background:rgba(93,202,165,0.16); border-color:var(--green-mid); color:var(--green-dark);">✎ Editable · Operario</span>
+            <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+          </div>
+          <h1 class="step-header__title">Verificación de pesos</h1>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Registro de pesos por materia prima (paso crítico)</p>
+          <div class="info-notice" style="margin-bottom:10px">
+            ⚠ Si algún peso sale fuera del rango BPM, se debe abrir una No Conformidad antes de continuar.
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Materia prima</th>
+                <th>Teórico (g)</th>
+                <th>Mín</th>
+                <th>Máx</th>
+                <th>Peso registrado (g)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% const pesos = [
+                { nombre:'Amoxicilina trihidrato',  t:'500.0', min:'490.0', max:'510.0' },
+                { nombre:'Celulosa microcristalina', t:'160.0', min:'155.0', max:'165.0' },
+                { nombre:'Almidón de maíz',          t:'80.0',  min:'77.0',  max:'83.0'  },
+                { nombre:'Estearato de magnesio',    t:'4.0',   min:'3.8',   max:'4.2'   },
+                { nombre:'Dióxido de silicio',       t:'3.0',   min:'2.8',   max:'3.2'   },
+              ]; %>
+              <% pesos.forEach((p, i) => { %>
+                <tr>
+                  <td><%= p.nombre %></td>
+                  <td><%= p.t %></td>
+                  <td><%= p.min %></td>
+                  <td><%= p.max %></td>
+                  <td><input type="number" step="0.1" name="peso_<%= i %>" placeholder="<%= p.t %>"></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Confirmaciones del paso</p>
+          <div class="checklist-grid">
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_balanza" value="1"><span>Balanza calibrada</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_pesos_reg" value="1"><span>Pesos registrados</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_bpm" value="1"><span>Dentro de BPM</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_area_limpia" value="1"><span>Área limpia</span></label>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <label class="step-card__title" for="observaciones">Observaciones del paso</label>
+          <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
+                    rows="3" placeholder="Reporta desviaciones, ajustes o no conformidades..."></textarea>
+        </div>
+
+      </div>
+
+      <%- include('../partials/op-stepper-aside') %>
+    </div>
+
+    <div class="step-footer">
+      <div class="step-footer__left">
+        <span>✎ Editando paso <%= paso %>/9 · <%= operario.nombre %></span>
+      </div>
+      <div class="step-footer__right">
+        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+        <button type="submit" class="btn-step"
+                style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;">
+          Guardar y continuar →
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

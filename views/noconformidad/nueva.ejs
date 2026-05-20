@@ -1,0 +1,397 @@
+<%# views/noconformidad/nueva.ejs — Pantalla: Reportar No Conformidad (RQF-21) %>
+
+<!-- ════════════════════════════════════════════
+     TOPBAR
+════════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="topbar__left">
+    <nav class="breadcrumb">
+      <a href="#" class="breadcrumb__link">Mis lotes</a>
+      <span class="breadcrumb__sep">/</span>
+      <a href="#" class="breadcrumb__link">LT-2024-089</a>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">No conformidad</span>
+    </nav>
+    <h1 class="topbar__title">Registrar no conformidad</h1>
+  </div>
+
+  <div class="topbar__center">
+    <div class="lote-topbar-info">
+      <span class="lote-topbar-info__lote">LT-2024-089 — Amoxicilina 500mg</span>
+      <span class="badge badge--warning">⚠ Registrando desviación</span>
+    </div>
+  </div>
+
+  <div class="topbar__right">
+    <span class="topbar__date">Lunes, 12 abr 2026 · 10:43 a.m.</span>
+    <div class="avatar topbar__avatar">DP</div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════════
+     LAYOUT PRINCIPAL: FORMULARIO + ASIDE
+════════════════════════════════════════════ -->
+<div class="nc-layout">
+
+  <!-- ───────────────────────────────────────
+       PANEL CENTRAL — FORMULARIO
+  ─────────────────────────────────────────── -->
+  <main class="nc-form-panel">
+
+    <div class="nc-form-header">
+      <h2 class="nc-form-title">Nueva no conformidad</h2>
+      <p class="nc-form-subtitle">Registra los detalles de la desviación encontrada en el proceso.</p>
+    </div>
+
+    <% if (typeof errores !== 'undefined' && errores.length > 0) { %>
+    <div class="alert alert--error">
+      <ul>
+        <% errores.forEach(e => { %>
+          <li><%= e %></li>
+        <% }) %>
+      </ul>
+    </div>
+    <% } %>
+
+    <form action="/noconformidad" method="POST" class="nc-form" id="nc-form" novalidate>
+
+      <!-- ── SECCIÓN 1: Identificación ───────────────── -->
+      <section class="nc-section">
+        <h3 class="nc-section__title">
+          <span class="nc-section__num">1</span>
+          Identificación de la no conformidad
+        </h3>
+
+        <div class="form-row form-row--2">
+          <div class="field-group">
+            <label class="field-label" for="loteRef">Lote afectado</label>
+            <input
+              class="input input--completed"
+              type="text"
+              id="loteRef"
+              name="loteRef"
+              value="LT-2024-089"
+              readonly
+            />
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="pasoProceso">Paso del proceso</label>
+            <input
+              class="input input--completed"
+              type="text"
+              id="pasoProceso"
+              name="pasoProceso"
+              value="Paso 3 — Verificación de pesos"
+              readonly
+            />
+          </div>
+        </div>
+
+        <div class="form-row form-row--2">
+          <div class="field-group">
+            <label class="field-label" for="producto">Producto</label>
+            <input
+              class="input input--completed"
+              type="text"
+              id="producto"
+              name="producto"
+              value="Amoxicilina 500mg"
+              readonly
+            />
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="operario">Operario que reporta</label>
+            <input
+              class="input input--completed"
+              type="text"
+              id="operario"
+              name="operario"
+              value="Juan Bahos"
+              readonly
+            />
+          </div>
+        </div>
+
+        <div class="form-row form-row--2">
+          <div class="field-group">
+            <label class="field-label" for="fechaHora">Fecha y hora</label>
+            <input
+              class="input input--completed"
+              type="text"
+              id="fechaHora"
+              name="fechaHora"
+              value="12/04/2026 · 10:43 a.m."
+              readonly
+            />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Tipo de no conformidad <span class="required">*</span></label>
+            <div class="toggle-group" id="tipoNC">
+              <button
+                type="button"
+                class="toggle-btn toggle-btn--active"
+                data-value="desviacion_bpm"
+                onclick="selectToggle('tipoNC', this)"
+              >Desviación BPM</button>
+              <button
+                type="button"
+                class="toggle-btn"
+                data-value="fuera_especificacion"
+                onclick="selectToggle('tipoNC', this)"
+              >Fuera de especificación</button>
+            </div>
+            <input type="hidden" name="tipoNC" id="tipoNC-value" value="desviacion_bpm" />
+          </div>
+        </div>
+      </section>
+
+      <hr class="nc-divider" />
+
+      <!-- ── SECCIÓN 2: Descripción ───────────────────── -->
+      <section class="nc-section">
+        <h3 class="nc-section__title">
+          <span class="nc-section__num">2</span>
+          Descripción de la desviación
+        </h3>
+        <p class="nc-section__subtitle">Parámetro o elemento fuera de especificación</p>
+
+        <div class="form-row form-row--3">
+          <div class="field-group">
+            <label class="field-label" for="parametro">Parámetro afectado <span class="required">*</span></label>
+            <input
+              class="input"
+              type="text"
+              id="parametro"
+              name="parametro"
+              placeholder="Ej: Peso de principio activo"
+              required
+            />
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="valorEsperado">Valor esperado <span class="required">*</span></label>
+            <input
+              class="input"
+              type="text"
+              id="valorEsperado"
+              name="valorEsperado"
+              placeholder="Ej: 500 g"
+              required
+            />
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="valorObtenido">Valor obtenido <span class="required">*</span></label>
+            <input
+              class="input input--error"
+              type="text"
+              id="valorObtenido"
+              name="valorObtenido"
+              placeholder="Ej: 523 g"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="descripcionDesviacion">Descripción detallada de la desviación <span class="required">*</span></label>
+          <textarea
+            class="input textarea"
+            id="descripcionDesviacion"
+            name="descripcionDesviacion"
+            rows="4"
+            placeholder="Describe qué ocurrió, cuándo lo detectaste y cuáles pueden ser las causas. Sé específico para facilitar la investigación."
+            required
+          ></textarea>
+        </div>
+      </section>
+
+      <hr class="nc-divider" />
+
+      <!-- ── SECCIÓN 3: Severidad ──────────────────────── -->
+      <section class="nc-section">
+        <h3 class="nc-section__title">
+          <span class="nc-section__num">3</span>
+          Severidad e impacto
+        </h3>
+
+        <div class="severity-group" id="severityGroup">
+          <button type="button" class="severity-btn severity-btn--critico" data-value="critico" onclick="selectSeverity(this)">
+            Crítico
+          </button>
+          <button type="button" class="severity-btn severity-btn--mayor severity-btn--selected" data-value="mayor" onclick="selectSeverity(this)">
+            <span class="severity-dot"></span> Mayor
+          </button>
+          <button type="button" class="severity-btn severity-btn--menor" data-value="menor" onclick="selectSeverity(this)">
+            Menor
+          </button>
+        </div>
+        <input type="hidden" name="severidad" id="severidad-value" value="mayor" />
+
+        <div class="field-group" style="margin-top: var(--space-3);">
+          <label class="field-label" for="impactoProceso">Impacto en el proceso (describe) <span class="required">*</span></label>
+          <textarea
+            class="input textarea"
+            id="impactoProceso"
+            name="impactoProceso"
+            rows="2"
+            placeholder="¿Qué parte del proceso o producto puede verse afectada?"
+            required
+          ></textarea>
+        </div>
+      </section>
+
+      <hr class="nc-divider" />
+
+      <!-- ── SECCIÓN 4: Acción inmediata ──────────────── -->
+      <section class="nc-section">
+        <h3 class="nc-section__title">
+          <span class="nc-section__num">4</span>
+          Acción inmediata tomada
+        </h3>
+
+        <div class="field-group">
+          <label class="field-label" for="accionInmediata">Describe la acción <span class="required">*</span></label>
+          <textarea
+            class="input textarea"
+            id="accionInmediata"
+            name="accionInmediata"
+            rows="3"
+            placeholder="¿Detuviste el proceso? ¿Separaste el material? ¿Notificaste al supervisor? Describe la acción inmediata tomada."
+            required
+          ></textarea>
+        </div>
+
+        <div class="checkbox-list">
+          <label class="checkbox-item">
+            <input type="checkbox" name="accionesInmediatas" value="proceso_detenido" class="checkbox-input" checked />
+            <span class="checkbox-custom checkbox-custom--checked"></span>
+            <span class="checkbox-label">Proceso detenido en este paso</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="accionesInmediatas" value="supervisor_notificado" class="checkbox-input" />
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label">Supervisor notificado verbalmente</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="accionesInmediatas" value="material_cuarentenado" class="checkbox-input" />
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label">Material cuarentenado / separado</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- ── BOTONES DE ACCIÓN ────────────────────────── -->
+      <div class="nc-actions">
+        <button type="submit" name="_action" value="guardar" class="btn btn--primary">
+          Guardar y continuar
+        </button>
+        <button type="submit" name="_action" value="reportar" class="btn btn--alert">
+          Reportar no conformidad
+        </button>
+        <button type="button" class="btn btn--secondary" onclick="window.history.back()">
+          Ver instructivo
+        </button>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- ───────────────────────────────────────
+       ASIDE DERECHO
+  ─────────────────────────────────────────── -->
+  <aside class="nc-aside">
+
+    <!-- Card: Protocolo de desviación -->
+    <div class="aside-card aside-card--alert">
+      <h4 class="aside-card__title aside-card__title--alert">⚠ Protocolo de desviación</h4>
+      <ol class="protocol-list">
+        <li>Detén el proceso inmediatamente.</li>
+        <li>Separa el material afectado.</li>
+        <li>Notifica al supervisor.</li>
+        <li>Completa este formulario.</li>
+        <li>Espera instrucciones del D.T.</li>
+        <li>No destruyas ninguna evidencia.</li>
+      </ol>
+    </div>
+
+    <!-- Card: No conformidades previas -->
+    <div class="aside-card">
+      <h4 class="aside-card__title">No conformidades previas</h4>
+      <ul class="nc-history-list">
+        <li class="nc-history-item">
+          <span class="nc-history-item__label">LT-2024-089:</span>
+          <span class="nc-history-item__value">0 anteriores</span>
+        </li>
+        <li class="nc-history-item">
+          <span class="nc-history-item__label">Operario JB:</span>
+          <span class="nc-history-item__value">1 en el último mes</span>
+        </li>
+        <li class="nc-history-item">
+          <span class="nc-history-item__label">Planta total:</span>
+          <span class="nc-history-item__value">4 en el último mes</span>
+        </li>
+      </ul>
+    </div>
+
+  </aside>
+</div>
+
+<!-- ════════════════════════════════════════════
+     JS INLINE — Interactividad del formulario
+════════════════════════════════════════════ -->
+<script>
+  /**
+   * Selecciona un toggle dentro de un grupo por ID de contenedor.
+   * Actualiza el input hidden correspondiente.
+   */
+  function selectToggle(groupId, btn) {
+    const group = document.getElementById(groupId);
+    group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('toggle-btn--active'));
+    btn.classList.add('toggle-btn--active');
+    document.getElementById(groupId + '-value').value = btn.dataset.value;
+  }
+
+  /**
+   * Selecciona el nivel de severidad y actualiza el input hidden.
+   */
+  function selectSeverity(btn) {
+    document.querySelectorAll('.severity-btn').forEach(b => b.classList.remove('severity-btn--selected'));
+    btn.classList.add('severity-btn--selected');
+    document.getElementById('severidad-value').value = btn.dataset.value;
+  }
+
+  /**
+   * Actualiza el estilo visual de los checkboxes al cambiar su estado.
+   */
+  document.querySelectorAll('.checkbox-input').forEach(input => {
+    input.addEventListener('change', function () {
+      const custom = this.nextElementSibling;
+      if (this.checked) {
+        custom.classList.add('checkbox-custom--checked');
+      } else {
+        custom.classList.remove('checkbox-custom--checked');
+      }
+    });
+  });
+
+  /**
+   * Validación básica en cliente antes de enviar (RQF-12).
+   * El backend también valida; esto es solo para UX inmediata.
+   */
+  document.getElementById('nc-form').addEventListener('submit', function (e) {
+    const required = this.querySelectorAll('[required]');
+    let valid = true;
+    required.forEach(field => {
+      if (!field.value.trim()) {
+        field.classList.add('input--error');
+        valid = false;
+      } else {
+        field.classList.remove('input--error');
+        field.classList.add('input--completed');
+      }
+    });
+    if (!valid) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+</script>

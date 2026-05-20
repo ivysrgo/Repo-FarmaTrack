@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FarmaTrack — <%= typeof title !== 'undefined' ? title : 'Producción' %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <%# farmatrack.css define los tokens del design system (--nude, --green-dark,
+       --sp4, --sp5, --font, etc.) que panel.css y stepper.css consumen.
+       Debe cargarse PRIMERO para que las variables estén disponibles. %>
+  <link rel="stylesheet" href="/css/farmatrack.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/panel.css" />
+  <link rel="stylesheet" href="/css/stepper.css" />
+  <%# Placeholder para los <style> internos extraídos de cada vista
+       (configurado por app.set('layout extractStyles', true) en app.js).
+       Sin esta línea, los estilos inline de nuevo.ejs, panel/index.ejs, etc.
+       se extraen pero no se inyectan en ningún lado y se pierden. %>
+  <%- style %>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <div class="sidebar__avatar">Ft</div>
+      <div class="sidebar__brand-info">
+        <span class="sidebar__brand-name">FarmaTrack</span>
+        <span class="sidebar__brand-sub">Producción · Col.</span>
+      </div>
+    </div>
+
+    <%# Sidebar dinámico por rol — usa dashboardPath / dashboardLabel inyectados
+         por el middleware global de app.js. Una sola fuente de verdad para todas
+         las vistas. _isDashActive marca el item como activo cuando el usuario
+         está en /panel, /mis-lotes o navegando lotes/*. %>
+    <%
+      const _path  = (typeof currentPath !== 'undefined' && currentPath) ? currentPath : '';
+      const _dash  = (typeof dashboardPath  !== 'undefined') ? dashboardPath  : '/panel';
+      const _label = (typeof dashboardLabel !== 'undefined') ? dashboardLabel : 'Panel de lotes';
+      const _isDashActive =
+        _path === '/panel' ||
+        _path === '/mis-lotes' ||
+        _path.startsWith('/lotes');
+      // Etiqueta corta para el sidebar (cabe mejor que "Mis lotes asignados")
+      const _sidebarLabel = (_label === 'Mis lotes asignados') ? 'Mis lotes' : _label;
+
+      // Datos del usuario logueado para el widget inferior
+      const _u           = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+      const _userNombre  = _u ? (_u.nombre || 'Usuario') : 'Invitado';
+      const _userInic    = _userNombre.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() || '··';
+    %>
+    <nav class="sidebar__nav">
+      <p class="sidebar__section-label">PRODUCCIÓN</p>
+      <a href="<%= _dash %>" class="sidebar__item <%= _isDashActive ? 'sidebar__item--active' : '' %>">
+        <%= _sidebarLabel %> <span class="sidebar__badge">8</span>
+      </a>
+      <a href="#" class="sidebar__item">
+        Batch records <span class="sidebar__badge sidebar__badge--warning">3</span>
+      </a>
+      <a href="#" class="sidebar__item">Control calidad</a>
+      <a href="#" class="sidebar__item">Inventario MP</a>
+      <a href="#" class="sidebar__item">Bitácora</a>
+      <a href="#" class="sidebar__item">Reportes</a>
+
+      <p class="sidebar__section-label">SISTEMA</p>
+      <a href="#" class="sidebar__item">Configuración</a>
+    </nav>
+
+    <div class="sidebar__user">
+      <div class="avatar"><%= _userInic %></div>
+      <span class="sidebar__user-name"><%= _userNombre %></span>
+    </div>
+    <form action="/auth/logout" method="POST" style="margin:0;">
+      <button type="submit" class="sidebar__logout">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5.25 2.333H2.917A.583.583 0 0 0 2.333 2.917v8.166c0 .323.261.584.584.584H5.25" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M9.333 9.917L11.667 7 9.333 4.083" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M11.667 7H5.25" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        Cerrar sesión
+      </button>
+    </form>
+  </aside>
+
+  <div class="main-wrapper">
+    <%- body %>
+  </div>
+
+</body>
+</html>

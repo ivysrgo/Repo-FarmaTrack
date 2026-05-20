@@ -1,0 +1,910 @@
+{
+  "global": {
+    "color": {
+      "mint": {
+        "400": {
+          "value": "#5DCAA5",
+          "type": "color",
+          "description": "Verde menta medio — paso activo, borde completado, badge activo"
+        },
+        "700": {
+          "value": "#1A5C3A",
+          "type": "color",
+          "description": "Verde oscuro profundo — botón primario, paso completado, texto sobre mint"
+        }
+      },
+      "blue": {
+        "300": {
+          "value": "#7EC8E3",
+          "type": "color",
+          "description": "Azul claro — avatares, iconos de acceso rápido, hover"
+        }
+      },
+      "nude": {
+        "100": {
+          "value": "#F5EFE6",
+          "type": "color",
+          "description": "Crema / nude claro — topbar, fondo stepper, fondo contextual"
+        }
+      },
+      "yellow": {
+        "400": {
+          "value": "#E8F055",
+          "type": "color",
+          "description": "Amarillo alerta — botón no conformidad, alertas de desviación"
+        }
+      },
+      "white": {
+        "value": "#FFFFFF",
+        "type": "color",
+        "description": "Blanco puro — fondo de cards, inputs activos, panel principal"
+      },
+      "gray": {
+        "200": {
+          "value": "#D3D1C7",
+          "type": "color",
+          "description": "Gris claro — pasos pendientes, checkboxes vacíos, bordes por defecto"
+        },
+        "800": {
+          "value": "#444441",
+          "type": "color",
+          "description": "Gris oscuro — texto principal"
+        }
+      },
+      "red": {
+        "500": {
+          "value": "#E24B4A",
+          "type": "color",
+          "description": "Rojo error — campos fuera de rango BPM, validación crítica"
+        }
+      },
+      "amber": {
+        "600": {
+          "value": "#633806",
+          "type": "color",
+          "description": "Ocre oscuro — texto sobre badge amarillo (pendiente verificación)"
+        }
+      }
+    },
+    "spacing": {
+      "space-1": {
+        "value": "4",
+        "type": "spacing",
+        "description": "Gap mínimo entre elementos inline"
+      },
+      "space-2": {
+        "value": "8",
+        "type": "spacing",
+        "description": "Gap entre ícono y texto en botones, gap entre checkboxes"
+      },
+      "space-3": {
+        "value": "12",
+        "type": "spacing",
+        "description": "Padding interno de campos de texto, gap entre cards del aside"
+      },
+      "space-4": {
+        "value": "14",
+        "type": "spacing",
+        "description": "Padding lateral del panel principal, gap entre botones"
+      },
+      "space-5": {
+        "value": "16",
+        "type": "spacing",
+        "description": "Padding interno de cards, margen entre secciones del formulario"
+      },
+      "space-6": {
+        "value": "18",
+        "type": "spacing",
+        "description": "Padding del topbar y stepper"
+      },
+      "space-8": {
+        "value": "28",
+        "type": "spacing",
+        "description": "Separación entre bloques mayores"
+      }
+    },
+    "borderRadius": {
+      "sm": {
+        "value": "4",
+        "type": "borderRadius",
+        "description": "Checkboxes, badges pequeños, hints"
+      },
+      "md": {
+        "value": "8",
+        "type": "borderRadius",
+        "description": "Inputs, botones, badges de estado, quick buttons del aside"
+      },
+      "lg": {
+        "value": "12",
+        "type": "borderRadius",
+        "description": "Cards del aside (Información, Bitácora, Accesos rápidos)"
+      },
+      "pill": {
+        "value": "20",
+        "type": "borderRadius",
+        "description": "Badges de paso activo, badge de estado del lote"
+      },
+      "circle": {
+        "value": "50%",
+        "type": "borderRadius",
+        "description": "Círculos del stepper, avatares"
+      }
+    },
+    "borderWidth": {
+      "default": {
+        "value": "0.5",
+        "type": "borderWidth",
+        "description": "Bordes de inputs sin foco, separadores de tabla, topbar"
+      },
+      "focus": {
+        "value": "1.5",
+        "type": "borderWidth",
+        "description": "Input en estado focus"
+      },
+      "accent": {
+        "value": "2",
+        "type": "borderWidth",
+        "description": "Borde izquierdo de tarjetas en espera (color amarillo)"
+      }
+    },
+    "fontSize": {
+      "screen-title": {
+        "value": "18",
+        "type": "fontSizes",
+        "description": "Título de pantalla — nombre del lote en topbar"
+      },
+      "section-title": {
+        "value": "14",
+        "type": "fontSizes",
+        "description": "Título de sección — título del paso activo"
+      },
+      "input-text": {
+        "value": "13",
+        "type": "fontSizes",
+        "description": "Texto de input — valores ingresados en formularios"
+      },
+      "field-label": {
+        "value": "11",
+        "type": "fontSizes",
+        "description": "Etiqueta de campo, texto de bitácora"
+      },
+      "hint": {
+        "value": "10",
+        "type": "fontSizes",
+        "description": "Hint / ayuda, badge / pill, número de paso en stepper"
+      },
+      "button": {
+        "value": "12",
+        "type": "fontSizes",
+        "description": "Etiqueta de todos los botones"
+      },
+      "stepper-label": {
+        "value": "9",
+        "type": "fontSizes",
+        "description": "Label del stepper — nombre del paso debajo del círculo"
+      }
+    },
+    "fontWeights": {
+      "regular": {
+        "value": "400",
+        "type": "fontWeights"
+      },
+      "medium": {
+        "value": "500",
+        "type": "fontWeights"
+      }
+    },
+    "fontFamilies": {
+      "base": {
+        "value": "Inter, Segoe UI, sans-serif",
+        "type": "fontFamilies",
+        "description": "Única familia tipográfica del sistema"
+      }
+    },
+    "sizing": {
+      "button-height": {
+        "value": "34",
+        "type": "sizing",
+        "description": "Altura de todos los botones"
+      },
+      "topbar-height": {
+        "value": "44",
+        "type": "sizing",
+        "description": "Altura del topbar"
+      },
+      "input-height": {
+        "value": "34",
+        "type": "sizing",
+        "description": "Altura de inputs de formulario"
+      },
+      "stepper-circle": {
+        "value": "26",
+        "type": "sizing",
+        "description": "Diámetro del círculo del stepper"
+      },
+      "avatar": {
+        "value": "28",
+        "type": "sizing",
+        "description": "Diámetro de los avatares"
+      },
+      "aside-width": {
+        "value": "210",
+        "type": "sizing",
+        "description": "Ancho del panel lateral aside"
+      },
+      "sidebar-width": {
+        "value": "220",
+        "type": "sizing",
+        "description": "Ancho del sidebar de navegación principal"
+      },
+      "sidebar-collapsed": {
+        "value": "56",
+        "type": "sizing",
+        "description": "Ancho del sidebar en modo compacto (solo íconos)"
+      },
+      "modal-width": {
+        "value": "480",
+        "type": "sizing",
+        "description": "Ancho de modales"
+      },
+      "badge-height": {
+        "value": "22",
+        "type": "sizing",
+        "description": "Altura de badges / pills"
+      }
+    }
+  },
+  "semantic": {
+    "color": {
+      "action": {
+        "primary": {
+          "value": "{color.mint.700}",
+          "type": "color",
+          "description": "Fondo de botón primario, texto sobre verde menta"
+        },
+        "primary-hover": {
+          "value": "{color.mint.400}",
+          "type": "color",
+          "description": "Hover del botón primario"
+        }
+      },
+      "state": {
+        "active": {
+          "value": "{color.mint.400}",
+          "type": "color",
+          "description": "Paso activo en stepper, borde de campo completado"
+        },
+        "completed": {
+          "value": "{color.mint.700}",
+          "type": "color",
+          "description": "Paso completado en stepper, checkbox marcado"
+        },
+        "pending": {
+          "value": "{color.gray.200}",
+          "type": "color",
+          "description": "Paso pendiente en stepper, checkbox vacío"
+        },
+        "warning": {
+          "value": "{color.yellow.400}",
+          "type": "color",
+          "description": "Botón de no conformidad, alertas de desviación"
+        },
+        "error": {
+          "value": "{color.red.500}",
+          "type": "color",
+          "description": "Campos fuera de rango BPM, errores de validación"
+        }
+      },
+      "surface": {
+        "base": {
+          "value": "{color.white}",
+          "type": "color",
+          "description": "Fondo de panel principal, cards, inputs activos"
+        },
+        "raised": {
+          "value": "{color.nude.100}",
+          "type": "color",
+          "description": "Topbar, fondo del stepper, fondo contextual"
+        },
+        "info": {
+          "value": "{color.blue.300}",
+          "type": "color",
+          "description": "Elementos informativos secundarios"
+        }
+      },
+      "border": {
+        "default": {
+          "value": "{color.gray.200}",
+          "type": "color",
+          "description": "Bordes de inputs sin foco, separadores"
+        },
+        "active": {
+          "value": "{color.mint.400}",
+          "type": "color",
+          "description": "Borde de input con valor completado"
+        },
+        "error": {
+          "value": "{color.red.500}",
+          "type": "color",
+          "description": "Borde de input con valor fuera de rango"
+        }
+      },
+      "text": {
+        "primary": {
+          "value": "{color.gray.800}",
+          "type": "color",
+          "description": "Texto principal del sistema"
+        },
+        "secondary": {
+          "value": "#888780",
+          "type": "color",
+          "description": "Labels, hints, metadatos"
+        },
+        "on-primary": {
+          "value": "{color.white}",
+          "type": "color",
+          "description": "Texto sobre botón primario (verde oscuro)"
+        },
+        "on-active-badge": {
+          "value": "{color.mint.700}",
+          "type": "color",
+          "description": "Texto en badge de estado activo"
+        },
+        "on-warning-badge": {
+          "value": "{color.amber.600}",
+          "type": "color",
+          "description": "Texto en badge de pendiente verificación"
+        }
+      }
+    }
+  },
+  "components": {
+    "button": {
+      "primary": {
+        "background": {
+          "value": "{color.action.primary}",
+          "type": "color"
+        },
+        "text": {
+          "value": "{color.white}",
+          "type": "color"
+        },
+        "border": {
+          "value": "{color.action.primary}",
+          "type": "color"
+        },
+        "height": {
+          "value": "{sizing.button-height}",
+          "type": "sizing"
+        },
+        "borderRadius": {
+          "value": "{borderRadius.md}",
+          "type": "borderRadius"
+        },
+        "fontSize": {
+          "value": "{fontSize.button}",
+          "type": "fontSizes"
+        },
+        "fontWeight": {
+          "value": "{fontWeights.medium}",
+          "type": "fontWeights"
+        },
+        "paddingHorizontal": {
+          "value": "{spacing.space-5}",
+          "type": "spacing"
+        },
+        "disabledOpacity": {
+          "value": "0.4",
+          "type": "opacity",
+          "description": "Opacidad cuando está deshabilitado (checklist incompleta)"
+        }
+      },
+      "secondary": {
+        "background": {
+          "value": "{color.surface.base}",
+          "type": "color"
+        },
+        "text": {
+          "value": "{color.action.primary}",
+          "type": "color"
+        },
+        "border": {
+          "value": "{color.border.default}",
+          "type": "color"
+        },
+        "height": {
+          "value": "{sizing.button-height}",
+          "type": "sizing"
+        },
+        "borderRadius": {
+          "value": "{borderRadius.md}",
+          "type": "borderRadius"
+        },
+        "fontSize": {
+          "value": "{fontSize.button}",
+          "type": "fontSizes"
+        },
+        "fontWeight": {
+          "value": "{fontWeights.medium}",
+          "type": "fontWeights"
+        }
+      },
+      "alert": {
+        "background": {
+          "value": "{color.state.warning}",
+          "type": "color",
+          "description": "Usar con 22% de opacidad en Figma (fill opacity)"
+        },
+        "border": {
+          "value": "{color.state.warning}",
+          "type": "color"
+        },
+        "text": {
+          "value": "{color.amber.600}",
+          "type": "color"
+        },
+        "height": {
+          "value": "{sizing.button-height}",
+          "type": "sizing"
+        },
+        "borderRadius": {
+          "value": "{borderRadius.md}",
+          "type": "borderRadius"
+        },
+        "fontSize": {
+          "value": "{fontSize.button}",
+          "type": "fontSizes"
+        },
+        "fontWeight": {
+          "value": "{fontWeights.medium}",
+          "type": "fontWeights"
+        }
+      }
+    },
+    "input": {
+      "empty": {
+        "border": {
+          "value": "{color.border.default}",
+          "type": "color"
+        },
+        "background": {
+          "value": "#F8F7F4",
+          "type": "color",
+          "description": "Fondo gris muy claro cuando está vacío"
+        }
+      },
+      "completed": {
+        "border": {
+          "value": "{color.border.active}",
+          "type": "color"
+        },
+        "background": {
+          "value": "{color.surface.base}",
+          "type": "color"
+        }
+      },
+      "error": {
+        "border": {
+          "value": "{color.border.error}",
+          "type": "color"
+        },
+        "background": {
+          "value": "{color.red.500}",
+          "type": "color",
+          "description": "Usar con 5% de opacidad en Figma (fill opacity)"
+        }
+      },
+      "focus": {
+        "border": {
+          "value": "{color.border.active}",
+          "type": "color"
+        },
+        "borderWidth": {
+          "value": "{borderWidth.focus}",
+          "type": "borderWidth"
+        },
+        "background": {
+          "value": "{color.surface.base}",
+          "type": "color"
+        }
+      },
+      "shared": {
+        "height": {
+          "value": "{sizing.input-height}",
+          "type": "sizing"
+        },
+        "borderRadius": {
+          "value": "{borderRadius.md}",
+          "type": "borderRadius"
+        },
+        "fontSize": {
+          "value": "{fontSize.input-text}",
+          "type": "fontSizes"
+        },
+        "paddingHorizontal": {
+          "value": "{spacing.space-3}",
+          "type": "spacing"
+        }
+      }
+    },
+    "checkbox": {
+      "empty": {
+        "border": {
+          "value": "{color.border.default}",
+          "type": "color"
+        },
+        "borderWidth": {
+          "value": "1.5",
+          "type": "borderWidth"
+        },
+        "background": {
+          "value": "{color.surface.base}",
+          "type": "color"
+        },
+        "borderRadius": {
+          "value": "{borderRadius.sm}",
+          "type": "borderRadius"
+        }
+      },
+      "inProgress": {
+        "border": {
+          "value": "{color.state.active}",
+          "type": "color"
+        },
+        "borderWidth": {
+          "value": "1.5",
+          "type": "borderWidth"
+        },
+        "background": {
+          "value": "{color.mint.400}",
+          "type": "color",
+          "description": "Usar con 13% de opacidad en Figma (fill opacity)"
+        },
+        "borderRadius": {
+          "value": "{borderRadius.sm}",
+          "type": "borderRadius"
+        }
+      },
+      "checked": {
+        "background": {
+          "value": "{color.state.completed}",
+          "type": "color"
+        },
+        "checkmark": {
+          "value": "{color.white}",
+          "type": "color"
+        },
+        "borderRadius": {
+          "value": "{borderRadius.sm}",
+          "type": "borderRadius"
+        }
+      },
+      "shared": {
+        "size": {
+          "value": "16",
+          "type": "sizing"
+        }
+      }
+    },
+    "badge": {
+      "active": {
+        "background": {
+          "value": "{color.mint.400}",
+          "type": "color",
+          "description": "Usar con 13% de opacidad + borde mint sólido"
+        },
+        "border": {
+          "value": "{color.mint.400}",
+          "type": "color"
+        },
+        "text": {
+          "value": "{color.mint.700}",
+          "type": "color"
+        }
+      },
+      "warning": {
+        "background": {
+          "value": "{color.yellow.400}",
+          "type": "color",
+          "description": "Usar con 13% de opacidad + borde amarillo sólido"
+        },
+        "border": {
+          "value": "{color.yellow.400}",
+          "type": "color"
+        },
+        "text": {
+          "value": "{color.amber.600}",
+          "type": "color"
+        }
+      },
+      "liberated": {
+        "background": {
+          "value": "{color.mint.400}",
+          "type": "color",
+          "description": "Usar con 10% de opacidad, sin borde"
+        },
+        "text": {
+          "value": "{color.mint.700}",
+          "type": "color"
+        }
+      },
+      "shared": {
+        "height": {
+          "value": "{sizing.badge-height}",
+          "type": "sizing"
+        },
+        "borderRadius": {
+          "value": "{borderRadius.pill}",
+          "type": "borderRadius"
+        },
+        "fontSize": {
+          "value": "{fontSize.hint}",
+          "type": "fontSizes"
+        },
+        "fontWeight": {
+          "value": "{fontWeights.medium}",
+          "type": "fontWeights"
+        },
+        "paddingHorizontal": {
+          "value": "10",
+          "type": "spacing"
+        }
+      }
+    },
+    "avatar": {
+      "size": {
+        "value": "{sizing.avatar}",
+        "type": "sizing"
+      },
+      "background": {
+        "value": "{color.blue.300}",
+        "type": "color"
+      },
+      "text": {
+        "value": "{color.mint.700}",
+        "type": "color"
+      },
+      "borderRadius": {
+        "value": "{borderRadius.circle}",
+        "type": "borderRadius"
+      },
+      "fontSize": {
+        "value": "10",
+        "type": "fontSizes"
+      },
+      "fontWeight": {
+        "value": "{fontWeights.medium}",
+        "type": "fontWeights"
+      }
+    },
+    "topbar": {
+      "background": {
+        "value": "{color.surface.raised}",
+        "type": "color"
+      },
+      "height": {
+        "value": "{sizing.topbar-height}",
+        "type": "sizing"
+      },
+      "borderBottom": {
+        "value": "{color.border.default}",
+        "type": "color"
+      },
+      "paddingHorizontal": {
+        "value": "{spacing.space-6}",
+        "type": "spacing"
+      },
+      "titleFontSize": {
+        "value": "13",
+        "type": "fontSizes"
+      },
+      "titleFontWeight": {
+        "value": "{fontWeights.medium}",
+        "type": "fontWeights"
+      },
+      "subtitleFontSize": {
+        "value": "{fontSize.field-label}",
+        "type": "fontSizes"
+      }
+    },
+    "stepper": {
+      "background": {
+        "value": "{color.surface.raised}",
+        "type": "color"
+      },
+      "padding": {
+        "value": "{spacing.space-6}",
+        "type": "spacing"
+      },
+      "circle": {
+        "size": {
+          "value": "{sizing.stepper-circle}",
+          "type": "sizing"
+        },
+        "borderRadius": {
+          "value": "{borderRadius.circle}",
+          "type": "borderRadius"
+        },
+        "active-background": {
+          "value": "{color.state.active}",
+          "type": "color"
+        },
+        "completed-background": {
+          "value": "{color.state.completed}",
+          "type": "color"
+        },
+        "pending-border": {
+          "value": "{color.state.pending}",
+          "type": "color"
+        },
+        "pending-background": {
+          "value": "{color.surface.base}",
+          "type": "color"
+        },
+        "text-on-active": {
+          "value": "{color.white}",
+          "type": "color"
+        },
+        "text-on-pending": {
+          "value": "#888780",
+          "type": "color"
+        }
+      },
+      "connector": {
+        "height": {
+          "value": "1.5",
+          "type": "sizing"
+        },
+        "done": {
+          "value": "{color.mint.700}",
+          "type": "color"
+        },
+        "active": {
+          "value": "{color.mint.400}",
+          "type": "color"
+        },
+        "pending": {
+          "value": "{color.gray.200}",
+          "type": "color"
+        }
+      },
+      "label": {
+        "fontSize": {
+          "value": "{fontSize.stepper-label}",
+          "type": "fontSizes"
+        },
+        "color": {
+          "value": "#888780",
+          "type": "color"
+        }
+      }
+    },
+    "asideCard": {
+      "background": {
+        "value": "{color.surface.base}",
+        "type": "color"
+      },
+      "border": {
+        "value": "{color.border.default}",
+        "type": "color"
+      },
+      "borderRadius": {
+        "value": "{borderRadius.lg}",
+        "type": "borderRadius"
+      },
+      "padding": {
+        "value": "{spacing.space-3}",
+        "type": "spacing"
+      }
+    },
+    "loteCard": {
+      "background": {
+        "value": "{color.surface.base}",
+        "type": "color"
+      },
+      "border": {
+        "value": "{color.border.default}",
+        "type": "color"
+      },
+      "borderRadius": {
+        "value": "{borderRadius.lg}",
+        "type": "borderRadius"
+      },
+      "padding": {
+        "value": "{spacing.space-4}",
+        "type": "spacing"
+      },
+      "waiting-accent-border": {
+        "value": "{color.yellow.400}",
+        "type": "color",
+        "description": "Borde izquierdo de 2px en lotes bloqueados/en espera"
+      },
+      "progressPill": {
+        "height": {
+          "value": "5",
+          "type": "sizing"
+        },
+        "borderRadius": {
+          "value": "10",
+          "type": "borderRadius"
+        },
+        "done": {
+          "value": "{color.mint.700}",
+          "type": "color"
+        },
+        "active": {
+          "value": "{color.mint.400}",
+          "type": "color"
+        },
+        "pending": {
+          "value": "{color.gray.200}",
+          "type": "color"
+        }
+      }
+    },
+    "modal": {
+      "width": {
+        "value": "{sizing.modal-width}",
+        "type": "sizing"
+      },
+      "background": {
+        "value": "{color.surface.base}",
+        "type": "color"
+      },
+      "borderRadius": {
+        "value": "{borderRadius.lg}",
+        "type": "borderRadius"
+      },
+      "padding": {
+        "value": "{spacing.space-5}",
+        "type": "spacing"
+      },
+      "overlay": {
+        "value": "#000000",
+        "type": "color",
+        "description": "Usar con 35% de opacidad en Figma"
+      }
+    },
+    "divider": {
+      "color": {
+        "value": "{color.border.default}",
+        "type": "color"
+      },
+      "width": {
+        "value": "0.5",
+        "type": "borderWidth"
+      }
+    },
+    "sidebar": {
+      "background": {
+        "value": "{color.surface.raised}",
+        "type": "color"
+      },
+      "width": {
+        "value": "{sizing.sidebar-width}",
+        "type": "sizing"
+      },
+      "collapsedWidth": {
+        "value": "{sizing.sidebar-collapsed}",
+        "type": "sizing"
+      },
+      "activeItem": {
+        "background": {
+          "value": "{color.surface.base}",
+          "type": "color"
+        },
+        "border": {
+          "value": "{color.border.default}",
+          "type": "color"
+        },
+        "fontWeight": {
+          "value": "{fontWeights.medium}",
+          "type": "fontWeights"
+        }
+      }
+    }
+  },
+  "$metadata": {
+    "tokenSetOrder": ["global", "semantic", "components"]
+  }
+}

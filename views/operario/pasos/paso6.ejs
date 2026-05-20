@@ -1,0 +1,83 @@
+<%# views/operario/pasos/paso6.ejs — Retiro de marmita (editable) %>
+<div class="step-page">
+  <%- include('../partials/op-stepper-topbar') %>
+
+  <form action="/mis-lotes/<%= lote.id %>/paso/<%= paso %>" method="POST" novalidate>
+    <div class="step-layout">
+      <div class="step-main">
+
+        <div class="step-header">
+          <div class="step-header__meta">
+            <span>Paso 6/9 · <%= lote.numeroLote %> · <%= lote.producto %> · Operario: <%= operario.nombre %></span>
+            <span class="step-header__badge" style="background:rgba(93,202,165,0.16); border-color:var(--green-mid); color:var(--green-dark);">✎ Editable · Operario</span>
+            <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+          </div>
+          <h1 class="step-header__title">Retiro de marmita</h1>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Datos del retiro</p>
+          <div class="field-grid field-grid--2">
+            <div class="field-group">
+              <span class="field-label">Cantidad planificada</span>
+              <div class="field-value"><%= lote.cantidadPlanificada.toLocaleString('es-CO') %> unidades</div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="cant_obtenida">Cantidad obtenida</label>
+              <input class="field-value" type="number" id="cant_obtenida" name="cant_obtenida" placeholder="unidades">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="hora_retiro">Hora de retiro</label>
+              <input class="field-value" type="time" id="hora_retiro" name="hora_retiro">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="destino">Destino del producto</label>
+              <input class="field-value" type="text" id="destino" name="destino" placeholder="Ej: Área de empaque — Mesa 3">
+            </div>
+            <div class="field-group" style="grid-column: span 2;">
+              <label class="field-label" for="condicion">Condición del producto</label>
+              <select class="field-value" id="condicion" name="condicion">
+                <option value="">Selecciona...</option>
+                <option value="conforme">Conforme — sin observaciones</option>
+                <option value="con_obs">Conforme con observaciones</option>
+                <option value="no_conforme">No conforme</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Confirmaciones del paso</p>
+          <div class="checklist-grid">
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_producto_retirado" value="1"><span>Producto retirado de marmita</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_cantidad" value="1"><span>Cantidad registrada</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_hora" value="1"><span>Hora anotada</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_destino" value="1"><span>Destino confirmado</span></label>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <label class="step-card__title" for="observaciones">Observaciones del paso</label>
+          <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
+                    rows="3" placeholder="Rendimiento, novedades del retiro..."></textarea>
+        </div>
+
+      </div>
+
+      <%- include('../partials/op-stepper-aside') %>
+    </div>
+
+    <div class="step-footer">
+      <div class="step-footer__left">
+        <span>✎ Editando paso <%= paso %>/9 · <%= operario.nombre %></span>
+      </div>
+      <div class="step-footer__right">
+        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+        <button type="submit" class="btn-step"
+                style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;">
+          Guardar y continuar →
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

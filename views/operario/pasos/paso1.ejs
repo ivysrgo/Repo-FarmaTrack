@@ -1,0 +1,97 @@
+<%# views/operario/pasos/paso1.ejs — Recepción de la orden (operario · editable) %>
+<div class="step-page">
+  <%- include('../partials/op-stepper-topbar') %>
+
+  <form action="/mis-lotes/<%= lote.id %>/paso/<%= paso %>" method="POST" novalidate>
+    <div class="step-layout">
+      <div class="step-main">
+
+        <div class="step-header">
+          <div class="step-header__meta">
+            <span>Paso 1/9 · <%= lote.numeroLote %> · <%= lote.producto %> · Operario: <%= operario.nombre %></span>
+            <span class="step-header__badge" style="background:rgba(93,202,165,0.16); border-color:var(--green-mid); color:var(--green-dark);">✎ Editable · Operario</span>
+            <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+          </div>
+          <h1 class="step-header__title">Recepción de la orden</h1>
+        </div>
+
+        <!-- Datos de la orden (informativos, no editables) -->
+        <div class="step-card">
+          <p class="step-card__title">Datos de la orden de producción</p>
+          <div class="field-grid field-grid--2">
+            <div class="field-group">
+              <span class="field-label">Número de orden</span>
+              <div class="field-value"><%= lote.numeroOrden || '—' %></div>
+            </div>
+            <div class="field-group">
+              <span class="field-label">Producto a fabricar</span>
+              <div class="field-value"><%= lote.producto %></div>
+            </div>
+            <div class="field-group">
+              <span class="field-label">Cantidad planificada</span>
+              <div class="field-value"><%= lote.cantidadPlanificada.toLocaleString('es-CO') %> unidades</div>
+            </div>
+            <div class="field-group">
+              <span class="field-label">Fecha de inicio</span>
+              <div class="field-value"><%= lote.fechaInicio ? new Date(lote.fechaInicio).toLocaleDateString('es-CO') : '—' %></div>
+            </div>
+            <div class="field-group">
+              <span class="field-label">Director Técnico</span>
+              <div class="field-value"><%= lote.directorTecnico %></div>
+            </div>
+            <div class="field-group">
+              <span class="field-label">Área de producción</span>
+              <div class="field-value"><%= lote.area || '—' %></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Checklist editable -->
+        <div class="step-card">
+          <p class="step-card__title">Confirmaciones del paso (marca cuando hayas verificado)</p>
+          <div class="checklist-grid">
+            <label class="check-row" style="cursor:pointer;">
+              <input type="checkbox" name="chk_orden_recibida" value="1">
+              <span>Orden física recibida y en mi poder</span>
+            </label>
+            <label class="check-row" style="cursor:pointer;">
+              <input type="checkbox" name="chk_datos_coinciden" value="1">
+              <span>Datos del sistema coinciden con la orden física</span>
+            </label>
+            <label class="check-row" style="cursor:pointer;">
+              <input type="checkbox" name="chk_responsable" value="1">
+              <span>Responsable de producción asignado</span>
+            </label>
+            <label class="check-row" style="cursor:pointer;">
+              <input type="checkbox" name="chk_observaciones" value="1">
+              <span>Observaciones iniciales registradas</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="step-card">
+          <label class="step-card__title" for="observaciones">Observaciones del paso</label>
+          <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
+                    rows="3" placeholder="Anota cualquier novedad de la recepción..."></textarea>
+        </div>
+
+      </div>
+
+      <%- include('../partials/op-stepper-aside') %>
+    </div>
+
+    <div class="step-footer">
+      <div class="step-footer__left">
+        <span>✎ Editando paso <%= paso %>/9 · <%= operario.nombre %></span>
+      </div>
+      <div class="step-footer__right">
+        <a href="/mis-lotes" class="btn-step btn-step--secondary">← Volver a mis lotes</a>
+        <button type="submit" class="btn-step"
+                style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;">
+          Guardar y continuar →
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

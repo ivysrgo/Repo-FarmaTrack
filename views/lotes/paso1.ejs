@@ -1,0 +1,84 @@
+<%# views/lotes/paso1.ejs — Recepción de la orden %>
+<div class="step-page">
+  <%- include('../partials/stepper-topbar') %>
+
+  <div class="step-layout">
+    <div class="step-main">
+
+      <!-- Header del paso -->
+      <div class="step-header">
+        <div class="step-header__meta">
+          <span>Paso 1/9 · <%= lote.numeroLote %> · <%= lote.medicamento %> · Operario: <%= operario.nombre %></span>
+          <span class="step-header__badge step-header__badge--readonly">🔒 Solo lectura · D.T.</span>
+          <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+        </div>
+        <h1 class="step-header__title">Recepción de la orden</h1>
+      </div>
+
+      <div class="readonly-notice">🔒 Vista de solo lectura — Director Técnico. Este paso fue completado por el Operario.</div>
+
+      <!-- Datos de la orden -->
+      <div class="step-card">
+        <p class="step-card__title">Datos de la orden de producción (completado por operario)</p>
+        <div class="field-grid field-grid--2">
+          <div class="field-group">
+            <span class="field-label">Número de orden</span>
+            <div class="field-value"><%= ordenNumero %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Producto a fabricar</span>
+            <div class="field-value"><%= producto %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Cantidad planificada</span>
+            <div class="field-value"><%= cantidad %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Fecha de inicio</span>
+            <div class="field-value"><%= fechaInicio %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Responsable asignado</span>
+            <div class="field-value"><%= responsable %></div>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Director Técnico</span>
+            <div class="field-value"><%= director %></div>
+          </div>
+          <div class="field-group" style="grid-column: span 2">
+            <span class="field-label">Área de producción</span>
+            <div class="field-value"><%= area %></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Checklist confirmado -->
+      <div class="step-card">
+        <p class="step-card__title">Checklist confirmado por operario — <%= operario.nombre %></p>
+        <div class="checklist-grid">
+          <% checklist.forEach(item => { %>
+            <div class="check-row">
+              <div class="check-box"></div>
+              <span><%= item %></span>
+            </div>
+          <% }) %>
+        </div>
+        <div style="margin-top:12px">
+          <p class="obs-label">Observaciones del operario en este paso</p>
+          <div class="field-value field-value--wide"><%= observaciones %></div>
+        </div>
+      </div>
+
+      <!-- Observaciones solo lectura -->
+      <div class="step-card">
+        <p class="obs-label">Observaciones del operario (solo lectura)</p>
+        <div class="field-value field-value--wide" style="color:var(--muted)">Sin observaciones adicionales registradas en este paso.</div>
+      </div>
+
+    </div>
+
+    <%- include('../partials/stepper-aside') %>
+  </div>
+
+  <%- include('../partials/stepper-footer') %>
+</div>

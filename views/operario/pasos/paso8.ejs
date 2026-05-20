@@ -1,0 +1,85 @@
+<%# views/operario/pasos/paso8.ejs — Área de acondicionamiento (editable) %>
+<div class="step-page">
+  <%- include('../partials/op-stepper-topbar') %>
+
+  <form action="/mis-lotes/<%= lote.id %>/paso/<%= paso %>" method="POST" novalidate>
+    <div class="step-layout">
+      <div class="step-main">
+
+        <div class="step-header">
+          <div class="step-header__meta">
+            <span>Paso 8/9 · <%= lote.numeroLote %> · <%= lote.producto %> · Operario: <%= operario.nombre %></span>
+            <span class="step-header__badge" style="background:rgba(93,202,165,0.16); border-color:var(--green-mid); color:var(--green-dark);">✎ Editable · Operario</span>
+            <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+          </div>
+          <h1 class="step-header__title">Área de acondicionamiento</h1>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Condiciones ambientales del área</p>
+          <div class="field-grid field-grid--2">
+            <div class="field-group">
+              <label class="field-label" for="hora_ingreso">Hora de ingreso al área</label>
+              <input class="field-value" type="time" id="hora_ingreso" name="hora_ingreso">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="codigo_area">Código del área</label>
+              <input class="field-value" type="text" id="codigo_area" name="codigo_area" placeholder="Ej: ÁREA-S01">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="temp_area">Temperatura registrada (°C)</label>
+              <input class="field-value" type="number" step="0.1" id="temp_area" name="temp_area" placeholder="15 - 25">
+              <small style="font-size:10px; color:var(--muted);">Rango BPM: 15 - 25 °C</small>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="humedad_area">Humedad relativa (%)</label>
+              <input class="field-value" type="number" step="0.1" id="humedad_area" name="humedad_area" placeholder="40 - 60">
+              <small style="font-size:10px; color:var(--muted);">Rango BPM: 40 - 60 % HR</small>
+            </div>
+            <div class="field-group" style="grid-column: span 2;">
+              <label class="field-label" for="condicion_area">Condición del área</label>
+              <select class="field-value" id="condicion_area" name="condicion_area">
+                <option value="">Selecciona...</option>
+                <option value="habilitada">Habilitada — Todo conforme</option>
+                <option value="condicional">Habilitada con observaciones</option>
+                <option value="no_habilitada">No habilitada</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Confirmaciones del paso</p>
+          <div class="checklist-grid">
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_hora_ingreso" value="1"><span>Hora de ingreso registrada</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_temp_bpm" value="1"><span>Temperatura dentro de BPM</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_hum_bpm" value="1"><span>Humedad dentro de BPM</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_area_habilitada" value="1"><span>Área habilitada</span></label>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <label class="step-card__title" for="observaciones">Observaciones del paso</label>
+          <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
+                    rows="3" placeholder="Estabilidad ambiental, novedades del área..."></textarea>
+        </div>
+
+      </div>
+
+      <%- include('../partials/op-stepper-aside') %>
+    </div>
+
+    <div class="step-footer">
+      <div class="step-footer__left">
+        <span>✎ Editando paso <%= paso %>/9 · <%= operario.nombre %></span>
+      </div>
+      <div class="step-footer__right">
+        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+        <button type="submit" class="btn-step"
+                style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;">
+          Guardar y continuar →
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
