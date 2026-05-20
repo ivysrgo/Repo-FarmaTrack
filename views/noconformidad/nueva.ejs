@@ -1,0 +1,126 @@
+<%# views/noconformidad/nueva.ejs — Reportar no conformidad (RQF) %>
+
+<header class="topbar">
+  <div class="topbar__left">
+    <nav class="breadcrumb">
+      <span class="breadcrumb__link">Inicio</span>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">Reportar no conformidad</span>
+    </nav>
+  </div>
+  <div class="topbar__right">
+    <div class="topbar__date"><%= fechaHoy %></div>
+    <div class="avatar topbar__avatar"><%= usuario.iniciales %></div>
+  </div>
+</header>
+
+<% if (errores && errores.length) { %>
+  <div class="sec-flash sec-flash--err">
+    <span>⚠</span>
+    <span><%= errores.join(' · ') %></span>
+  </div>
+<% } %>
+
+<div class="sec-page">
+  <div class="sec-page__head">
+    <h1 class="sec-page__title">Reportar no conformidad</h1>
+    <p class="sec-page__sub">
+      Documenta cualquier desviación BPM, error de proceso, ingrediente fuera de especificación
+      o evento que requiera revisión del Director Técnico.
+    </p>
+  </div>
+
+  <form action="/noconformidad/nueva" method="POST">
+    <div class="sec-layout">
+
+      <div class="sec-layout__main">
+        <div class="sec-card">
+          <p class="sec-card__title">Datos de la NC</p>
+
+          <div class="field-grid field-grid--2" style="margin-bottom:var(--sp3);">
+            <div class="field-group">
+              <label class="field-label" for="tipo">Tipo de no conformidad</label>
+              <select class="field-value" id="tipo" name="tipo" required>
+                <option value="">Selecciona...</option>
+                <option value="desviacion_bpm">Desviación BPM</option>
+                <option value="material_no_conforme">Material no conforme</option>
+                <option value="equipo_falla">Falla de equipo</option>
+                <option value="error_proceso">Error de proceso</option>
+                <option value="documentacion">Error de documentación</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="loteId">Lote afectado (opcional)</label>
+              <select class="field-value" id="loteId" name="loteId">
+                <option value="">Sin lote asociado</option>
+                <% lotesActivos.forEach(function(l) { %>
+                  <option value="<%= l.id %>"><%= l.numeroLote %> — <%= l.producto %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group" style="margin-bottom:var(--sp3);">
+            <label class="field-label" for="descripcion">Descripción detallada</label>
+            <textarea class="field-value field-value--wide" id="descripcion" name="descripcion"
+                      rows="5"
+                      placeholder="Describe qué ocurrió, cuándo, dónde y bajo qué circunstancias..."
+                      required></textarea>
+          </div>
+
+          <div class="field-grid field-grid--2">
+            <div class="field-group">
+              <label class="field-label" for="impacto">Impacto estimado</label>
+              <select class="field-value" id="impacto" name="impacto">
+                <option value="bajo">Bajo</option>
+                <option value="medio" selected>Medio</option>
+                <option value="alto">Alto</option>
+                <option value="critico">Crítico</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="bloqueante">¿Bloquea el lote?</label>
+              <select class="field-value" id="bloqueante" name="bloqueante">
+                <option value="0">No, solo informativo</option>
+                <option value="1">Sí, marcar lote con alerta BPM</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:var(--sp3);">
+          <button type="submit" class="btn-step"
+                  style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer; padding:0 22px; height:40px;">
+            Enviar reporte
+          </button>
+          <a href="<%= typeof dashboardPath !== 'undefined' ? dashboardPath : '/panel' %>" class="btn-step btn-step--secondary"
+             style="padding:0 22px; height:40px;">
+            Cancelar
+          </a>
+        </div>
+      </div>
+
+      <aside class="sec-layout__aside">
+        <div class="sec-card">
+          <p class="sec-card__title">⚠ Importante</p>
+          <p style="font-size:11px; color:var(--muted); line-height:1.5;">
+            Una NC bloqueante detiene el avance del lote hasta que el Director Técnico
+            revise y autorice la reanudación. Úsala solo cuando la desviación implique
+            riesgo al cumplimiento BPM o INVIMA.
+          </p>
+        </div>
+        <div class="sec-card">
+          <p class="sec-card__title">Qué pasa después</p>
+          <p style="font-size:11px; color:var(--muted); line-height:1.5;">
+            1. La NC queda registrada en la bitácora.<br/>
+            2. Si es bloqueante, el lote pasa a estado "alerta BPM".<br/>
+            3. El DT recibe la notificación y decide la acción.<br/>
+            4. Cuando se resuelve, queda documentada para INVIMA.
+          </p>
+        </div>
+      </aside>
+
+    </div>
+  </form>
+</div>
