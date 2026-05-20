@@ -121,9 +121,13 @@
   display: flex;
   gap: var(--space-1);
   flex: 1;
+  flex-wrap: wrap;
 }
 
 .filter-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   height: var(--size-button-height);
   padding: 0 var(--space-3);
   border-radius: var(--radius-pill);
@@ -133,8 +137,9 @@
   font-size: var(--font-size-button);
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s;
   white-space: nowrap;
+  user-select: none;
 }
 
 .filter-tab:hover {
@@ -142,11 +147,79 @@
   color: var(--color-action-primary);
 }
 
+.filter-tab:active {
+  transform: scale(0.97);
+}
+
 .filter-tab--active {
   background: rgba(93, 202, 165, 0.12);
   border-color: var(--color-border-active);
   color: var(--color-action-primary);
   font-weight: var(--font-weight-medium);
+  box-shadow: 0 0 0 2px rgba(93, 202, 165, 0.18);
+}
+
+/* Badge numérico dentro de cada tab */
+.filter-tab__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  background: var(--color-border-default);
+  color: var(--color-text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.filter-tab--active .filter-tab__badge {
+  background: var(--color-action-primary);
+  color: #fff;
+}
+
+.filter-tab__badge--warning {
+  background: rgba(232, 240, 85, 0.35);
+  color: #8a7c00;
+}
+.filter-tab--active .filter-tab__badge--warning {
+  background: #E8F055;
+  color: #6b5e00;
+}
+
+.filter-tab__badge--success {
+  background: rgba(93, 202, 165, 0.2);
+  color: var(--color-action-primary);
+}
+.filter-tab--active .filter-tab__badge--success {
+  background: var(--color-action-primary);
+  color: #fff;
+}
+
+/* Estado vacío cuando no hay lotes en el filtro seleccionado */
+.lotes-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 12px;
+  border-radius: var(--radius-lg);
+  border: 1.5px dashed var(--color-border-default);
+  background: var(--color-surface-base);
+}
+
+.lotes-vacio__icon {
+  font-size: 28px;
+  opacity: 0.5;
+}
+
+.lotes-vacio__texto {
+  font-size: var(--font-size-button);
+  color: var(--color-text-secondary);
 }
 
 .sort-control {

@@ -340,7 +340,7 @@ body {
   font-family: var(--font-family-base);
   font-size: var(--font-size-input-text);
   color: var(--color-text-primary);
-  background: var(--color-surface-raised);
+  background: var(--color-white);
   display: flex;
   min-height: 100vh;
 }
@@ -467,6 +467,30 @@ body {
 .sidebar__user-name {
   font-size: var(--font-size-button);
   color: var(--color-text-primary);
+}
+
+.sidebar__logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px var(--space-4);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-family-base);
+  color: var(--color-text-secondary, #888780);
+  text-decoration: none;
+  background: none;
+  border: none;
+  border-top: 1px solid rgba(211,209,199,0.4);
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.15s, background 0.15s;
+}
+
+.sidebar__logout:hover {
+  color: var(--color-red-500, #E24B4A);
+  background: rgba(226,75,74,0.06);
 }
 
 /* ════════════════════════════════════════════════════════════

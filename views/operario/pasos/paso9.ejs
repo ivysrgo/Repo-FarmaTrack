@@ -1,0 +1,136 @@
+<%# views/operario/pasos/paso9.ejs — Etiquetado + Notificación al DT (paso terminal del operario) %>
+<div class="step-page">
+  <%- include('../partials/op-stepper-topbar') %>
+
+  <form action="/mis-lotes/<%= lote.id %>/paso/<%= paso %>" method="POST" novalidate>
+    <div class="step-layout">
+      <div class="step-main">
+
+        <div class="step-header">
+          <div class="step-header__meta">
+            <span>Paso 9/9 · <%= lote.numeroLote %> · <%= lote.producto %> · Operario: <%= operario.nombre %></span>
+            <% if (lote.estado === 'pendiente_firma') { %>
+              <span class="step-header__badge" style="background:rgba(232,240,85,0.30); border-color:#c5c930; color:#555800;">⏳ Esperando firma del DT</span>
+            <% } else if (lote.estado === 'liberado') { %>
+              <span class="step-header__badge" style="background:rgba(26,92,58,0.12); border-color:var(--green-dark); color:var(--green-dark);">✓ Lote liberado por el DT</span>
+            <% } else { %>
+              <span class="step-header__badge" style="background:rgba(93,202,165,0.16); border-color:var(--green-mid); color:var(--green-dark);">✎ Editable · Operario</span>
+            <% } %>
+            <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+          </div>
+          <h1 class="step-header__title">Etiquetado y cierre del lote</h1>
+        </div>
+
+        <% if (lote.estado === 'pendiente_firma') { %>
+          <div class="info-notice" style="background:rgba(232,240,85,0.20); border-color:#c5c930; color:#555800;">
+            ⏳ Ya notificaste al Director Técnico. El lote queda en espera de su firma de liberación.
+            Puedes seguir consultando los pasos anteriores; no se aceptan más ediciones.
+          </div>
+        <% } else if (lote.estado === 'liberado') { %>
+          <div class="info-notice" style="background:rgba(26,92,58,0.10); border-color:var(--green-dark); color:var(--green-dark);">
+            ✓ Lote liberado<% if (lote.liberadoPor) { %> por <%= lote.liberadoPor %><% } %>.
+            <% if (lote.liberadoEn) { %>
+              Firma registrada el <%= new Date(lote.liberadoEn).toLocaleString('es-CO', { dateStyle:'long', timeStyle:'short' }) %>.
+            <% } %>
+          </div>
+        <% } %>
+
+        <!-- Datos del etiquetado -->
+        <div class="step-card">
+          <p class="step-card__title">Verificación de etiquetado</p>
+          <div class="field-grid field-grid--2">
+            <div class="field-group">
+              <label class="field-label" for="numero_lote_etq">N° de lote en etiqueta</label>
+              <input class="field-value" type="text" id="numero_lote_etq" name="numero_lote_etq"
+                     value="<%= lote.numeroLote %>"
+                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="nombre_producto_etq">Nombre del producto en etiqueta</label>
+              <input class="field-value" type="text" id="nombre_producto_etq" name="nombre_producto_etq"
+                     value="<%= lote.producto %>"
+                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="fecha_fab">Fecha de fabricación</label>
+              <input class="field-value" type="date" id="fecha_fab" name="fecha_fab"
+                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="fecha_venc">Fecha de vencimiento</label>
+              <input class="field-value" type="date" id="fecha_venc" name="fecha_venc"
+                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="unidades_etiquetadas">Unidades etiquetadas</label>
+              <input class="field-value" type="number" id="unidades_etiquetadas" name="unidades_etiquetadas" placeholder="0"
+                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="registro_sanitario">N° de registro sanitario</label>
+              <input class="field-value" type="text" id="registro_sanitario" name="registro_sanitario" placeholder="INVIMA..."
+                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Checklist final de etiquetado</p>
+          <div class="checklist-grid">
+            <% const items = [
+              ['chk_numero_lote',  'Número de lote en etiqueta coincide'],
+              ['chk_fecha_fab',    'Fecha de fabricación correcta'],
+              ['chk_fecha_venc',   'Fecha de vencimiento correcta'],
+              ['chk_nombre',       'Nombre del producto correcto'],
+              ['chk_concentracion','Concentración correcta'],
+              ['chk_registro',     'Número de registro sanitario presente'],
+            ]; %>
+            <% items.forEach(([n, t]) => { %>
+              <label class="check-row" style="cursor:pointer;">
+                <input type="checkbox" name="<%= n %>" value="1"
+                       <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'disabled' : '' %>>
+                <span><%= t %></span>
+              </label>
+            <% }) %>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <label class="step-card__title" for="observaciones">Observaciones finales del operario</label>
+          <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
+                    rows="3" placeholder="Cualquier nota relevante para el DT antes de la firma..."
+                    <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>></textarea>
+        </div>
+
+      </div>
+
+      <%- include('../partials/op-stepper-aside') %>
+    </div>
+
+    <%# ─── Footer: cambia según el estado del lote ─── %>
+    <div class="step-footer">
+      <div class="step-footer__left">
+        <% if (lote.estado === 'pendiente_firma') { %>
+          <span style="color:#555800; font-weight:500;">⏳ Pendiente de firma del DT</span>
+        <% } else if (lote.estado === 'liberado') { %>
+          <span style="color:var(--green-dark); font-weight:500;">✓ Lote liberado por el DT</span>
+        <% } else { %>
+          <span>Última etapa — al notificar, el lote pasa al DT</span>
+        <% } %>
+      </div>
+      <div class="step-footer__right">
+        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+
+        <% if (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') { %>
+          <a href="/mis-lotes" class="btn-step btn-step--secondary">Volver a mis lotes</a>
+        <% } else { %>
+          <button type="submit" class="btn-step"
+                  style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;"
+                  onclick="return confirm('¿Confirmas notificar al Director Técnico que el lote <%= lote.numeroLote %> está listo para liberación?\n\nUna vez notificado, no podrás editar este paso.');">
+            ✓ Notificar al DT para liberación →
+          </button>
+        <% } %>
+      </div>
+    </div>
+  </form>
+</div>

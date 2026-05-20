@@ -19,9 +19,18 @@
       <!-- Verificación de etiquetas -->
       <div class="step-card">
         <p class="step-card__title">Verificación de etiquetado — completado por operario</p>
-        <div class="info-notice" style="margin-bottom:14px">
-          ✅ Todas las verificaciones de etiquetado fueron confirmadas por el operario. Lote listo para liberación.
-        </div>
+        <% if (lote.estado === 'liberado') { %>
+          <div class="info-notice" style="margin-bottom:14px; background:rgba(26,92,58,0.10); border-color:var(--green-dark); color:var(--green-dark);">
+            ✓ Lote liberado<% if (lote.liberadoPor) { %> por <%= lote.liberadoPor %><% } %>.
+            <% if (lote.liberadoEn) { %>
+              Firma registrada el <%= new Date(lote.liberadoEn).toLocaleString('es-CO', { dateStyle:'long', timeStyle:'short' }) %>.
+            <% } %>
+          </div>
+        <% } else { %>
+          <div class="info-notice" style="margin-bottom:14px">
+            ✅ Todas las verificaciones de etiquetado fueron confirmadas por el operario. Lote listo para liberación.
+          </div>
+        <% } %>
 
         <div class="checklist-grid">
           <% checklist.forEach(item => { %>
@@ -67,7 +76,13 @@
           </div>
           <div class="field-group">
             <span class="field-label">Estado final</span>
-            <div class="field-value" style="background:var(--white); color:var(--green-dark); font-weight:500;">✅ Completado</div>
+            <% if (lote.estado === 'liberado') { %>
+              <div class="field-value" style="background:var(--white); color:var(--green-dark); font-weight:500;">✓ Liberado</div>
+            <% } else if (lote.estado === 'rechazado') { %>
+              <div class="field-value" style="background:var(--white); color:#C42E2D; font-weight:500;">✗ Rechazado</div>
+            <% } else { %>
+              <div class="field-value" style="background:var(--white); color:var(--green-dark); font-weight:500;">✅ Listo para liberar</div>
+            <% } %>
           </div>
           <div class="field-group">
             <span class="field-label">Pasos completados</span>
@@ -97,12 +112,25 @@
         </div>
       </div>
 
-      <div class="aside-card" style="border-color:var(--green-mid);">
-        <p class="aside-card__title" style="color:var(--green-dark);">✅ Lote completado</p>
-        <p style="font-size:11px; color:var(--muted); margin-top:4px;">
-          Todos los pasos del proceso han sido completados y verificados.
-        </p>
-      </div>
+      <% if (lote.estado === 'liberado') { %>
+        <div class="aside-card" style="border-color:var(--green-dark); background:rgba(26,92,58,0.05);">
+          <p class="aside-card__title" style="color:var(--green-dark);">✓ Lote liberado</p>
+          <p style="font-size:11px; color:var(--muted); margin-top:4px;">
+            Firmado<% if (lote.liberadoPor) { %> por <%= lote.liberadoPor %><% } %>.
+            <% if (lote.liberadoEn) { %>
+              <br/><%= new Date(lote.liberadoEn).toLocaleString('es-CO', { dateStyle:'short', timeStyle:'short' }) %>
+            <% } %>
+          </p>
+        </div>
+      <% } else { %>
+        <div class="aside-card" style="border-color:var(--green-mid);">
+          <p class="aside-card__title" style="color:var(--green-dark);">✅ Lote completado</p>
+          <p style="font-size:11px; color:var(--muted); margin-top:4px;">
+            Todos los pasos del proceso han sido completados y verificados.
+            Pendiente la firma del Director Técnico.
+          </p>
+        </div>
+      <% } %>
 
       <div class="aside-card">
         <p class="aside-card__title">Eventos recientes</p>
@@ -132,21 +160,47 @@
     </aside>
   </div>
 
-  <!-- Footer especial para último paso -->
+  <%# ─── Footer del paso 9 ──────────────────────────────────────────
+       Caso A) lote ya liberado     → badge informativo (no se puede re-liberar)
+       Caso B) lote rechazado       → mensaje en rojo, no se libera
+       Caso C) cualquier otro estado→ formulario POST /lotes/:id/liberar
+       El botón principal está dentro de un <form> para que pueda hacer POST.
+  %>
   <div class="step-footer">
     <div class="step-footer__left">
-      <span>Solo lectura · D.T.</span>
+      <% if (lote.estado === 'liberado') { %>
+        <span style="color:var(--green-dark); font-weight:500;">
+          ✓ Liberado<% if (lote.liberadoPor) { %> por <%= lote.liberadoPor %><% } %>
+          <% if (lote.liberadoEn) { %>
+            · <%= new Date(lote.liberadoEn).toLocaleString('es-CO', { dateStyle:'short', timeStyle:'short' }) %>
+          <% } %>
+        </span>
+      <% } else if (lote.estado === 'rechazado') { %>
+        <span style="color:#C42E2D; font-weight:500;">✗ Lote rechazado — no puede liberarse</span>
+      <% } else { %>
+        <span>Listo para firma y liberación</span>
+      <% } %>
     </div>
+
     <div class="step-footer__right">
-<<<<<<< HEAD
-      <a href="/lotes/<%= lote.id %>/paso/8" class="btn-step btn-step--ghost">← Paso anterior</a>
-      <a href="/lotes" class="btn-step btn-step--secondary">Ver todos los lotes</a>
-=======
       <a href="/lotes/<%= lote.id %>/paso/8" class="btn-step btn-step--secondary">← Paso anterior</a>
-      <a href="<%= typeof dashboardPath !== 'undefined' ? dashboardPath : '/panel' %>" class="btn-step btn-step--secondary">
-        Volver a <%= typeof dashboardLabel !== 'undefined' ? dashboardLabel.toLowerCase() : 'panel' %>
-      </a>
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
+
+      <% if (lote.estado === 'liberado' || lote.estado === 'rechazado') { %>
+        <%# Acción terminal ya hecha — solo mostramos vuelta al dashboard %>
+        <a href="<%= typeof dashboardPath !== 'undefined' ? dashboardPath : '/panel' %>" class="btn-step btn-step--secondary">
+          Volver a <%= typeof dashboardLabel !== 'undefined' ? dashboardLabel.toLowerCase() : 'panel' %>
+        </a>
+      <% } else { %>
+        <%# Acción principal: liberar el lote — POST /lotes/:id/liberar %>
+        <form action="/lotes/<%= lote.id %>/liberar" method="POST" style="display:inline-flex; margin:0; gap:8px;">
+          <button type="submit"
+                  class="btn-step"
+                  style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;"
+                  onclick="return confirm('¿Confirmas liberar el lote <%= lote.numeroLote %>?\n\nEsta acción registra tu firma como Director Técnico y el lote queda marcado como liberado.');">
+            ✓ Liberar lote y firmar →
+          </button>
+        </form>
+      <% } %>
     </div>
   </div>
 </div>

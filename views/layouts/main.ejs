@@ -4,11 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FarmaTrack — <%= typeof title !== 'undefined' ? title : 'Producción' %></title>
-<<<<<<< HEAD
-  <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/css/panel.css" />
-  <link rel="stylesheet" href="/css/stepper.css" />
-=======
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -24,7 +19,6 @@
        Sin esta línea, los estilos inline de nuevo.ejs, panel/index.ejs, etc.
        se extraen pero no se inyectan en ningún lado y se pierden. %>
   <%- style %>
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
 </head>
 <body>
 
@@ -37,12 +31,6 @@
       </div>
     </div>
 
-<<<<<<< HEAD
-    <nav class="sidebar__nav">
-      <p class="sidebar__section-label">PRODUCCIÓN</p>
-      <a href="#" class="sidebar__item sidebar__item--active">
-        Panel de lotes <span class="sidebar__badge">8</span>
-=======
     <%# Sidebar dinámico por rol — usa dashboardPath / dashboardLabel inyectados
          por el middleware global de app.js. Una sola fuente de verdad para todas
          las vistas. _isDashActive marca el item como activo cuando el usuario
@@ -67,7 +55,6 @@
       <p class="sidebar__section-label">PRODUCCIÓN</p>
       <a href="<%= _dash %>" class="sidebar__item <%= _isDashActive ? 'sidebar__item--active' : '' %>">
         <%= _sidebarLabel %> <span class="sidebar__badge">8</span>
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
       </a>
       <a href="#" class="sidebar__item">
         Batch records <span class="sidebar__badge sidebar__badge--warning">3</span>
@@ -82,14 +69,19 @@
     </nav>
 
     <div class="sidebar__user">
-<<<<<<< HEAD
-      <div class="avatar">DP</div>
-      <span class="sidebar__user-name">David Peña</span>
-=======
       <div class="avatar"><%= _userInic %></div>
       <span class="sidebar__user-name"><%= _userNombre %></span>
->>>>>>> d51e171 (CAmbios y Funcionalidades realizadas para FarmaTrack)
     </div>
+    <form action="/auth/logout" method="POST" style="margin:0;">
+      <button type="submit" class="sidebar__logout">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5.25 2.333H2.917A.583.583 0 0 0 2.333 2.917v8.166c0 .323.261.584.584.584H5.25" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M9.333 9.917L11.667 7 9.333 4.083" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M11.667 7H5.25" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        Cerrar sesión
+      </button>
+    </form>
   </aside>
 
   <div class="main-wrapper">

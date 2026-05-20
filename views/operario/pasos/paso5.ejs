@@ -1,0 +1,86 @@
+<%# views/operario/pasos/paso5.ejs — Controles de calidad (editable, paso crítico) %>
+<div class="step-page">
+  <%- include('../partials/op-stepper-topbar') %>
+
+  <form action="/mis-lotes/<%= lote.id %>/paso/<%= paso %>" method="POST" novalidate>
+    <div class="step-layout">
+      <div class="step-main">
+
+        <div class="step-header">
+          <div class="step-header__meta">
+            <span>Paso 5/9 · <%= lote.numeroLote %> · <%= lote.producto %> · Operario: <%= operario.nombre %></span>
+            <span class="step-header__badge" style="background:rgba(93,202,165,0.16); border-color:var(--green-mid); color:var(--green-dark);">✎ Editable · Operario</span>
+            <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+          </div>
+          <h1 class="step-header__title">Controles de calidad</h1>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Controles intermedios — registra los valores obtenidos</p>
+          <div class="info-notice" style="margin-bottom:10px">
+            ⚠ Paso crítico. Cualquier valor fuera de especificación dispara una No Conformidad.
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Especif. Mín</th>
+                <th>Especif. Máx</th>
+                <th>Valor obtenido</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% const controles = [
+                { p:'Pérdida por secado',  min:'≤ 3.0 %',  max:'3.0 %'    },
+                { p:'Tamaño de partícula', min:'180 μm',   max:'250 μm'   },
+                { p:'Densidad aparente',   min:'0.42 g/mL',max:'0.58 g/mL' },
+                { p:'pH solución 1%',      min:'5.5',      max:'6.5'      },
+                { p:'Humedad residual',    min:'—',        max:'5.0 %'    },
+              ]; %>
+              <% controles.forEach((c, i) => { %>
+                <tr>
+                  <td><%= c.p %></td>
+                  <td><%= c.min %></td>
+                  <td><%= c.max %></td>
+                  <td><input type="text" name="control_<%= i %>_valor" placeholder="Valor medido"></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Confirmaciones del paso</p>
+          <div class="checklist-grid">
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_controles" value="1"><span>Controles ejecutados</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_lab" value="1"><span>Reporte de laboratorio adjunto</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_dentro_espec" value="1"><span>Resultados dentro de especificación</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_desviaciones" value="1"><span>Desviaciones revisadas</span></label>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <label class="step-card__title" for="observaciones">Observaciones del paso</label>
+          <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
+                    rows="3" placeholder="Reporta ajustes, repeticiones de medición, NC abiertas..."></textarea>
+        </div>
+
+      </div>
+
+      <%- include('../partials/op-stepper-aside') %>
+    </div>
+
+    <div class="step-footer">
+      <div class="step-footer__left">
+        <span>✎ Editando paso <%= paso %>/9 · <%= operario.nombre %></span>
+      </div>
+      <div class="step-footer__right">
+        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+        <button type="submit" class="btn-step"
+                style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;">
+          Guardar y continuar →
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
