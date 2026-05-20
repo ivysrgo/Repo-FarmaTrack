@@ -125,6 +125,16 @@
         <span style="font-size:10px; color:var(--muted);"><%= _userRolTxt %></span>
       </div>
     </div>
+    <form action="/auth/logout" method="POST" style="margin:0;">
+      <button type="submit" class="sidebar__logout">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5.25 2.333H2.917A.583.583 0 0 0 2.333 2.917v8.166c0 .323.261.584.584.584H5.25" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M9.333 9.917L11.667 7 9.333 4.083" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M11.667 7H5.25" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        Cerrar sesión
+      </button>
+    </form>
   </aside>
 
   <div class="main-wrapper">

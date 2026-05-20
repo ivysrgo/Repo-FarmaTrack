@@ -84,6 +84,16 @@ function getPanelDT(req, res) {
       tasaBPM:         94,                      // mock — luego se calcula real
     },
 
+    // Conteos por estado para los filter-tabs (RQF-07)
+    // alertasBPM se agrupa bajo "en_produccion" porque son lotes activos con desvío
+    tabCounts: {
+      todos:           counts.total,
+      en_produccion:   counts.enProduccion + counts.alertasBPM,
+      en_calidad:      counts.enCalidad,
+      pendiente_firma: counts.pendientesFirma,
+      liberado:        counts.liberados,
+    },
+
     lotes,
     resumen: {
       lotesIniciados: counts.enProduccion + counts.pendientesFirma + counts.enCalidad,

@@ -105,40 +105,32 @@
           class="search-box__input"
           placeholder="Buscar lote, producto..."
           id="buscarLote"
-          oninput="filtrarLotes(this.value)"
         />
       </div>
       <div class="filter-tabs" id="filterTabs">
-        <button class="filter-tab filter-tab--active" data-filter="todos" onclick="setFiltro(this, 'todos')">
-          Todos (<%= lotes.length %>)
+        <button class="filter-tab filter-tab--active" data-filter="todos" data-count="<%= tabCounts.todos %>" onclick="setFiltro(this, 'todos')">
+          Todos <span class="filter-tab__badge"><%= tabCounts.todos %></span>
         </button>
-        <button class="filter-tab" data-filter="en_produccion" onclick="setFiltro(this, 'en_produccion')">
-          En producción
+        <button class="filter-tab" data-filter="en_produccion" data-count="<%= tabCounts.en_produccion %>" onclick="setFiltro(this, 'en_produccion')">
+          En producción <% if (tabCounts.en_produccion > 0) { %><span class="filter-tab__badge"><%= tabCounts.en_produccion %></span><% } %>
         </button>
-        <button class="filter-tab" data-filter="en_calidad" onclick="setFiltro(this, 'en_calidad')">
-          En calidad
+        <button class="filter-tab" data-filter="en_calidad" data-count="<%= tabCounts.en_calidad %>" onclick="setFiltro(this, 'en_calidad')">
+          En calidad <% if (tabCounts.en_calidad > 0) { %><span class="filter-tab__badge"><%= tabCounts.en_calidad %></span><% } %>
         </button>
-        <button class="filter-tab" data-filter="pendiente_firma" onclick="setFiltro(this, 'pendiente_firma')">
-          Pendiente lib.
+        <button class="filter-tab" data-filter="pendiente_firma" data-count="<%= tabCounts.pendiente_firma %>" onclick="setFiltro(this, 'pendiente_firma')">
+          Pendiente lib. <% if (tabCounts.pendiente_firma > 0) { %><span class="filter-tab__badge filter-tab__badge--warning"><%= tabCounts.pendiente_firma %></span><% } %>
         </button>
-        <button class="filter-tab" data-filter="liberado" onclick="setFiltro(this, 'liberado')">
-          Liberados
+        <button class="filter-tab" data-filter="liberado" data-count="<%= tabCounts.liberado %>" onclick="setFiltro(this, 'liberado')">
+          Liberados <% if (tabCounts.liberado > 0) { %><span class="filter-tab__badge filter-tab__badge--success"><%= tabCounts.liberado %></span><% } %>
         </button>
       </div>
-      <div class="sort-control">
-        <span class="sort-control__label">Ordenar por:</span>
-        <select class="sort-control__select" onchange="ordenarLotes(this.value)">
-          <option value="fecha">Fecha</option>
-          <option value="nombre">Nombre</option>
-          <option value="paso">Paso</option>
-        </select>
-      </div>
+
     </div>
 
     <!-- Lista de lotes -->
     <section class="lotes-section">
       <div class="lotes-section__header">
-        <h2 class="lotes-section__title">Lotes en curso</h2>
+        <h2 class="lotes-section__title" id="lotesSectionTitle">Lotes en curso</h2>
         <span class="lotes-section__meta" id="lotesCount"><%= lotes.length %> lotes · actualizado hace 2 min</span>
       </div>
 
@@ -157,8 +149,8 @@
                 <span class="lote-card__id"><%= displayId %></span>
                 <h3 class="lote-card__nombre"><%= lote.producto %></h3>
               </div>
-              <span class="badge badge--<%= lote.estadoSlug %>">
-                <% if (lote.estadoSlug === 'alerta_bpm') { %>⚠ <% } %>
+              <span class="badge badge--<%= lote.estado %>">
+                <% if (lote.estado === 'alerta_bpm') { %>⚠ <% } %>
                 <%= lote.estadoLabel %>
               </span>
             </div>
@@ -178,7 +170,7 @@
                 <span class="lote-card__paso">Paso <%= lote.pasoActual %>/9</span>
                 <span class="lote-card__tiempo"><%= lote.tiempoTranscurrido %></span>
               </div>
-              <% if (lote.estadoSlug === 'alerta_bpm') { %>
+              <% if (lote.estado === 'alerta_bpm') { %>
                 <span class="lote-card__alerta-label">⚠ Desviación BPM detectada · Paso <%= lote.pasoActual %>/9</span>
               <% } %>
             </div>
@@ -188,11 +180,11 @@
               <% if (lote.estadoSlug === 'en_produccion') { %>
                 <%# RQF-06: el botón "Continuar lote" abre el stepper en el paso donde va el lote %>
                 <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoActual %>" class="btn btn--primary btn--sm">Continuar lote</a>
-              <% } else if (lote.estadoSlug === 'pendiente_firma') { %>
+              <% } else if (lote.estado === 'pendiente_firma') { %>
                 <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoActual %>" class="btn btn--primary btn--sm">Revisar lote</a>
-              <% } else if (lote.estadoSlug === 'en_calidad') { %>
+              <% } else if (lote.estado === 'en_calidad') { %>
                 <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoActual %>" class="btn btn--secondary btn--sm">Ver resultados</a>
-              <% } else if (lote.estadoSlug === 'alerta_bpm') { %>
+              <% } else if (lote.estado === 'alerta_bpm') { %>
                 <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoActual %>" class="btn btn--alert btn--sm">Ver alerta</a>
               <% } else { %>
                 <a href="/lotes/<%= lote.id %>" class="btn btn--secondary btn--sm">Ver detalle</a>
@@ -283,47 +275,97 @@
 
 <!-- ── Script de filtrado y búsqueda (RQF-07) ─────────────────────── -->
 <script>
-  let filtroActivo = 'todos';
+  // ── Estado global ────────────────────────────────────────────────
+  var _filtroActivo = 'todos';
 
-  function filtrarLotes(query) {
-    const cards = document.querySelectorAll('.lote-card');
-    const q = query.toLowerCase().trim();
-    cards.forEach(card => {
-      const nombre = card.dataset.nombre || '';
-      const id     = card.dataset.id     || '';
-      const estado = card.dataset.estado || '';
-      const coincideTexto  = !q || nombre.includes(q) || id.includes(q);
-      const coincideFiltro = filtroActivo === 'todos' || estado === filtroActivo;
-      card.style.display = (coincideTexto && coincideFiltro) ? '' : 'none';
+  var FILTRO_MAP = {
+    en_produccion:   'en_produccion',
+    alerta_bpm:      'en_produccion',
+    en_espera:       'en_produccion',
+    en_calidad:      'en_calidad',
+    bloqueado:       'en_calidad',
+    pendiente_firma: 'pendiente_firma',
+    liberado:        'liberado',
+    rechazado:       'liberado',
+  };
+
+  // ── Función central: filtro + buscador ──────────────────────────
+  function aplicarFiltros() {
+    var inputEl = document.getElementById('buscarLote');
+    var q = inputEl ? inputEl.value.toLowerCase().trim() : '';
+    var cards = document.querySelectorAll('#lotesLista .lote-card');
+    var visibles = 0;
+
+    cards.forEach(function(card) {
+      var estado = card.getAttribute('data-estado') || '';
+      var nombre = card.getAttribute('data-nombre') || '';
+      var id     = card.getAttribute('data-id')     || '';
+
+      var coincideTexto  = !q || nombre.indexOf(q) !== -1 || id.indexOf(q) !== -1;
+      var coincideFiltro = _filtroActivo === 'todos'
+        ? true
+        : (estado === _filtroActivo || FILTRO_MAP[estado] === _filtroActivo);
+
+      if (coincideTexto && coincideFiltro) {
+        card.style.display = '';
+        visibles++;
+      } else {
+        card.style.display = 'none';
+      }
     });
-    actualizarContador();
+
+    actualizarUI(visibles);
   }
 
+  // ── Cambiar tab activo ───────────────────────────────────────────
   function setFiltro(btn, filtro) {
-    filtroActivo = filtro;
-    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('filter-tab--active'));
-    btn.classList.add('filter-tab--active');
-    filtrarLotes(document.getElementById('buscarLote').value);
-  }
-
-  function ordenarLotes(criterio) {
-    const lista = document.getElementById('lotesLista');
-    const cards = Array.from(lista.querySelectorAll('.lote-card'));
-    cards.sort((a, b) => {
-      if (criterio === 'nombre') return a.dataset.nombre.localeCompare(b.dataset.nombre);
-      return 0;
+    _filtroActivo = filtro;
+    document.querySelectorAll('.filter-tab').forEach(function(b) {
+      b.classList.remove('filter-tab--active');
     });
-    cards.forEach(c => lista.appendChild(c));
+    btn.classList.add('filter-tab--active');
+    aplicarFiltros();
   }
 
-  function actualizarContador() {
-    const visibles = document.querySelectorAll('.lote-card:not([style*="display: none"])').length;
-    document.getElementById('lotesCount').textContent = visibles + ' lotes · actualizado hace 2 min';
+  // ── Actualizar título, contador y estado vacío ──────────────────
+  function actualizarUI(visibles) {
+    var lista = document.getElementById('lotesLista');
+    if (!lista) return;
+
+    var tabActivo  = document.querySelector('.filter-tab--active');
+    var labelTexto = tabActivo ? tabActivo.firstChild.textContent.trim() : 'Lotes en curso';
+
+    var titulo = document.getElementById('lotesSectionTitle');
+    if (titulo) titulo.textContent = _filtroActivo === 'todos' ? 'Lotes en curso' : labelTexto;
+
+    var contador = document.getElementById('lotesCount');
+    if (contador) contador.textContent =
+      visibles + (visibles === 1 ? ' lote' : ' lotes') +
+      (_filtroActivo !== 'todos' ? ' en este estado' : '') +
+      ' · actualizado hace 2 min';
+
+    var hayVacio = lista.querySelector('.lotes-vacio');
+    if (visibles === 0 && !hayVacio) {
+      var el = document.createElement('div');
+      el.className = 'lotes-vacio';
+      el.innerHTML = '<span class="lotes-vacio__icon">📋</span><p class="lotes-vacio__texto">No hay lotes en este estado.</p>';
+      lista.appendChild(el);
+    } else if (visibles > 0 && hayVacio) {
+      hayVacio.remove();
+    }
   }
 
+  // ── Ver todos ────────────────────────────────────────────────────
   function verTodos() {
-    document.querySelectorAll('.lote-card').forEach(c => c.style.display = '');
-    document.querySelector('.ver-todos-btn')?.remove();
-    actualizarContador();
+    var btn = document.querySelector('.ver-todos-btn');
+    if (btn) btn.remove();
+    aplicarFiltros();
   }
+
+  // ── Arranque cuando el DOM esté listo ───────────────────────────
+  window.addEventListener('load', function() {
+    var inputBuscar = document.getElementById('buscarLote');
+    if (inputBuscar) inputBuscar.addEventListener('input', aplicarFiltros);
+    aplicarFiltros();
+  });
 </script>
