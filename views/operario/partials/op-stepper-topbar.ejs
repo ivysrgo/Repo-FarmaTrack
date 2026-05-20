@@ -1,0 +1,42 @@
+<%# partials/op-stepper-topbar.ejs
+     Topbar + barra de 9 pasos del stepper EDITABLE del operario.
+     Diferencia clave con el del DT: los enlaces de la barra apuntan a
+     /mis-lotes/:id/paso/:n y solo permiten navegar a los pasos ya
+     completados (no se puede saltar al futuro). %>
+
+<div class="step-topbar">
+  <div class="step-topbar__breadcrumb">
+    <a href="/mis-lotes">← Mis lotes</a>
+    <span>/</span>
+    <span><%= lote.numeroLote %></span>
+    <span>/</span>
+    <span>Paso <%= paso %>/9 — Editando</span>
+  </div>
+  <div class="step-topbar__right">
+    <span><%= fechaHoy %></span>
+    <div class="step-topbar__avatar"><%= usuario.iniciales %></div>
+  </div>
+</div>
+
+<%# Stepper visual — solo los pasos done/active son clicables; los futuros
+     se muestran apagados para evitar que el operario salte hacia adelante. %>
+<div class="stepper-bar">
+  <% pasos.forEach(p => {
+       let cls = '';
+       if (p.n < paso)  cls = 'stepper-bar__step--done';
+       if (p.n === paso) cls = 'stepper-bar__step--active';
+       const navegable = p.n <= paso;
+  %>
+    <% if (navegable) { %>
+      <a href="/mis-lotes/<%= lote.id %>/paso/<%= p.n %>" class="stepper-bar__step <%= cls %>">
+        <div class="stepper-bar__circle"><span><%= p.n %></span></div>
+        <span class="stepper-bar__label"><%= p.nombre %></span>
+      </a>
+    <% } else { %>
+      <span class="stepper-bar__step" style="opacity:.45; cursor:not-allowed;">
+        <div class="stepper-bar__circle"><span><%= p.n %></span></div>
+        <span class="stepper-bar__label"><%= p.nombre %></span>
+      </span>
+    <% } %>
+  <% }) %>
+</div>

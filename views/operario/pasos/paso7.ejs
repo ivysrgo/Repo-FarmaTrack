@@ -1,0 +1,86 @@
+<%# views/operario/pasos/paso7.ejs — Empaque y tapado (editable) %>
+<div class="step-page">
+  <%- include('../partials/op-stepper-topbar') %>
+
+  <form action="/mis-lotes/<%= lote.id %>/paso/<%= paso %>" method="POST" novalidate>
+    <div class="step-layout">
+      <div class="step-main">
+
+        <div class="step-header">
+          <div class="step-header__meta">
+            <span>Paso 7/9 · <%= lote.numeroLote %> · <%= lote.producto %> · Operario: <%= operario.nombre %></span>
+            <span class="step-header__badge" style="background:rgba(93,202,165,0.16); border-color:var(--green-mid); color:var(--green-dark);">✎ Editable · Operario</span>
+            <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+          </div>
+          <h1 class="step-header__title">Empaque y tapado</h1>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Datos del empaque</p>
+          <div class="field-grid field-grid--3">
+            <div class="field-group">
+              <label class="field-label" for="tipo_envase">Tipo de envase</label>
+              <input class="field-value" type="text" id="tipo_envase" name="tipo_envase" placeholder="Ej: Frasco PET 60ml">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="lote_envases">Lote de envases</label>
+              <input class="field-value" type="text" id="lote_envases" name="lote_envases" placeholder="ENV-2026-...">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="lote_etiquetas">Lote de etiquetas</label>
+              <input class="field-value" type="text" id="lote_etiquetas" name="lote_etiquetas" placeholder="ETQ-2026-...">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="unidades_empacadas">Unidades empacadas</label>
+              <input class="field-value" type="number" id="unidades_empacadas" name="unidades_empacadas" placeholder="0">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="unidades_descartadas">Unidades descartadas</label>
+              <input class="field-value" type="number" id="unidades_descartadas" name="unidades_descartadas" placeholder="0">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="hora_inicio_emp">Hora de inicio</label>
+              <input class="field-value" type="time" id="hora_inicio_emp" name="hora_inicio_emp">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="hora_fin_emp">Hora de fin</label>
+              <input class="field-value" type="time" id="hora_fin_emp" name="hora_fin_emp">
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Confirmaciones del paso</p>
+          <div class="checklist-grid">
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_envase_reg" value="1"><span>Tipo de envase registrado</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_unidades_reg" value="1"><span>Unidades registradas</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_control_linea" value="1"><span>Control de línea realizado</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_horas_anotadas" value="1"><span>Horas anotadas</span></label>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <label class="step-card__title" for="observaciones">Observaciones del paso</label>
+          <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
+                    rows="3" placeholder="Defectos detectados, descartes, novedades de línea..."></textarea>
+        </div>
+
+      </div>
+
+      <%- include('../partials/op-stepper-aside') %>
+    </div>
+
+    <div class="step-footer">
+      <div class="step-footer__left">
+        <span>✎ Editando paso <%= paso %>/9 · <%= operario.nombre %></span>
+      </div>
+      <div class="step-footer__right">
+        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+        <button type="submit" class="btn-step"
+                style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;">
+          Guardar y continuar →
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

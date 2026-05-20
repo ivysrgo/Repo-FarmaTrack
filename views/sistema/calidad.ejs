@@ -1,0 +1,112 @@
+<%# views/sistema/calidad.ejs — Control de calidad %>
+
+<header class="topbar">
+  <div class="topbar__left">
+    <nav class="breadcrumb">
+      <span class="breadcrumb__link">Inicio</span>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">Control de calidad</span>
+    </nav>
+  </div>
+  <div class="topbar__right">
+    <div class="topbar__date"><%= fechaHoy %></div>
+    <div class="avatar topbar__avatar"><%= usuario.iniciales %></div>
+  </div>
+</header>
+
+<div class="sec-page">
+
+  <div class="sec-page__head">
+    <h1 class="sec-page__title">Control de calidad</h1>
+    <p class="sec-page__sub">Lotes en revisión, con alertas BPM y bloqueados por desviación.</p>
+  </div>
+
+  <div class="sec-kpi-row">
+    <div class="sec-kpi sec-kpi--ok">
+      <span class="sec-kpi__label">En revisión de calidad</span>
+      <span class="sec-kpi__value"><%= stats.enRevision %></span>
+      <span class="sec-kpi__hint">Pruebas USP en curso</span>
+    </div>
+    <div class="sec-kpi sec-kpi--warning">
+      <span class="sec-kpi__label">Con alerta BPM</span>
+      <span class="sec-kpi__value"><%= stats.alertas %></span>
+      <span class="sec-kpi__hint">Desviaciones activas</span>
+    </div>
+    <div class="sec-kpi sec-kpi--alert">
+      <span class="sec-kpi__label">Bloqueados</span>
+      <span class="sec-kpi__value"><%= stats.bloqueados %></span>
+      <span class="sec-kpi__hint">No conformidades sin resolver</span>
+    </div>
+  </div>
+
+  <div class="sec-card">
+    <p class="sec-card__title">Lotes en revisión</p>
+    <% if (enRevision.length === 0) { %>
+      <div class="sec-empty">No hay lotes en revisión de calidad en este momento.</div>
+    <% } else { %>
+      <table class="sec-table">
+        <thead>
+          <tr><th>N° de lote</th><th>Producto</th><th>Paso</th><th>Operario</th><th>Jefe de calidad</th><th></th></tr>
+        </thead>
+        <tbody>
+          <% enRevision.forEach(function(l) { %>
+            <tr>
+              <td><strong><%= l.numeroLote %></strong></td>
+              <td><%= l.producto %></td>
+              <td><span class="sec-pill sec-pill--ok">Paso <%= l.pasoActual %>/9</span></td>
+              <td><%= l.operario %></td>
+              <td><%= l.jefeCalidad || '—' %></td>
+              <td><a href="/lotes/<%= l.id %>/paso/<%= l.pasoActual %>" class="sec-link">Revisar →</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+  <div class="sec-card">
+    <p class="sec-card__title">⚠ Lotes con alerta BPM</p>
+    <% if (conAlerta.length === 0) { %>
+      <div class="sec-empty">No hay alertas BPM activas. ¡Bien!</div>
+    <% } else { %>
+      <table class="sec-table">
+        <thead>
+          <tr><th>N° de lote</th><th>Producto</th><th>Paso</th><th>Operario</th><th>Observaciones</th><th></th></tr>
+        </thead>
+        <tbody>
+          <% conAlerta.forEach(function(l) { %>
+            <tr>
+              <td><strong><%= l.numeroLote %></strong></td>
+              <td><%= l.producto %></td>
+              <td><span class="sec-pill sec-pill--warn">Paso <%= l.pasoActual %>/9</span></td>
+              <td><%= l.operario %></td>
+              <td style="max-width:280px"><%= l.observaciones || '—' %></td>
+              <td><a href="/lotes/<%= l.id %>/paso/<%= l.pasoActual %>" class="sec-link">Atender →</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+  <% if (bloqueados.length > 0) { %>
+    <div class="sec-card">
+      <p class="sec-card__title">🔒 Lotes bloqueados</p>
+      <table class="sec-table">
+        <thead><tr><th>N° de lote</th><th>Producto</th><th>Paso</th><th>Operario</th><th></th></tr></thead>
+        <tbody>
+          <% bloqueados.forEach(function(l) { %>
+            <tr>
+              <td><strong><%= l.numeroLote %></strong></td>
+              <td><%= l.producto %></td>
+              <td><span class="sec-pill sec-pill--alert">Paso <%= l.pasoActual %>/9</span></td>
+              <td><%= l.operario %></td>
+              <td><a href="/lotes/<%= l.id %>/paso/<%= l.pasoActual %>" class="sec-link">Ver →</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+
+</div>

@@ -1,0 +1,123 @@
+<%# views/sistema/configuracion.ejs — Perfil del usuario y datos del sistema %>
+
+<header class="topbar">
+  <div class="topbar__left">
+    <nav class="breadcrumb">
+      <span class="breadcrumb__link">Inicio</span>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">Configuración</span>
+    </nav>
+  </div>
+  <div class="topbar__right">
+    <div class="topbar__date"><%= fechaHoy %></div>
+    <div class="avatar topbar__avatar"><%= usuario.iniciales %></div>
+  </div>
+</header>
+
+<div class="sec-page">
+
+  <div class="sec-page__head">
+    <h1 class="sec-page__title">Configuración</h1>
+    <p class="sec-page__sub">Perfil del usuario logueado y datos del sistema FarmaTrack.</p>
+  </div>
+
+  <div class="sec-layout">
+
+    <div class="sec-layout__main">
+      <div class="sec-card">
+        <p class="sec-card__title">Mi perfil</p>
+        <div class="cfg-perfil">
+          <div class="cfg-perfil__avatar"><%= usuario.iniciales %></div>
+          <div class="cfg-perfil__info">
+            <p class="cfg-perfil__name"><%= perfil.nombre %></p>
+            <p class="cfg-perfil__rol"><%= perfil.rolLabel %></p>
+          </div>
+        </div>
+
+        <div class="cfg-grid">
+          <div class="cfg-field">
+            <span class="cfg-field__label">Correo institucional</span>
+            <span class="cfg-field__value"><%= perfil.email %></span>
+          </div>
+          <div class="cfg-field">
+            <span class="cfg-field__label">Cargo</span>
+            <span class="cfg-field__value"><%= perfil.cargo %></span>
+          </div>
+          <div class="cfg-field">
+            <span class="cfg-field__label">Rol</span>
+            <span class="cfg-field__value"><%= perfil.rolLabel %></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-card">
+        <p class="sec-card__title">Acciones</p>
+        <p class="sec-card__sub">La edición de perfil y cambio de contraseña se habilita cuando los usuarios vivan en MongoDB.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="reporte-card__btn" disabled>Editar perfil</button>
+          <button class="reporte-card__btn" disabled>Cambiar contraseña</button>
+          <form action="/auth/logout" method="POST" style="display:inline;">
+            <button type="submit" class="reporte-card__btn"
+                    style="background:#fff; color:#C42E2D; border-color:#E24B4A;">
+              Cerrar sesión
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <aside class="sec-layout__aside">
+      <div class="sec-card">
+        <p class="sec-card__title">Sistema</p>
+        <ul class="cfg-sys-list">
+          <li><span>Aplicación</span> <strong><%= sistema.app %></strong></li>
+          <li><span>Versión</span>    <strong><%= sistema.version %></strong></li>
+          <li><span>Entorno</span>    <strong><%= sistema.entorno %></strong></li>
+        </ul>
+      </div>
+
+      <div class="sec-card">
+        <p class="sec-card__title">Normatividad</p>
+        <p class="sec-card__sub" style="line-height:1.55">
+          FarmaTrack opera bajo lineamientos <strong>INVIMA</strong>,
+          <strong>BPM</strong> (Buenas Prácticas de Manufactura) y la
+          farmacopea <strong>USP</strong>.
+        </p>
+      </div>
+    </aside>
+
+  </div>
+
+</div>
+
+<style>
+  .cfg-perfil {
+    display: flex; gap: var(--sp3); align-items: center;
+    padding-bottom: var(--sp3); border-bottom: 0.5px solid var(--border);
+    margin-bottom: var(--sp3);
+  }
+  .cfg-perfil__avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--blue-av); color: var(--green-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: var(--fw-medium); flex-shrink: 0;
+  }
+  .cfg-perfil__info { display: flex; flex-direction: column; gap: 2px; }
+  .cfg-perfil__name { font-size: 16px; font-weight: var(--fw-medium); color: var(--text); }
+  .cfg-perfil__rol  { font-size: 12px; color: var(--muted); }
+
+  .cfg-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp3);
+  }
+  .cfg-field { display: flex; flex-direction: column; gap: 3px; }
+  .cfg-field__label { font-size: var(--fs-hint);  color: var(--muted); }
+  .cfg-field__value { font-size: var(--fs-label); color: var(--text); }
+
+  .cfg-sys-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .cfg-sys-list li {
+    display: flex; justify-content: space-between; gap: 8px;
+    font-size: var(--fs-label);
+  }
+  .cfg-sys-list li span    { color: var(--muted); }
+  .cfg-sys-list li strong  { color: var(--text); font-weight: var(--fw-medium); }
+</style>

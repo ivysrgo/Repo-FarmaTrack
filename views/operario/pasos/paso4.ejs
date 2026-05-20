@@ -1,0 +1,86 @@
+<%# views/operario/pasos/paso4.ejs — Instructivo de manufactura (editable) %>
+<div class="step-page">
+  <%- include('../partials/op-stepper-topbar') %>
+
+  <form action="/mis-lotes/<%= lote.id %>/paso/<%= paso %>" method="POST" novalidate>
+    <div class="step-layout">
+      <div class="step-main">
+
+        <div class="step-header">
+          <div class="step-header__meta">
+            <span>Paso 4/9 · <%= lote.numeroLote %> · <%= lote.producto %> · Operario: <%= operario.nombre %></span>
+            <span class="step-header__badge" style="background:rgba(93,202,165,0.16); border-color:var(--green-mid); color:var(--green-dark);">✎ Editable · Operario</span>
+            <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+          </div>
+          <h1 class="step-header__title">Instructivo de manufactura</h1>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Parámetros de la mezcla / granulación</p>
+          <div class="field-grid field-grid--2">
+            <div class="field-group">
+              <label class="field-label" for="temp_mezcla">Temperatura de mezcla (°C)</label>
+              <input class="field-value" type="number" step="0.1" id="temp_mezcla" name="temp_mezcla" placeholder="25 - 30">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="vel_baja">Velocidad baja (rpm)</label>
+              <input class="field-value" type="number" id="vel_baja" name="vel_baja" placeholder="20">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="vel_media">Velocidad media (rpm)</label>
+              <input class="field-value" type="number" id="vel_media" name="vel_media" placeholder="50">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="hora_inicio">Hora de inicio de la mezcla</label>
+              <input class="field-value" type="time" id="hora_inicio" name="hora_inicio">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="temp_amasado">Temperatura de amasado (°C)</label>
+              <input class="field-value" type="number" step="0.1" id="temp_amasado" name="temp_amasado" placeholder="28 - 32">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="homogeneidad">Homogeneidad visual</label>
+              <select class="field-value" id="homogeneidad" name="homogeneidad">
+                <option value="">Selecciona...</option>
+                <option value="ok">Confirmada</option>
+                <option value="no">No conforme</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <p class="step-card__title">Confirmaciones del paso</p>
+          <div class="checklist-grid">
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_mezclador" value="1"><span>Mezclador limpio y habilitado</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_temp_ok" value="1"><span>Temperatura OK</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_pasos_seguidos" value="1"><span>Pasos del instructivo seguidos en orden</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_homogeneidad" value="1"><span>Homogeneidad visual OK</span></label>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <label class="step-card__title" for="observaciones">Observaciones del paso</label>
+          <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
+                    rows="3" placeholder="Anota desviaciones en parámetros, ajustes de proceso..."></textarea>
+        </div>
+
+      </div>
+
+      <%- include('../partials/op-stepper-aside') %>
+    </div>
+
+    <div class="step-footer">
+      <div class="step-footer__left">
+        <span>✎ Editando paso <%= paso %>/9 · <%= operario.nombre %></span>
+      </div>
+      <div class="step-footer__right">
+        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+        <button type="submit" class="btn-step"
+                style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;">
+          Guardar y continuar →
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

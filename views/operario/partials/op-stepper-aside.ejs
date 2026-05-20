@@ -1,0 +1,42 @@
+<%# partials/op-stepper-aside.ejs
+     Aside derecho del stepper editable: ayuda contextual + navegación de pasos
+     (sin "eventos recientes" — esos los genera el sistema y aún no aplican
+     mientras escribimos contra el repo en memoria). %>
+<aside class="step-aside">
+
+  <!-- Ayuda contextual del paso actual -->
+  <div class="aside-card">
+    <p class="aside-card__title">Cómo completar este paso</p>
+    <p style="font-size:11px; color:var(--muted); line-height:1.5; margin-top:6px;">
+      Diligencia los campos del formulario con los valores reales medidos.
+      Marca el checklist solo cuando hayas verificado cada punto en planta.
+      Las observaciones quedan en la bitácora del lote.
+    </p>
+  </div>
+
+  <!-- Navegación de pasos: solo done/active son clicables -->
+  <div class="aside-card">
+    <p class="aside-card__title">Navegación de pasos</p>
+    <div class="nav-step-list">
+      <% pasos.forEach(p => {
+           const isDone   = p.n < paso;
+           const isActive = p.n === paso;
+           const navegable = p.n <= paso;
+      %>
+        <% if (navegable) { %>
+          <a href="/mis-lotes/<%= lote.id %>/paso/<%= p.n %>"
+             class="nav-step-item <%= isActive ? 'nav-step-item--active' : isDone ? 'nav-step-item--done' : '' %>">
+            <div class="nav-step-dot <%= isActive ? 'nav-step-dot--active' : isDone ? 'nav-step-dot--done' : '' %>"></div>
+            <span>Paso <%= p.n %> — <%= p.nombre %><%= isDone ? ' ✓' : isActive ? ' ←' : '' %></span>
+          </a>
+        <% } else { %>
+          <span class="nav-step-item" style="opacity:.45;">
+            <div class="nav-step-dot"></div>
+            <span>Paso <%= p.n %> — <%= p.nombre %></span>
+          </span>
+        <% } %>
+      <% }) %>
+    </div>
+  </div>
+
+</aside>

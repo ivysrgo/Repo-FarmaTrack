@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FarmaTrack — <%= typeof title !== 'undefined' ? title : 'Producción' %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <%# farmatrack.css define los tokens del design system (--nude, --green-dark,
+       --sp4, --sp5, --font, etc.) que panel.css y stepper.css consumen.
+       Debe cargarse PRIMERO para que las variables estén disponibles. %>
+  <link rel="stylesheet" href="/css/farmatrack.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/panel.css" />
+  <link rel="stylesheet" href="/css/stepper.css" />
+  <%# Estilos compartidos por las páginas secundarias del sidebar
+       (batch-records, calidad, inventario, bitácora, reportes, configuración). %>
+  <link rel="stylesheet" href="/css/sistema.css" />
+  <%# Placeholder para los <style> internos extraídos de cada vista
+       (configurado por app.set('layout extractStyles', true) en app.js).
+       Sin esta línea, los estilos inline de nuevo.ejs, panel/index.ejs, etc.
+       se extraen pero no se inyectan en ningún lado y se pierden. %>
+  <%- style %>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <div class="sidebar__avatar">Ft</div>
+      <div class="sidebar__brand-info">
+        <span class="sidebar__brand-name">FarmaTrack</span>
+        <span class="sidebar__brand-sub">Producción · Col.</span>
+      </div>
+    </div>
+
+    <%#
+      ── Sidebar dinámico por rol ───────────────────────────────────────
+      Cada item lleva su ruta real, su badge si aplica, y se marca como
+      activo según `currentPath`. Items distintos por rol:
+
+        Director Técnico (director_tecnico):
+          PRODUCCIÓN → Panel de lotes, Batch records, Control calidad,
+                       Inventario MP, Bitácora, Reportes
+          SISTEMA    → Configuración
+
+        Operario (operario):
+          MI TRABAJO → Mis lotes, Reportar NC, Mi bitácora
+          SISTEMA    → Configuración
+
+      Cualquier rol no listado cae al sidebar del DT como default seguro.
+    %>
+    <%
+      const _path  = (typeof currentPath !== 'undefined' && currentPath) ? currentPath : '';
+      const _u     = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+      const _rol   = _u && _u.rol ? _u.rol : '';
+      const _esOperario = _rol === 'operario';
+
+      // Helper: ¿el path actual coincide con alguna de las rutas pasadas?
+      const _isActive = (matches) => matches.some(m =>
+        typeof m === 'string' ? (_path === m || _path.startsWith(m + '/')) : false
+      );
+
+      // Estado activo del item principal (panel/mis-lotes) — incluye los pasos del stepper
+      const _activoDash = _esOperario
+        ? (_path === '/mis-lotes' || _path.startsWith('/mis-lotes/'))
+        : (_path === '/panel'     || _path.startsWith('/lotes'));
+
+      // Datos del usuario logueado para el widget inferior
+      const _userNombre  = _u ? (_u.nombre || 'Usuario') : 'Invitado';
+      const _userInic    = _userNombre.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() || '··';
+      const _userRolTxt  = _esOperario ? 'Operario' : (_rol === 'director_tecnico' ? 'Director Técnico' : (_rol || 'Usuario'));
+    %>
+    <nav class="sidebar__nav">
+      <% if (_esOperario) { %>
+        <%# ─── Sidebar para OPERARIO ─── %>
+        <p class="sidebar__section-label">MI TRABAJO</p>
+        <a href="/mis-lotes" class="sidebar__item <%= _activoDash ? 'sidebar__item--active' : '' %>">
+          Mis lotes
+        </a>
+        <a href="/noconformidad/nueva" class="sidebar__item <%= _isActive(['/noconformidad']) ? 'sidebar__item--active' : '' %>">
+          Reportar NC
+        </a>
+        <a href="/bitacora" class="sidebar__item <%= _isActive(['/bitacora']) ? 'sidebar__item--active' : '' %>">
+          Mi bitácora
+        </a>
+
+        <p class="sidebar__section-label">SISTEMA</p>
+        <a href="/configuracion" class="sidebar__item <%= _isActive(['/configuracion']) ? 'sidebar__item--active' : '' %>">
+          Configuración
+        </a>
+      <% } else { %>
+        <%# ─── Sidebar para DIRECTOR TÉCNICO (default) ─── %>
+        <p class="sidebar__section-label">PRODUCCIÓN</p>
+        <a href="/panel" class="sidebar__item <%= _activoDash ? 'sidebar__item--active' : '' %>">
+          Panel de lotes
+        </a>
+        <a href="/batch-records" class="sidebar__item <%= _isActive(['/batch-records']) ? 'sidebar__item--active' : '' %>">
+          Batch records
+        </a>
+        <a href="/calidad" class="sidebar__item <%= _isActive(['/calidad']) ? 'sidebar__item--active' : '' %>">
+          Control calidad
+        </a>
+        <a href="/inventario" class="sidebar__item <%= _isActive(['/inventario']) ? 'sidebar__item--active' : '' %>">
+          Inventario MP
+        </a>
+        <a href="/bitacora" class="sidebar__item <%= _isActive(['/bitacora']) ? 'sidebar__item--active' : '' %>">
+          Bitácora
+        </a>
+        <a href="/reportes" class="sidebar__item <%= _isActive(['/reportes']) ? 'sidebar__item--active' : '' %>">
+          Reportes
+        </a>
+
+        <p class="sidebar__section-label">SISTEMA</p>
+        <a href="/configuracion" class="sidebar__item <%= _isActive(['/configuracion']) ? 'sidebar__item--active' : '' %>">
+          Configuración
+        </a>
+      <% } %>
+    </nav>
+
+    <div class="sidebar__user" title="<%= _userRolTxt %>">
+      <div class="avatar"><%= _userInic %></div>
+      <div style="display:flex; flex-direction:column; line-height:1.2;">
+        <span class="sidebar__user-name"><%= _userNombre %></span>
+        <span style="font-size:10px; color:var(--muted);"><%= _userRolTxt %></span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrapper">
+    <%- body %>
+  </div>
+
+</body>
+</html>

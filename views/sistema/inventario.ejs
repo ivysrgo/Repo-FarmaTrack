@@ -1,0 +1,78 @@
+<%# views/sistema/inventario.ejs — Inventario de materias primas %>
+
+<header class="topbar">
+  <div class="topbar__left">
+    <nav class="breadcrumb">
+      <span class="breadcrumb__link">Inicio</span>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">Inventario MP</span>
+    </nav>
+  </div>
+  <div class="topbar__right">
+    <div class="topbar__date"><%= fechaHoy %></div>
+    <div class="avatar topbar__avatar"><%= usuario.iniciales %></div>
+  </div>
+</header>
+
+<div class="sec-page">
+
+  <div class="sec-page__head">
+    <h1 class="sec-page__title">Inventario de materias primas</h1>
+    <p class="sec-page__sub">Stock actual de MP por proveedor, con alertas de stock bajo o agotado.</p>
+  </div>
+
+  <div class="sec-kpi-row">
+    <div class="sec-kpi sec-kpi--ok">
+      <span class="sec-kpi__label">Total de MP en catálogo</span>
+      <span class="sec-kpi__value"><%= stats.total %></span>
+    </div>
+    <div class="sec-kpi sec-kpi--warning">
+      <span class="sec-kpi__label">Stock bajo</span>
+      <span class="sec-kpi__value"><%= stats.bajos %></span>
+      <span class="sec-kpi__hint">Requieren reposición pronto</span>
+    </div>
+    <div class="sec-kpi sec-kpi--alert">
+      <span class="sec-kpi__label">Agotados</span>
+      <span class="sec-kpi__value"><%= stats.agotados %></span>
+      <span class="sec-kpi__hint">Pedir urgentemente</span>
+    </div>
+  </div>
+
+  <div class="sec-card">
+    <p class="sec-card__title">Catálogo de materias primas</p>
+    <p class="sec-card__sub">Datos provisionales — el catálogo real vendrá de la colección Material en MongoDB.</p>
+    <table class="sec-table">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Materia prima</th>
+          <th>Stock actual (kg)</th>
+          <th>Mínimo</th>
+          <th>Estado</th>
+          <th>Proveedor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% materias.forEach(function(m) { %>
+          <tr>
+            <td><strong><%= m.codigo %></strong></td>
+            <td><%= m.nombre %></td>
+            <td><%= m.stockKg.toLocaleString('es-CO') %> kg</td>
+            <td><%= m.stockMinKg.toLocaleString('es-CO') %> kg</td>
+            <td>
+              <% if (m.estado === 'ok') { %>
+                <span class="sec-pill sec-pill--ok">● Disponible</span>
+              <% } else if (m.estado === 'bajo') { %>
+                <span class="sec-pill sec-pill--warn">● Stock bajo</span>
+              <% } else { %>
+                <span class="sec-pill sec-pill--alert">● Agotado</span>
+              <% } %>
+            </td>
+            <td><%= m.proveedor %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+</div>

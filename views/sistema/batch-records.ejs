@@ -1,0 +1,87 @@
+<%# views/sistema/batch-records.ejs — Listado de batch records (lotes liberados) %>
+
+<header class="topbar">
+  <div class="topbar__left">
+    <nav class="breadcrumb">
+      <span class="breadcrumb__link">Inicio</span>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">Batch records</span>
+    </nav>
+  </div>
+  <div class="topbar__right">
+    <div class="topbar__date"><%= fechaHoy %></div>
+    <div class="avatar topbar__avatar"><%= usuario.iniciales %></div>
+  </div>
+</header>
+
+<% if (flashOk && flashOk.length) { %>
+  <div class="sec-flash sec-flash--ok"><span>✓</span> <%= flashOk[0] %></div>
+<% } %>
+
+<div class="sec-page">
+
+  <div class="sec-page__head">
+    <h1 class="sec-page__title">Batch Records</h1>
+    <p class="sec-page__sub">Expedientes de lote liberados con firma electrónica del Director Técnico.</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="sec-kpi-row">
+    <div class="sec-kpi">
+      <span class="sec-kpi__label">Liberados total</span>
+      <span class="sec-kpi__value"><%= stats.total %></span>
+    </div>
+    <div class="sec-kpi">
+      <span class="sec-kpi__label">Liberados este mes</span>
+      <span class="sec-kpi__value"><%= stats.esteMes %></span>
+    </div>
+    <div class="sec-kpi sec-kpi--warning">
+      <span class="sec-kpi__label">Pendientes de firma</span>
+      <span class="sec-kpi__value"><%= stats.pendientes %></span>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="sec-card">
+    <p class="sec-card__title">Batch records firmados</p>
+    <% if (lotes.length === 0) { %>
+      <div class="sec-empty">Aún no hay lotes liberados en el sistema.</div>
+    <% } else { %>
+      <table class="sec-table">
+        <thead>
+          <tr>
+            <th>N° de lote</th>
+            <th>Producto</th>
+            <th>Operario</th>
+            <th>Firmado por</th>
+            <th>Fecha de liberación</th>
+            <th>Cantidad</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% lotes.forEach(function(l) { %>
+            <tr>
+              <td><strong><%= l.numeroLote %></strong></td>
+              <td><%= l.producto %></td>
+              <td><%= l.operario || '—' %></td>
+              <td><%= l.liberadoPor || l.directorTecnico || '—' %></td>
+              <td>
+                <% if (l.liberadoEn) { %>
+                  <%= new Date(l.liberadoEn).toLocaleString('es-CO', { dateStyle:'short', timeStyle:'short' }) %>
+                <% } else { %>
+                  —
+                <% } %>
+              </td>
+              <td><%= (l.cantidadPlanificada || 0).toLocaleString('es-CO') %> unid.</td>
+              <td><a href="/lotes/<%= l.id %>/paso/9" class="sec-link">Ver →</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+</div>
+
+<%# Los estilos .sec-* viven en /css/sistema.css cargado por main.ejs %>
