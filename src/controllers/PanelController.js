@@ -1,5 +1,6 @@
 /**
- * src/controllers/PanelController.js (Iteración 4 - bitácora real)
+ * src/controllers/PanelController.js
+ * Iteración 5: aislamiento por DT + bitácora filtrada a lotes propios.
  */
 'use strict';
 
@@ -24,6 +25,10 @@ function _tiempoRelativo(date) {
   if (h < 24)   return `Hace ${h}h`;
   const d = Math.floor(h / 24);
   return `Hace ${d}d`;
+}
+
+function _norm(s) {
+  return (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
 }
 
 function buildPendientes(lotes) {
@@ -77,9 +82,24 @@ async function getPanelDT(req, res) {
     ? userLocal.nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
     : 'DT';
 
-  const lotes  = await loteService.findAll();
-  const counts = await loteService.stats();
+  // Aislamiento por DT: solo si el usuario tiene rol director_tecnico
+  // explícito. Para otros usuarios (admin/legacy/tests) se muestra todo.
+  const todos = await loteService.findAll();
+  const dtNorm = _norm(userLocal.nombre);
+  const lotes = (userLocal.rol === 'director_tecnico' && dtNorm)
+    ? todos.filter(l => _norm(l.directorTecnico) === dtNorm)
+    : todos;
 
+  // Stats locales sobre los lotes propios
+  const counts = {
+    total:           lotes.length,
+    enProduccion:    lotes.filter(l => l.estado === 'en_produccion').length,
+    pendientesFirma: lotes.filter(l => l.estado === 'pendiente_firma').length,
+    enCalidad:       lotes.filter(l => l.estado === 'en_calidad').length,
+    alertasBPM:      lotes.filter(l => l.estado === 'alerta_bpm').length,
+    liberados:       lotes.filter(l => l.estado === 'liberado').length,
+    bloqueados:      lotes.filter(l => l.estado === 'bloqueado').length,
+  };
   const tasaBPM = counts.total > 0
     ? Math.round((counts.liberados / counts.total) * 100)
     : 100;
@@ -92,7 +112,13 @@ async function getPanelDT(req, res) {
 
   const pendientesReales = buildPendientes(lotes);
 
-  const ultimosEventos = await eventoService.listarUltimos(5);
+  // Bitácora reciente: solo eventos de lotes propios. Eventos sin loteId
+  // (creación global, sistema) se incluyen siempre.
+  const loteIdsPropios = new Set(lotes.map(l => String(l.id)));
+  const eventosTodos = await eventoService.listar({ limit: 50 });
+  const ultimosEventos = eventosTodos
+    .filter(e => !e.loteId || loteIdsPropios.has(String(e.loteId)))
+    .slice(0, 5);
   const bitacoraReciente = ultimosEventos.map(e => ({
     tipo:    VISUAL_POR_TIPO[e.tipo] || 'info',
     texto:   e.texto,

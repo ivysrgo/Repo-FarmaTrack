@@ -98,11 +98,11 @@ describe('AuthController (async)', () => {
   });
 
   describe('signup', () => {
-    it('flashea mensaje y redirige a /auth/login?tab=signup', () => {
-      const req = mockReq();
+    it('body vacío → error de validación y redirige a /auth/login?tab=signup', async () => {
+      const req = mockReq({ body: {} });
       const res = mockRes();
-      auth.signup(req, res);
-      expect(req.flash).toHaveBeenCalledWith('signupError', expect.stringMatching(/registro/i));
+      await auth.signup(req, res);
+      expect(req.flash).toHaveBeenCalledWith('signupError', expect.any(String));
       expect(res.redirect).toHaveBeenCalledWith('/auth/login?tab=signup');
     });
   });

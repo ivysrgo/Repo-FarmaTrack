@@ -200,15 +200,18 @@
                     <svg width="13" height="10" viewBox="0 0 16 12" fill="none" stroke="#BBBAAF" stroke-width="1.2"><rect width="16" height="12" rx="2"/><polyline points="0,0 8,7 16,0"/></svg>
                   </span>
                   <input type="email" id="su-email" name="email" class="ft-input"
-                    placeholder="@farmatrack.co" autocomplete="email" />
+                    placeholder="usuario@farmatrack.co"
+                    pattern="[^\s@]+@farmatrack\.co"
+                    title="Solo se permiten correos del dominio @farmatrack.co"
+                    autocomplete="email" />
                 </div>
+                <p style="font-size:10px; color:var(--muted, #8a8a8a); margin:4px 0 0;">Solo correos institucionales @farmatrack.co</p>
               </div>
               <div class="form-group" style="margin-bottom:0;">
                 <label class="form-label" for="su-rol">Rol</label>
                 <select id="su-rol" name="rol" class="ft-input ft-select">
                   <option value="">Seleccionar...</option>
                   <option value="operario">Operario</option>
-                  <option value="calidad">Analista Calidad</option>
                   <option value="director_tecnico">Director Técnico</option>
                 </select>
               </div>
@@ -292,11 +295,58 @@
     });
   }
 
+  // Toggle ojito: alterna type="password"/"text" para que el usuario vea
+  // lo que está escribiendo. Funciona tanto en login como en signup.
+  function bindToggle(btnId, inputId) {
+    var btn = document.getElementById(btnId);
+    var inp = document.getElementById(inputId);
+    if (!btn || !inp) return;
+    btn.addEventListener('click', function() {
+      var visible = inp.type === 'text';
+      inp.type = visible ? 'password' : 'text';
+      btn.classList.toggle('input-wrap__toggle--active', !visible);
+    });
+  }
+
+  // Indicador de fuerza de contraseña (signup).
+  function checkStrength(val) {
+    var box   = document.getElementById('pwdStrength');
+    var bars  = ['bar1', 'bar2', 'bar3'].map(function(id) { return document.getElementById(id); });
+    var label = document.getElementById('pwdLabel');
+    if (!box || !label) return;
+    if (!val) { box.style.display = 'none'; return; }
+    box.style.display = 'flex';
+    var score = 0;
+    if (val.length >= 4) score++;
+    if (val.length >= 8 && /[A-Z]/.test(val)) score++;
+    if (/\d/.test(val) && /[^A-Za-z0-9]/.test(val)) score++;
+    var nivel = ['Débil', 'Media', 'Fuerte'][Math.max(0, score - 1)] || 'Débil';
+    bars.forEach(function(b, i) {
+      if (!b) return;
+      b.style.background = i < score
+        ? (score === 1 ? '#E24B4A' : score === 2 ? '#c5c930' : '#2f5e4f')
+        : 'rgba(0,0,0,0.08)';
+    });
+    label.textContent = nivel;
+  }
+
+  // Validador inline: las dos contraseñas deben coincidir.
+  function checkMatch() {
+    var p1 = document.getElementById('su-password');
+    var p2 = document.getElementById('su-confirm');
+    var err = document.getElementById('pwdMatchError');
+    if (!p1 || !p2 || !err) return;
+    if (p2.value && p1.value !== p2.value) err.style.display = 'flex';
+    else err.style.display = 'none';
+  }
+
   // Al cargar la página, activar el tab correcto según ?tab=signup
   (function() {
     var params = new URLSearchParams(window.location.search);
     if (params.get('tab') === 'signup') {
       switchTab('signup');
     }
+    bindToggle('togglePwd',   'password');
+    bindToggle('toggleSuPwd', 'su-password');
   })();
 </script>

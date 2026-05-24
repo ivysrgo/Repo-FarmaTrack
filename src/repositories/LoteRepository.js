@@ -161,19 +161,3 @@ module.exports = instance;
 module.exports.LoteRepository = LoteRepository;
 module.exports.ESTADOS = ESTADOS;
 module.exports.labelFor = labelFor;
-).length,
-      liberados:       all.filter(l => l.estado === 'liberado').length,
-      bloqueados:      all.filter(l => l.estado === 'bloqueado').length,
-    };
-  }
-}
-
-const instance = new LoteRepository();
-module.exports = instance;
-module.exports.LoteRepository = LoteRepository;
-module.exports.ESTADOS = ESTADOS;
-module.exports.labelFor = labelFor;
- instance;
-module.exports.LoteRepository = LoteRepository;
-module.exports.ESTADOS = ESTADOS;
-module.exports.labelFor = labelFor;

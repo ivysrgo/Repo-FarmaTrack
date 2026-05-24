@@ -182,7 +182,3 @@ describe('SidebarController (async)', () => {
     });
   });
 });
-rsion).toBe('1.0.0');
-    });
-  });
-});

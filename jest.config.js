@@ -11,8 +11,9 @@ module.exports = {
     '!src/routes/**',
     '!src/middlewares/**',
     '!src/models/**',
-    '!src/repositories/LoteRepositoryMongo.js',
-    '!src/repositories/UsuarioRepositoryMongo.js',
+    // Los repos Mongo se cubren con integration tests con BD real (no aplican
+    // aquí). Excluirlos evita contar 0% sobre código que requiere Atlas.
+    '!src/repositories/**Mongo.js',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'text-summary', 'html'],

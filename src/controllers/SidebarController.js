@@ -29,23 +29,37 @@ function buildCommonCtx(req, res, opts = {}) {
   };
 }
 
+// Aislamiento por dueño: filtra los lotes a los que pertenecen al usuario
+// logueado. DT ve sólo sus propios lotes (campo directorTecnico); operario
+// ve sólo los que tiene asignados; cualquier otro rol ve todo (admin/legacy).
+function _norm(s) {
+  return (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+}
+function filtrarLotesDelUsuario(lotes, res) {
+  const u = res.locals.currentUser || {};
+  const nombreNorm = _norm(u.nombre);
+  if (!nombreNorm) return lotes;
+  if (u.rol === 'director_tecnico') return lotes.filter(l => _norm(l.directorTecnico) === nombreNorm);
+  if (u.rol === 'operario')         return lotes.filter(l => _norm(l.operario)         === nombreNorm);
+  return lotes;
+}
+
 async function getBatchRecords(req, res) {
-  const all = await loteService.findAll();
+  const all = filtrarLotesDelUsuario(await loteService.findAll(), res);
   const lotesLiberados = all.filter(l => l.estado === 'liberado');
-  const counts = await loteService.stats();
   res.render('sistema/batch-records', {
     ...buildCommonCtx(req, res, { title: 'Batch Records', currentPath: '/batch-records' }),
     lotes: lotesLiberados,
     stats: {
-      total:      counts.liberados,
+      total:      lotesLiberados.length,
       esteMes:    lotesLiberados.length,
-      pendientes: counts.pendientesFirma,
+      pendientes: all.filter(l => l.estado === 'pendiente_firma').length,
     },
   });
 }
 
 async function getCalidad(req, res) {
-  const all = await loteService.findAll();
+  const all = filtrarLotesDelUsuario(await loteService.findAll(), res);
   const enRevision = all.filter(l => l.estado === 'en_calidad');
   const conAlerta  = all.filter(l => l.estado === 'alerta_bpm');
   const bloqueados = all.filter(l => l.estado === 'bloqueado');
@@ -139,14 +153,17 @@ async function getBitacora(req, res) {
     };
   });
 
-  // Si es operario, filtrar solo sus eventos y los del sistema
+  // Aislamiento por dueño en la bitácora:
+  //   - Operario: solo eventos propios + del sistema.
+  //   - DT:       solo eventos de SUS lotes (los que él creó) + eventos sin
+  //               loteId (lote_creado del propio DT o globales).
   if (esOperario && usuario.nombre) {
     eventos = eventos.filter(e => e.usuario === usuario.nombre || e.usuario === 'Sistema');
-  }
-
-  // Los operarios NO ven el botón "Marcar resuelta" — sólo el DT.
-  if (esOperario) {
     eventos.forEach(e => { e.puedeResolver = false; });
+  } else if (usuario.rol === 'director_tecnico' && usuario.nombre) {
+    const lotesPropios = filtrarLotesDelUsuario(await loteService.findAll(), res);
+    const loteIdsPropios = new Set(lotesPropios.map(l => String(l.id)));
+    eventos = eventos.filter(e => !e.loteId || loteIdsPropios.has(String(e.loteId)));
   }
 
   res.render('sistema/bitacora', {

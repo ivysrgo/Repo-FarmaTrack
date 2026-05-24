@@ -34,13 +34,13 @@ describe('OperarioController (async)', () => {
       const args = res.render.mock.calls[0][1];
       expect(args.activos.some(l => l.numeroLote === 'FT-2026-0041')).toBe(true);
     });
-    it('modo demo si no tiene lotes', async () => {
+    it('usuario sin lotes asignados ve dashboard vacío (sin fallback demo)', async () => {
       const req = mockReq();
       const res = mockRes({ locals: { currentUser: { nombre: 'Nadie' } } });
       await operario.getDashboard(req, res);
       const args = res.render.mock.calls[0][1];
-      expect(args.activos.length).toBeGreaterThan(0);
-      expect(args.activos.length).toBeLessThanOrEqual(4);
+      expect(args.activos.length).toBe(0);
+      expect(args.completadosHoy.length).toBe(0);
     });
     it('progresoPct entre 0-100', async () => {
       const req = mockReq();

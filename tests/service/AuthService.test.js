@@ -16,6 +16,11 @@ function buildMockRepo(usuarios = []) {
       const norm = email.toLowerCase().trim();
       return usuarios.find(u => u.email.toLowerCase() === norm) || null;
     }),
+    create: jest.fn(async (data) => {
+      const nuevo = { id: 'u-' + (usuarios.length + 1), ...data };
+      usuarios.push(nuevo);
+      return nuevo;
+    }),
   };
 }
 
@@ -136,6 +141,108 @@ describe('AuthService (async)', () => {
     it('no expone la password real en respuesta de error', async () => {
       const r = await auth.login('juan@x.co', 'mal');
       expect(JSON.stringify(r)).not.toContain('1234');
+    });
+  });
+
+  describe('registrar - validaciones', () => {
+    const okBody = {
+      nombre: 'Nuevo Usuario',
+      email: 'nuevo@farmatrack.co',
+      password: 'pass1234',
+      confirmPassword: 'pass1234',
+      rol: 'operario',
+      terminos: true,
+    };
+
+    it('body válido → crea y devuelve user sanitizado', async () => {
+      const r = await auth.registrar(okBody);
+      expect(r.ok).toBe(true);
+      expect(r.user.email).toBe('nuevo@farmatrack.co');
+      expect(r.user.rol).toBe('operario');
+      expect(r.user).not.toHaveProperty('password');
+      expect(repo.create).toHaveBeenCalled();
+    });
+
+    it('cargo se infiere del rol', async () => {
+      await auth.registrar({ ...okBody, rol: 'director_tecnico' });
+      const arg = repo.create.mock.calls[0][0];
+      expect(arg.cargo).toBe('Director Tecnico');
+    });
+
+    it('VALIDATION si falta nombre', async () => {
+      const r = await auth.registrar({ ...okBody, nombre: '' });
+      expect(r.ok).toBe(false);
+      expect(r.code).toBe('VALIDATION');
+      expect(r.error).toMatch(/nombre/i);
+    });
+
+    it('VALIDATION si email no es de @farmatrack.co', async () => {
+      const r = await auth.registrar({ ...okBody, email: 'malo@gmail.com' });
+      expect(r.ok).toBe(false);
+      expect(r.error).toMatch(/@farmatrack\.co/i);
+    });
+
+    it('VALIDATION si email no tiene formato válido', async () => {
+      const r = await auth.registrar({ ...okBody, email: 'no-es-email' });
+      expect(r.ok).toBe(false);
+      expect(r.error).toMatch(/correo/i);
+    });
+
+    it('VALIDATION si password < 4 chars', async () => {
+      const r = await auth.registrar({ ...okBody, password: '12', confirmPassword: '12' });
+      expect(r.ok).toBe(false);
+      expect(r.error).toMatch(/contrase/i);
+    });
+
+    it('VALIDATION si las contraseñas no coinciden', async () => {
+      const r = await auth.registrar({ ...okBody, confirmPassword: 'distinta' });
+      expect(r.ok).toBe(false);
+      expect(r.error).toMatch(/no coinciden/i);
+    });
+
+    it('VALIDATION si rol no es operario ni director_tecnico', async () => {
+      const r = await auth.registrar({ ...okBody, rol: 'calidad' });
+      expect(r.ok).toBe(false);
+      expect(r.error).toMatch(/rol/i);
+    });
+
+    it('VALIDATION si no acepta términos', async () => {
+      const r = await auth.registrar({ ...okBody, terminos: false });
+      expect(r.ok).toBe(false);
+      expect(r.error).toMatch(/términos/i);
+    });
+
+    it('DUPLICATE_EMAIL si ya existe ese correo', async () => {
+      await auth.registrar(okBody);
+      const r = await auth.registrar(okBody);
+      expect(r.ok).toBe(false);
+      expect(r.code).toBe('DUPLICATE_EMAIL');
+    });
+
+    it('DUPLICATE_EMAIL si el repo lanza E11000 (race condition)', async () => {
+      repo.create.mockImplementationOnce(async () => {
+        const err = new Error('duplicate'); err.code = 11000; throw err;
+      });
+      const r = await auth.registrar({ ...okBody, email: 'otro@farmatrack.co' });
+      expect(r.ok).toBe(false);
+      expect(r.code).toBe('DUPLICATE_EMAIL');
+    });
+
+    it('PERSIST_ERROR si el repo lanza un error genérico', async () => {
+      repo.create.mockImplementationOnce(async () => { throw new Error('boom'); });
+      const r = await auth.registrar({ ...okBody, email: 'otro2@farmatrack.co' });
+      expect(r.ok).toBe(false);
+      expect(r.code).toBe('PERSIST_ERROR');
+    });
+
+    it('email se normaliza a lowercase antes de persistir', async () => {
+      await auth.registrar({ ...okBody, email: 'MAYUS@FARMATRACK.CO' });
+      const arg = repo.create.mock.calls[0][0];
+      expect(arg.email).toBe('mayus@farmatrack.co');
+    });
+
+    it('body undefined no revienta', async () => {
+      await expect(auth.registrar()).resolves.toHaveProperty('ok', false);
     });
   });
 });

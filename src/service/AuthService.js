@@ -65,6 +65,60 @@ class AuthService {
     sessionUser.ultimaSesion = ultimaSesionPrev ? ultimaSesionPrev.toISOString() : null;
     return { ok: true, user: sessionUser };
   }
+
+  /**
+   * Registra un usuario nuevo. Valida campos, normaliza email, chequea duplicado,
+   * persiste en el repo (memoria o Mongo) y devuelve el usuario saneado.
+   * Cargo se infiere del rol si no llega explícito.
+   * @returns {Promise<{ok:true, user}> | {ok:false, error, code}>}
+   */
+  async registrar({ nombre, email, password, confirmPassword, rol, terminos } = {}) {
+    const errores = [];
+    const _email = (email || '').toString().toLowerCase().trim();
+    const _nombre = (nombre || '').toString().trim();
+    const _password = (password || '').toString();
+
+    if (!_nombre || _nombre.length < 2) errores.push('Ingresa tu nombre completo (mínimo 2 caracteres).');
+    if (!_email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(_email)) errores.push('Ingresa un correo electrónico válido.');
+    if (_email && !_email.endsWith('@farmatrack.co'))            errores.push('El correo debe ser del dominio @farmatrack.co.');
+    if (!_password || _password.length < 4) errores.push('La contraseña debe tener mínimo 4 caracteres.');
+    if (_password !== (confirmPassword || '').toString()) errores.push('Las contraseñas no coinciden.');
+    const ROLES_OK = ['operario', 'director_tecnico'];
+    if (!rol || !ROLES_OK.includes(rol)) errores.push('Selecciona un rol válido (operario o director técnico).');
+    if (!terminos) errores.push('Debes aceptar los términos del sistema BPM.');
+    if (errores.length > 0) return { ok: false, error: errores.join(' · '), code: 'VALIDATION' };
+
+    // Duplicado por email
+    const ya = await this.usuarioRepo.findByEmail(_email);
+    if (ya) return { ok: false, error: 'Ya existe una cuenta con ese correo.', code: 'DUPLICATE_EMAIL' };
+
+    const CARGOS = {
+      operario:         'Operario de Produccion',
+      calidad:          'Analista de Calidad',
+      director_tecnico: 'Director Tecnico',
+    };
+
+    let creado;
+    try {
+      creado = await this.usuarioRepo.create({
+        nombre:   _nombre,
+        email:    _email,
+        password: _password,
+        rol,
+        cargo:    CARGOS[rol] || '',
+        activo:   true,
+      });
+    } catch (err) {
+      // Mongo unique index puede rebotar igual si hubo race condition
+      if (err && err.code === 11000) {
+        return { ok: false, error: 'Ya existe una cuenta con ese correo.', code: 'DUPLICATE_EMAIL' };
+      }
+      console.error('[AuthService.registrar] Error al persistir:', err && err.message);
+      return { ok: false, error: 'No se pudo crear la cuenta. Intenta de nuevo.', code: 'PERSIST_ERROR' };
+    }
+
+    return { ok: true, user: this.sanitizeUser(creado) };
+  }
 }
 
 // Singleton conectado al repo del composition root

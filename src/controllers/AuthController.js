@@ -34,9 +34,28 @@ async function login(req, res) {
   });
 }
 
-function signup(req, res) {
-  req.flash('signupError', 'Por ahora el registro esta deshabilitado. Usa una cuenta demo.');
-  res.redirect('/auth/login?tab=signup');
+async function signup(req, res) {
+  const body = req.body || {};
+  const result = await authService.registrar({
+    nombre:          body.nombre,
+    email:           body.email,
+    password:        body.password,
+    confirmPassword: body.confirmPassword,
+    rol:             body.rol,
+    terminos:        !!body.terminos,
+  });
+
+  if (!result.ok) {
+    req.flash('signupError', result.error);
+    return res.redirect('/auth/login?tab=signup');
+  }
+
+  // Auto-login: dejamos al recién registrado adentro directo.
+  req.session.regenerate(() => {
+    req.session.usuario = result.user;
+    req.flash('ok', `Cuenta creada. ¡Bienvenido/a, ${result.user.nombre}!`);
+    res.redirect('/bienvenida');
+  });
 }
 
 function logout(req, res) {

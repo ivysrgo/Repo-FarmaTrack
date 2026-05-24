@@ -106,14 +106,10 @@ async function getDashboard(req, res) {
   const nombreNorm = normalizarNombre(nombre);
   const todos = await loteService.findAll();
 
-  // Filtro robusto: normaliza ambos lados (acentos, mayúsculas, espacios)
-  let misLotes = todos.filter(l => normalizarNombre(l.operario) === nombreNorm);
-
-  // Fallback demo: si el usuario logueado no tiene lotes asignados, mostramos
-  // los primeros 4 activos. Util durante desarrollo / sesiones de demo.
-  if (misLotes.length === 0) {
-    misLotes = todos.filter(l => ESTADOS_ACTIVOS.includes(l.estado)).slice(0, 4);
-  }
+  // Filtro estricto: solo lotes asignados a este operario. Sin fallback demo
+  // — un operario nuevo ve vacío hasta que el DT le asigne lotes (eso es lo
+  // que pidió el RQF: aislamiento por dueño).
+  const misLotes = todos.filter(l => normalizarNombre(l.operario) === nombreNorm);
 
   const activos = misLotes
     .filter(l => ESTADOS_ACTIVOS.includes(l.estado))
@@ -508,3 +504,9 @@ async function postPaso(req, res, next) {
 }
 
 module.exports = { getDashboard, getPaso, postPaso };
+// Exports internos para testing directo (no usar en runtime).
+module.exports._extractPasoData      = extractPasoData;
+module.exports._validarPasoCompleto  = validarPasoCompleto;
+// Exports internos para testing directo (no usar en runtime).
+module.exports._extractPasoData     = extractPasoData;
+module.exports._validarPasoCompleto = validarPasoCompleto;
