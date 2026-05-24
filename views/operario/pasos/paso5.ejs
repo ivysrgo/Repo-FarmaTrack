@@ -1,3 +1,16 @@
+<%# Datos previamente guardados por el operario en este paso (si existen) %>
+<%
+  const _datos = (lote && lote.pasos && lote.pasos[paso]) || {};
+  const D = (k, def = '') => (_datos[k] !== undefined && _datos[k] !== '') ? _datos[k] : def;
+  const C = (k) => (_datos[k] === true || _datos[k] === 'on' || _datos[k] === '1') ? 'checked' : '';
+  // Controles de calidad de la fórmula del producto.
+  const _controlesFormula = (typeof formula !== 'undefined' && formula && formula.paso5 && formula.paso5.controles)
+    ? formula.paso5.controles
+    : [
+        { nombre:'Control 1', min:null, max:null, unidad:'' },
+        { nombre:'Control 2', min:null, max:null, unidad:'' },
+      ];
+%>
 <%# views/operario/pasos/paso5.ejs — Controles de calidad (editable, paso crítico) %>
 <div class="step-page">
   <%- include('../partials/op-stepper-topbar') %>
@@ -15,34 +28,41 @@
           <h1 class="step-header__title">Controles de calidad</h1>
         </div>
 
+        <% if (typeof flashError !== 'undefined' && flashError && flashError.length) { %>
+          <div class="step-card" style="border-left:3px solid #E24B4A; background:rgba(226,75,74,0.05);">
+            <p class="step-card__title" style="color:#C42E2D;">⚠ Control fuera de rango BPM</p>
+            <% flashError.forEach(function(e) { %><p style="font-size:11px; color:#C42E2D; line-height:1.5;"><%= e %></p><% }) %>
+          </div>
+        <% } %>
+
         <div class="step-card">
-          <p class="step-card__title">Controles intermedios — registra los valores obtenidos</p>
+          <p class="step-card__title">Controles intermedios — <%= lote.producto %></p>
           <div class="info-notice" style="margin-bottom:10px">
-            ⚠ Paso crítico. Cualquier valor fuera de especificación dispara una No Conformidad.
+            ⚠ Paso crítico. Si algún valor cae fuera del rango, el sistema bloquea el guardado y debe abrirse una No Conformidad.
           </div>
           <table class="step-table">
             <thead>
               <tr>
                 <th>Parámetro</th>
-                <th>Especif. Mín</th>
-                <th>Especif. Máx</th>
+                <th>Mín</th>
+                <th>Máx</th>
+                <th>Unidad</th>
                 <th>Valor obtenido</th>
               </tr>
             </thead>
             <tbody>
-              <% const controles = [
-                { p:'Pérdida por secado',  min:'≤ 3.0 %',  max:'3.0 %'    },
-                { p:'Tamaño de partícula', min:'180 μm',   max:'250 μm'   },
-                { p:'Densidad aparente',   min:'0.42 g/mL',max:'0.58 g/mL' },
-                { p:'pH solución 1%',      min:'5.5',      max:'6.5'      },
-                { p:'Humedad residual',    min:'—',        max:'5.0 %'    },
-              ]; %>
-              <% controles.forEach((c, i) => { %>
+              <% _controlesFormula.forEach(function(c, i) { %>
+                <% const _prev = (_datos.controles && _datos.controles[i]) || {}; %>
                 <tr>
-                  <td><%= c.p %></td>
-                  <td><%= c.min %></td>
-                  <td><%= c.max %></td>
-                  <td><input type="text" name="control_<%= i %>_valor" placeholder="Valor medido"></td>
+                  <td><%= c.nombre %></td>
+                  <td><%= c.min !== null && c.min !== undefined ? c.min : '—' %></td>
+                  <td><%= c.max !== null && c.max !== undefined ? c.max : '—' %></td>
+                  <td><%= c.unidad || '—' %></td>
+                  <td>
+                    <input type="number" step="0.01" name="control_<%= i %>_valor"
+                           placeholder="Valor medido"
+                           value="<%= _prev.valor || '' %>">
+                  </td>
                 </tr>
               <% }) %>
             </tbody>
@@ -62,7 +82,7 @@
         <div class="step-card">
           <label class="step-card__title" for="observaciones">Observaciones del paso</label>
           <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
-                    rows="3" placeholder="Reporta ajustes, repeticiones de medición, NC abiertas..."></textarea>
+                    rows="3" placeholder="Reporta ajustes, repeticiones de medición, NC abiertas..."><%= D('observaciones') %></textarea>
         </div>
 
       </div>

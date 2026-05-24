@@ -1,88 +1,90 @@
-<%# Frame 5 — Welcome post-login %>
+<%# Frame 5 — Bienvenida post-login (compacta, entra en 1 pantalla) %>
 <%
   const u        = locals.currentUser || {};
   const nombre   = u.nombre || 'Usuario';
-  const cargo    = u.cargo  || '';
   const email    = u.email  || '';
-  const initials = nombre.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-  const hora     = new Date().toLocaleString('es-CO', { dateStyle:'medium', timeStyle:'short' });
+  // "Última sesión" = la sesión ANTERIOR (no la actual). Null si es el primer login.
+  let ultimaSesionTxt = 'Primera vez que ingresas';
+  if (u.ultimaSesion) {
+    const d = new Date(u.ultimaSesion);
+    ultimaSesionTxt = d.toLocaleDateString('es-CO', { day:'numeric', month:'short', year:'numeric' })
+                    + ' · ' + d.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' });
+  }
+  const fechaFull = new Date().toLocaleDateString('es-CO', { day:'numeric', month:'short', year:'numeric' });
+  const horaCorta = new Date().toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' });
   const rolesLabel = { director_tecnico:'Director Técnico — Planta Principal', operario:'Operario de Producción', calidad:'Analista de Calidad' };
   const rolLabel = rolesLabel[u.rol] || u.rol || 'Usuario';
+  const dashPath = typeof dashboardPath !== 'undefined' ? dashboardPath : '/panel';
+  const dashLabel = typeof dashboardLabel !== 'undefined' ? dashboardLabel.toLowerCase() : 'panel';
 %>
 
-<%# Wrapper de página: centra la tarjeta vertical y horizontalmente, ocupa todo el viewport %>
-<div class="welcome-page" style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background:var(--nude, #F5EFE6); box-sizing:border-box;">
+<div class="welcome-page welcome-page--compact">
+  <div class="welcome-card">
+    <div class="welcome-card__accent"></div>
 
-<div class="welcome-card" style="margin:0 auto; max-width:560px; width:100%;">
-  <!-- Accent top bar via ::before -->
+    <div class="welcome-card__body">
 
-  <div class="welcome-card__body" style="position:relative;">
-
-    <!-- Confetti — frame5 -->
-    <div style="position:relative; display:inline-block; margin-bottom:0;">
-      <!-- Dots decorativos -->
-      <div style="position:absolute; top:-20px; left:-80px; width:14px; height:14px; border-radius:50%; background:var(--yellow);"></div>
-      <div style="position:absolute; top:-30px; left:-52px; width:8px; height:8px; border-radius:50%; background:var(--green-mid);"></div>
-      <div style="position:absolute; top:-24px; right:-52px; width:12px; height:12px; border-radius:50%; background:var(--green-mid);"></div>
-      <div style="position:absolute; top:-32px; right:-80px; width:14px; height:14px; border-radius:50%; background:var(--yellow);"></div>
-      <!-- Cuadraditos rotados -->
-      <div style="position:absolute; top:-10px; left:-100px; width:9px; height:9px; background:var(--green-mid); transform:rotate(28deg);"></div>
-      <div style="position:absolute; top:-8px; right:-100px; width:9px; height:9px; background:var(--yellow); transform:rotate(-22deg);"></div>
-
-      <!-- Círculo éxito — frame5: ring exterior dashed + inner + checkmark -->
-      <div class="success-ring">
-        <div class="success-ring__inner">
-          <span style="font-size:24px; line-height:1; color:white;">✓</span>
+      <%# Confetti + success ring %>
+      <div class="welcome-confetti">
+        <span class="welcome-confetti__dot welcome-confetti__dot--y1"></span>
+        <span class="welcome-confetti__dot welcome-confetti__dot--g1"></span>
+        <span class="welcome-confetti__dot welcome-confetti__dot--g2"></span>
+        <span class="welcome-confetti__dot welcome-confetti__dot--y2"></span>
+        <span class="welcome-confetti__sq welcome-confetti__sq--1"></span>
+        <span class="welcome-confetti__sq welcome-confetti__sq--2"></span>
+        <div class="success-ring">
+          <div class="success-ring__inner">✓</div>
         </div>
       </div>
+
+      <h1 class="welcome-card__title">¡Bienvenido, <%= nombre.split(' ')[0] %>!</h1>
+      <p class="welcome-card__sub">
+        Has iniciado sesión correctamente como <%= rolLabel %>.
+      </p>
+
+      <div class="session-info">
+        <div class="session-info__row">
+          <span class="session-info__label">Rol</span>
+          <span class="session-info__value"><%= rolLabel %></span>
+        </div>
+        <div class="session-info__row">
+          <span class="session-info__label">Última sesión</span>
+          <span class="session-info__value"><%= ultimaSesionTxt %></span>
+        </div>
+        <div class="session-info__row">
+          <span class="session-info__label">Estado del sistema</span>
+          <span class="status-badge">Operativo · Sin alertas</span>
+        </div>
+      </div>
+
+      <div class="welcome-modules">
+        <a href="<%= dashPath %>" class="welcome-module">
+          <span class="welcome-module__icon">📋</span>
+          <div class="welcome-module__body">
+            <div class="welcome-module__name"><%= u.rol === 'operario' ? 'Mis lotes' : 'Panel de lotes' %></div>
+            <div class="welcome-module__meta">Activos del día</div>
+          </div>
+          <span class="welcome-module__badge welcome-module__badge--ok">Activo</span>
+        </a>
+        <a href="/batch-records" class="welcome-module">
+          <span class="welcome-module__icon">📄</span>
+          <div class="welcome-module__body">
+            <div class="welcome-module__name">Batch records</div>
+            <div class="welcome-module__meta">Liberados</div>
+          </div>
+          <span class="welcome-module__badge welcome-module__badge--warn">Pendiente</span>
+        </a>
+      </div>
+
+      <a href="<%= dashPath %>" class="ft-btn ft-btn--primary" style="width:100%; margin-bottom:8px;">
+        Ir al <%= dashLabel %> →
+      </a>
+      <form action="/auth/logout" method="POST" style="margin:0;">
+        <button type="submit" class="ft-btn ft-btn--secondary" style="width:100%;">
+          Cerrar sesión
+        </button>
+      </form>
+
     </div>
-
-    <!-- Saludo — font-size="26" del frame5 -->
-    <h1 class="welcome-card__title">¡Bienvenido, <%= nombre.split(' ')[0] %>!</h1>
-    <p class="welcome-card__sub">
-      Has iniciado sesión correctamente como <%= rolLabel %>.<br/>
-      El sistema está listo para su uso.
-    </p>
-
-    <!-- Info sesión — rect fill="#F5EFE6" del SVG -->
-    <div class="session-info">
-      <div class="session-info__row">
-        <span class="session-info__label">Rol</span>
-        <span class="session-info__value"><%= rolLabel %></span>
-      </div>
-      <div class="session-info__row">
-        <span class="session-info__label">Correo</span>
-        <span class="session-info__value"><%= email %></span>
-      </div>
-      <div class="session-info__row">
-        <span class="session-info__label">Sesión iniciada</span>
-        <span class="session-info__value"><%= hora %></span>
-      </div>
-      <div class="session-info__row">
-        <span class="session-info__label">Estado del sistema</span>
-        <span class="status-badge">● Operativo · Sin alertas</span>
-      </div>
-    </div>
-
-    <!-- Botón principal: continuar al dashboard correspondiente al rol.
-         dashboardPath se inyecta desde app.js: /panel para DT, /mis-lotes
-         para operario. Así un operario aterriza en su vista, no en la del DT. -->
-    <a href="<%= typeof dashboardPath !== 'undefined' ? dashboardPath : '/panel' %>"
-       class="ft-btn ft-btn--primary"
-       style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px;">
-      Continuar a <%= typeof dashboardLabel !== 'undefined' ? dashboardLabel.toLowerCase() : 'mi panel' %>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-    </a>
-
-    <!-- Botón salir -->
-    <form action="/auth/logout" method="POST">
-      <button type="submit" class="ft-btn ft-btn--secondary" style="width:100%;">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Cerrar sesión
-      </button>
-    </form>
-
   </div>
 </div>
-
-</div><%# /welcome-page %>

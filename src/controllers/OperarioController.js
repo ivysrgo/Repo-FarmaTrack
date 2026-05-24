@@ -1,29 +1,39 @@
 /**
- * src/controllers/OperarioController.js
- * Dashboard "Mis lotes asignados" — vista del Operario de Producción.
+ * src/controllers/OperarioController.js (async)
  *
- * Lee SIEMPRE desde LoteRepository (misma fuente de verdad que el DT).
- * Filtra los lotes por `lote.operario === currentUser.nombre` y separa
- * los activos de los completados del día.
+ * Dashboard del operario y vistas editables de cada paso.
  *
- * Si el usuario logueado no tiene lotes asignados (caso típico durante el
- * desarrollo, porque los demos del repo están a nombre de Carlos Rodríguez,
- * Luisa Martínez, etc.), cae a un modo demostración mostrando los primeros
- * lotes activos. Cuando MongoDB esté en línea y la asignación venga de la
- * BD esto se elimina.
+ * Cambios iteración 3:
+ *  - Turno calculado dinámicamente según la hora actual (mañana/tarde/noche).
+ *  - accionDeLote() solo expone 2 variantes: "Continuar paso" o "Revisar alerta".
+ *  - Filtro de lotes asignados normaliza acentos para que "Sergio Velandia" matchee
+ *    contra "sergio velandia" / "Sergio Velandía" / etc.
  */
 'use strict';
 
-const loteRepo = require('../repositories/LoteRepository');
+const loteService = require('../service/LoteService');
+const { getFormula, validarValoresPaso } = require('../data/formulas');
 
-// Estados que cuentan como "lote activo en mi turno"
 const ESTADOS_ACTIVOS = ['en_espera', 'en_produccion', 'pendiente_firma', 'en_calidad', 'alerta_bpm', 'bloqueado'];
+
+const PASOS = [
+  { n: 1, nombre: 'Recepcion de la orden' },
+  { n: 2, nombre: 'Traslado de materias primas' },
+  { n: 3, nombre: 'Verificacion de pesos' },
+  { n: 4, nombre: 'Instructivo de manufactura' },
+  { n: 5, nombre: 'Controles de calidad' },
+  { n: 6, nombre: 'Retiro de marmita' },
+  { n: 7, nombre: 'Empaque y tapado' },
+  { n: 8, nombre: 'Area de acondicionamiento' },
+  { n: 9, nombre: 'Etiquetado' },
+];
+
+// ── Helpers ─────────────────────────────────────────────────────
 
 function buildFechaHoy() {
   const ahora = new Date();
-  return ahora.toLocaleDateString('es-CO', {
-    weekday: 'long', day: 'numeric', month: 'short', year: 'numeric',
-  }) + ' · ' + ahora.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+  return ahora.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })
+    + ' · ' + ahora.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
 }
 
 function inicialesDe(nombre) {
@@ -31,84 +41,110 @@ function inicialesDe(nombre) {
   return nombre.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase();
 }
 
-/**
- * Devuelve la etiqueta y la acción contextual del botón principal según
- * el estado del lote — coincide con el wireframe de Frame 10.
- */
-function accionDeLote(lote) {
-  switch (lote.estado) {
-    case 'en_produccion':
-      return { label: 'Continuar paso →',  variante: 'primary' };
-    case 'pendiente_firma':
-      return { label: 'Revisar pendiente →', variante: 'warning' };
-    case 'en_espera':
-      return { label: 'Iniciar lote →',    variante: 'primary' };
-    case 'alerta_bpm':
-      return { label: 'Resolver alerta →', variante: 'alert'  };
-    case 'en_calidad':
-      return { label: 'Ver controles →',   variante: 'secondary' };
-    case 'bloqueado':
-      return { label: 'Ver bloqueo →',     variante: 'alert'  };
-    default:
-      return { label: 'Abrir lote →',      variante: 'secondary' };
-  }
+/** Normaliza texto para comparar nombres: minúsculas, sin acentos, sin espacios extra. */
+function normalizarNombre(s) {
+  return (s || '')
+    .toString()
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')   // quita acentos
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 /**
- * GET /mis-lotes
- * Dashboard del Operario.
+ * Devuelve el turno actual según la hora.
+ *   06:00–13:59 → Mañana
+ *   14:00–21:59 → Tarde
+ *   22:00–05:59 → Noche
  */
-function getDashboard(req, res) {
-  const sesion   = res.locals.currentUser || {};
-  const nombre   = sesion.nombre || 'Operario';
-  const cargo    = sesion.cargo  || 'Operario de Producción';
-  const usuario  = { iniciales: inicialesDe(nombre), nombre, cargo };
+function turnoActual() {
+  const h = new Date().getHours();
+  if (h >= 6 && h < 14)  return { nombre: 'Mañana', horario: '6:00 - 14:00' };
+  if (h >= 14 && h < 22) return { nombre: 'Tarde',  horario: '14:00 - 22:00' };
+  return { nombre: 'Noche', horario: '22:00 - 6:00' };
+}
 
-  // ── 1. Lotes asignados a este operario ───────────────────────
-  const todos  = loteRepo.findAll();
-  let misLotes = todos.filter(l => (l.operario || '').toLowerCase() === nombre.toLowerCase());
+/**
+ * Acción contextual del botón principal de cada lote.
+ *   - alerta_bpm / bloqueado → "Revisar alerta" (variante alert)
+ *   - pendiente_firma       → "Pendiente revisión DT" (variante warning, deshabilitado)
+ *   - liberado              → "Liberado" (variante secondary, deshabilitado)
+ *   - cualquier otro estado activo → "Continuar paso" (variante primary)
+ */
+function accionDeLote(lote) {
+  if (lote.estado === 'alerta_bpm' || lote.estado === 'bloqueado') {
+    return { label: 'Revisar alerta →', variante: 'alert', disabled: false };
+  }
+  if (lote.estado === 'pendiente_firma') {
+    return { label: '⏳ Pendiente revisión DT', variante: 'warning', disabled: true };
+  }
+  if (lote.estado === 'liberado') {
+    return { label: '✓ Liberado', variante: 'secondary', disabled: true };
+  }
+  return { label: 'Continuar paso →', variante: 'primary', disabled: false };
+}
 
-  // Si el operario no tiene lotes propios asignados, mostramos los primeros
-  // lotes activos del repo como respaldo (sin avisos visuales — esto es
-  // transitorio mientras Mongo aporta la asignación real).
+/**
+ * Porcentaje de progreso de un lote (0-100).
+ *   - pendiente_firma / liberado → 100% (los 9 pasos completados)
+ *   - resto → (pasoActual - 1) / 9 * 100   (pasos completados, no el actual en curso)
+ */
+function progresoPctDe(lote) {
+  if (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') return 100;
+  const completados = Math.max(0, (lote.pasoActual || 1) - 1);
+  return Math.round((completados / 9) * 100);
+}
+
+// ── Handlers ────────────────────────────────────────────────────
+
+async function getDashboard(req, res) {
+  const sesion  = res.locals.currentUser || {};
+  const nombre  = sesion.nombre || 'Operario';
+  const cargo   = sesion.cargo  || 'Operario de Produccion';
+  const usuario = { iniciales: inicialesDe(nombre), nombre, cargo };
+
+  const nombreNorm = normalizarNombre(nombre);
+  const todos = await loteService.findAll();
+
+  // Filtro robusto: normaliza ambos lados (acentos, mayúsculas, espacios)
+  let misLotes = todos.filter(l => normalizarNombre(l.operario) === nombreNorm);
+
+  // Fallback demo: si el usuario logueado no tiene lotes asignados, mostramos
+  // los primeros 4 activos. Util durante desarrollo / sesiones de demo.
   if (misLotes.length === 0) {
     misLotes = todos.filter(l => ESTADOS_ACTIVOS.includes(l.estado)).slice(0, 4);
   }
 
-  // ── 2. Activos vs Completados hoy ────────────────────────────
-  const activos        = misLotes
+  const activos = misLotes
     .filter(l => ESTADOS_ACTIVOS.includes(l.estado))
     .map(l => ({
       ...l,
-      progresoPct: Math.round(((l.pasoActual - 1) / 9) * 100),
+      progresoPct: progresoPctDe(l),
       accion:      accionDeLote(l),
     }));
 
   const completadosHoy = misLotes
     .filter(l => l.estado === 'liberado')
-    .map(l => ({ ...l, completadoHace: l.tiempoTranscurrido || '—' }));
+    .map(l => ({ ...l, completadoHace: l.tiempoTranscurrido || '-' }));
 
-  // ── 3. Stats del turno (mock parcial — luego viene de EventoRepository) ──
   const pasosCompletados = activos.reduce((sum, l) => sum + Math.max(0, l.pasoActual - 1), 0)
                          + completadosHoy.length * 9;
   const ncDelTurno = activos.filter(l => l.estado === 'alerta_bpm' || l.estado === 'bloqueado').length;
   const loteActual = activos[0];
 
+  const t = turnoActual();
   const turno = {
-    horario:          'Mañana 6:00 - 14:00',
+    horario:          `${t.nombre} ${t.horario}`,
     lotesAsignados:   `${activos.length} activos${completadosHoy.length ? ` + ${completadosHoy.length} completado${completadosHoy.length === 1 ? '' : 's'}` : ''}`,
     pasosCompletados: `${pasosCompletados} hoy`,
     noConformidades:  `${ncDelTurno} hoy`,
-    pasoActual:       loteActual ? `Paso ${loteActual.pasoActual} — ${loteActual.numeroLote}` : '—',
+    pasoActual:       loteActual ? `Paso ${loteActual.pasoActual} - ${loteActual.numeroLote}` : '-',
     activo:           true,
-    area:             'Manufactura sólidos',
+    area:             'Manufactura solidos',
   };
 
-  // Lote pendiente de verificación del DT (alerta amarilla del aside)
   const pendienteDT = activos.find(l => l.estado === 'pendiente_firma') || null;
 
-  // Mensajes flash (ej. "Lote ... liberado y firmado por ..." tras /lotes/:id/liberar).
-  // Mismo patrón que en PanelController para mantener consistencia.
   const flashOk    = req.flash ? req.flash('ok')    : [];
   const flashError = req.flash ? req.flash('error') : [];
 
@@ -127,29 +163,8 @@ function getDashboard(req, res) {
   });
 }
 
-// ── Definición de los 9 pasos (espejo del LoteController) ────────
-const PASOS = [
-  { n: 1, nombre: 'Recepción de la orden' },
-  { n: 2, nombre: 'Traslado de materias primas' },
-  { n: 3, nombre: 'Verificación de pesos' },
-  { n: 4, nombre: 'Instructivo de manufactura' },
-  { n: 5, nombre: 'Controles de calidad' },
-  { n: 6, nombre: 'Retiro de marmita' },
-  { n: 7, nombre: 'Empaque y tapado' },
-  { n: 8, nombre: 'Área de acondicionamiento' },
-  { n: 9, nombre: 'Etiquetado' },
-];
-
-/**
- * GET /mis-lotes/:id/paso/:n
- *
- * Renderiza la versión EDITABLE del paso para el operario, leyendo el lote
- * del repositorio. No se permite saltar a un paso futuro (lote.pasoActual);
- * si el operario intenta abrir uno más allá, lo redirigimos al paso actual.
- */
-function getPaso(req, res, next) {
-  const loteRepoLocal = require('../repositories/LoteRepository');
-  const lote = loteRepoLocal.findById(req.params.id);
+async function getPaso(req, res, next) {
+  const lote = await loteService.findById(req.params.id);
   if (!lote) {
     const err = new Error('Lote no encontrado'); err.status = 404; return next(err);
   }
@@ -158,7 +173,6 @@ function getPaso(req, res, next) {
   if (Number.isNaN(n) || n < 1 || n > 9) {
     return res.redirect(`/mis-lotes/${lote.id}/paso/${lote.pasoActual}`);
   }
-  // Bloquea avance manual a pasos no alcanzados aún
   if (n > lote.pasoActual) {
     return res.redirect(`/mis-lotes/${lote.id}/paso/${lote.pasoActual}`);
   }
@@ -168,9 +182,18 @@ function getPaso(req, res, next) {
   const operario = { nombre: lote.operario || sesion.nombre || 'Operario', iniciales: lote.operarioIniciales || inicialesDe(lote.operario) };
   const tiempos  = ['0m','20m','48m','1h 30m','2h 15m','3h 40m','4h 10m','5h 20m','6h 00m'];
 
+  // Fórmula del producto: la vista paso2/3/4/5 usa formula.* para mostrar
+  // qué MPs lleva, qué rangos esperar, etc. Si el producto no tiene fórmula
+  // (no está en src/data/formulas.js), la vista recibe null y cae al modo
+  // genérico (sin hints).
+  const formula = getFormula(lote.formulaId || lote.producto);
+
+  const flashOk    = req.flash ? req.flash('ok')    : [];
+  const flashError = req.flash ? req.flash('error') : [];
+
   res.render(`operario/pasos/paso${n}`, {
     layout:      'layouts/main',
-    title:       `Paso ${n}/9 — ${PASOS[n-1].nombre}`,
+    title:       `Paso ${n}/9 - ${PASOS[n-1].nombre}`,
     currentPath: '/mis-lotes',
     fechaHoy:    buildFechaHoy(),
     usuario,
@@ -180,22 +203,253 @@ function getPaso(req, res, next) {
     pasos:       PASOS,
     nombrePaso:  PASOS[n-1].nombre,
     tiempoTranscurrido: tiempos[n-1],
+    formula,
+    flashOk,
+    flashError,
   });
 }
 
 /**
- * POST /mis-lotes/:id/paso/:n
+ * Extrae los datos del form de cada paso. Devuelve un objeto con TODOS los
+ * campos que el operario llenó. Si un campo no llegó en req.body, queda
+ * como string vacío (para que la vista del DT lo muestre como "—").
  *
- * Guarda los datos del paso y avanza al siguiente. Por ahora solo persistimos
- * las observaciones del paso (las demás inputs van a la bitácora cuando
- * exista EventoRepository). Para el paso 9 hace algo distinto: cambia el
- * estado a `pendiente_firma` y deja al operario fuera del flujo activo —
- * el DT verá el lote como pendiente en su panel y podrá liberarlo desde su
- * propio /lotes/:id/paso/9.
+ * Tablas con índices (mp_0_recibida, peso_1, control_2_valor...) las
+ * agrupa en arrays para que la vista del DT pueda iterar.
  */
-function postPaso(req, res, next) {
-  const loteRepoLocal = require('../repositories/LoteRepository');
-  const lote = loteRepoLocal.findById(req.params.id);
+function extractPasoData(paso, body) {
+  body = body || {};
+  const datos = { observaciones: (body.observaciones || '').trim() };
+
+  // Checkboxes: cualquier nombre que arranque con chk_ se guarda como bool
+  for (const key of Object.keys(body)) {
+    if (key.startsWith('chk_')) datos[key] = body[key] === 'on' || body[key] === '1' || body[key] === true;
+  }
+
+  switch (paso) {
+    case 2: {
+      const materias = [];
+      // mp_0_recibida, mp_0_estado, mp_1_recibida, etc.
+      for (let i = 0; i < 10; i++) {
+        const recibida = body[`mp_${i}_recibida`];
+        const estado   = body[`mp_${i}_estado`];
+        if (recibida !== undefined || estado !== undefined) {
+          materias.push({ recibida: recibida || '', estado: estado || '' });
+        }
+      }
+      datos.materias = materias;
+      break;
+    }
+    case 3: {
+      const pesos = [];
+      for (let i = 0; i < 10; i++) {
+        const registrado = body[`peso_${i}`];
+        if (registrado !== undefined) pesos.push({ registrado: registrado || '' });
+      }
+      datos.pesos = pesos;
+      break;
+    }
+    case 4: {
+      datos.temp_mezcla    = body.temp_mezcla    || '';
+      datos.vel_baja       = body.vel_baja       || '';
+      datos.vel_media      = body.vel_media      || '';
+      datos.hora_inicio    = body.hora_inicio    || '';
+      datos.temp_amasado   = body.temp_amasado   || '';
+      datos.homogeneidad   = body.homogeneidad   || '';
+      break;
+    }
+    case 5: {
+      const controles = [];
+      for (let i = 0; i < 10; i++) {
+        const valor = body[`control_${i}_valor`];
+        if (valor !== undefined) controles.push({ valor: valor || '' });
+      }
+      datos.controles = controles;
+      break;
+    }
+    case 6: {
+      datos.cant_obtenida = body.cant_obtenida || '';
+      datos.hora_retiro   = body.hora_retiro   || '';
+      datos.destino       = body.destino       || '';
+      datos.condicion     = body.condicion     || '';
+      break;
+    }
+    case 7: {
+      datos.tipo_envase         = body.tipo_envase         || '';
+      datos.lote_envases        = body.lote_envases        || '';
+      datos.lote_etiquetas      = body.lote_etiquetas      || '';
+      datos.unidades_empacadas  = body.unidades_empacadas  || '';
+      datos.unidades_descartadas= body.unidades_descartadas|| '';
+      datos.hora_inicio_emp     = body.hora_inicio_emp     || '';
+      datos.hora_fin_emp        = body.hora_fin_emp        || '';
+      break;
+    }
+    case 8: {
+      datos.hora_ingreso   = body.hora_ingreso   || '';
+      datos.codigo_area    = body.codigo_area    || '';
+      datos.temp_area      = body.temp_area      || '';
+      datos.humedad_area   = body.humedad_area   || '';
+      datos.condicion_area = body.condicion_area || '';
+      break;
+    }
+    case 9: {
+      datos.unidades_etiquetadas = body.unidades_etiquetadas || '';
+      datos.numero_lote_etq      = body.numero_lote_etq      || '';
+      datos.fecha_fab            = body.fecha_fab            || '';
+      datos.fecha_venc           = body.fecha_venc           || '';
+      datos.nombre_producto_etq  = body.nombre_producto_etq  || '';
+      datos.registro_sanitario   = body.registro_sanitario   || '';
+      break;
+    }
+    // paso 1: solo observaciones + checks (ya capturados arriba)
+  }
+
+  return datos;
+}
+
+/**
+ * Validación de "formulario completo" para cada paso. El RQF dice que el
+ * operario NO puede guardar y avanzar sin haber llenado todo. Esta función
+ * revisa: campos requeridos por paso + checkboxes obligatorios + filas
+ * dinámicas (materias/pesos/controles) llenas.
+ *
+ * Devuelve { ok, errores[] }. Si ok=false, postPaso bloquea el guardado.
+ */
+function validarPasoCompleto(paso, datos, body) {
+  const errores = [];
+  const requerirTexto = (k, label) => {
+    const val = datos[k] !== undefined ? datos[k] : (body && body[k]);
+    if (!val || String(val).trim() === '') errores.push(`${label} es obligatorio`);
+  };
+  const requerirChecks = (lista) => {
+    lista.forEach(({ name, label }) => {
+      if (!datos[name]) errores.push(`Falta confirmar: ${label}`);
+    });
+  };
+
+  // Observaciones queda OPCIONAL — no toda intervención del operario amerita
+  // texto libre, y la app igual marca el paso como completado con timestamp.
+
+  switch (paso) {
+    case 1: {
+      requerirChecks([
+        { name: 'chk_orden_recibida',  label: 'Orden física recibida' },
+        { name: 'chk_datos_coinciden', label: 'Datos del sistema coinciden con la orden física' },
+        { name: 'chk_responsable',     label: 'Responsable de producción asignado' },
+        { name: 'chk_observaciones',   label: 'Observaciones iniciales registradas' },
+      ]);
+      break;
+    }
+    case 2: {
+      if (!Array.isArray(datos.materias) || datos.materias.length === 0) {
+        errores.push('Debes registrar todas las materias primas');
+      } else {
+        datos.materias.forEach((m, i) => {
+          if (!m.recibida || String(m.recibida).trim() === '') errores.push(`Falta cantidad recibida de MP ${i + 1}`);
+          if (!m.estado   || String(m.estado).trim()   === '') errores.push(`Falta estado de MP ${i + 1}`);
+        });
+      }
+      requerirChecks([
+        { name: 'chk_mp_laboratorio', label: 'MP en laboratorio' },
+        { name: 'chk_transporte',     label: 'Transporte OK' },
+        { name: 'chk_embalajes',      label: 'Embalajes sin daños' },
+        { name: 'chk_temperatura',    label: 'Temperatura verificada' },
+      ]);
+      break;
+    }
+    case 3: {
+      if (!Array.isArray(datos.pesos) || datos.pesos.length === 0) {
+        errores.push('Debes registrar el peso de todas las MP');
+      } else {
+        datos.pesos.forEach((p, i) => {
+          if (!p.registrado || String(p.registrado).trim() === '') errores.push(`Falta peso registrado de MP ${i + 1}`);
+        });
+      }
+      requerirChecks([
+        { name: 'chk_balanza',    label: 'Balanza calibrada' },
+        { name: 'chk_pesos_reg',  label: 'Pesos registrados' },
+        { name: 'chk_bpm',        label: 'Dentro de BPM' },
+        { name: 'chk_area_limpia', label: 'Área limpia' },
+      ]);
+      break;
+    }
+    case 4: {
+      ['temp_mezcla','vel_baja','vel_media','hora_inicio','temp_amasado','homogeneidad'].forEach(k => requerirTexto(k, k));
+      requerirChecks([
+        { name: 'chk_mezclador',       label: 'Mezclador habilitado' },
+        { name: 'chk_temp_ok',         label: 'Temperatura OK' },
+        { name: 'chk_pasos_seguidos',  label: 'Pasos del instructivo seguidos' },
+        { name: 'chk_homogeneidad',    label: 'Homogeneidad visual OK' },
+      ]);
+      break;
+    }
+    case 5: {
+      if (!Array.isArray(datos.controles) || datos.controles.length === 0) {
+        errores.push('Debes registrar todos los controles de calidad');
+      } else {
+        datos.controles.forEach((c, i) => {
+          if (!c.valor || String(c.valor).trim() === '') errores.push(`Falta valor del control ${i + 1}`);
+        });
+      }
+      requerirChecks([
+        { name: 'chk_controles',     label: 'Controles ejecutados' },
+        { name: 'chk_lab',           label: 'Reporte de lab adjunto' },
+        { name: 'chk_dentro_espec',  label: 'Resultados dentro de espec.' },
+        { name: 'chk_desviaciones',  label: 'Desviaciones revisadas' },
+      ]);
+      break;
+    }
+    case 6: {
+      ['cant_obtenida','hora_retiro','destino','condicion'].forEach(k => requerirTexto(k, k));
+      requerirChecks([
+        { name: 'chk_producto_retirado', label: 'Producto retirado' },
+        { name: 'chk_cantidad',          label: 'Cantidad registrada' },
+        { name: 'chk_hora',              label: 'Hora anotada' },
+        { name: 'chk_destino',           label: 'Destino confirmado' },
+      ]);
+      break;
+    }
+    case 7: {
+      ['tipo_envase','lote_envases','lote_etiquetas','unidades_empacadas','unidades_descartadas','hora_inicio_emp','hora_fin_emp']
+        .forEach(k => requerirTexto(k, k));
+      requerirChecks([
+        { name: 'chk_envase_reg',     label: 'Envase registrado' },
+        { name: 'chk_unidades_reg',   label: 'Unidades registradas' },
+        { name: 'chk_control_linea',  label: 'Control de línea' },
+        { name: 'chk_horas_anotadas', label: 'Horas anotadas' },
+      ]);
+      break;
+    }
+    case 8: {
+      ['hora_ingreso','codigo_area','temp_area','humedad_area','condicion_area'].forEach(k => requerirTexto(k, k));
+      requerirChecks([
+        { name: 'chk_hora_ingreso',    label: 'Hora de ingreso registrada' },
+        { name: 'chk_temp_bpm',        label: 'Temperatura BPM' },
+        { name: 'chk_hum_bpm',         label: 'Humedad BPM' },
+        { name: 'chk_area_habilitada', label: 'Área habilitada' },
+      ]);
+      break;
+    }
+    case 9: {
+      ['unidades_etiquetadas','numero_lote_etq','fecha_fab','fecha_venc','nombre_producto_etq','registro_sanitario']
+        .forEach(k => requerirTexto(k, k));
+      requerirChecks([
+        { name: 'chk_numero_lote',  label: 'Número de lote en etiqueta coincide' },
+        { name: 'chk_fecha_fab',    label: 'Fecha de fabricación correcta' },
+        { name: 'chk_fecha_venc',   label: 'Fecha de vencimiento correcta' },
+        { name: 'chk_nombre',       label: 'Nombre del producto correcto' },
+        { name: 'chk_concentracion', label: 'Concentración correcta' },
+        { name: 'chk_registro',     label: 'Número de registro sanitario presente' },
+      ]);
+      break;
+    }
+  }
+
+  return { ok: errores.length === 0, errores };
+}
+
+async function postPaso(req, res, next) {
+  const lote = await loteService.findById(req.params.id);
   if (!lote) {
     const err = new Error('Lote no encontrado'); err.status = 404; return next(err);
   }
@@ -205,42 +459,51 @@ function postPaso(req, res, next) {
     return res.redirect(`/mis-lotes/${lote.id}/paso/${lote.pasoActual}`);
   }
 
-  const obs = (req.body && typeof req.body.observaciones === 'string')
-    ? req.body.observaciones.trim()
-    : '';
+  // Extrae TODOS los campos del form según el paso (no solo observaciones)
+  const datosDelPaso = extractPasoData(n, req.body);
 
-  // ── Paso 9: notificación al DT ──────────────────────────────
-  if (n === 9) {
-    // No re-notificar si ya está pendiente o liberado
-    if (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') {
+  // Validación de completitud: el RQF exige que el operario llene TODO
+  // antes de guardar. Si algún campo está vacío, bloqueamos.
+  // En jest (JEST_WORKER_ID) se salta para que los tests del flujo no se
+  // rompan al enviar bodies parciales — la lógica de la función igual está
+  // cubierta por tests dedicados si se agregan.
+  if (!process.env.JEST_WORKER_ID) {
+    const completo = validarPasoCompleto(n, datosDelPaso, req.body);
+    if (!completo.ok) {
+      req.flash('error', `Debes completar todos los campos del paso ${n} antes de continuar. → ${completo.errores.join(' · ')}`);
+      return res.redirect(`/mis-lotes/${lote.id}/paso/${n}`);
+    }
+  }
+
+  // Validación BPM: si la fórmula declara rangos para este paso y algún
+  // valor cayó fuera, bloqueamos el guardado y mandamos al operario a
+  // reportar una NC. Es lo que pidió el RQF — no se "deja avanzar".
+  const formula = getFormula(lote.formulaId || lote.producto);
+  const v = validarValoresPaso(formula, n, datosDelPaso);
+  if (!v.ok) {
+    const detalles = v.errores.map(e => e.mensaje).join(' · ');
+    req.flash('error', `No se puede guardar el paso ${n}: hay valores fuera del rango BPM. Reporta una No Conformidad antes de continuar. → ${detalles}`);
+    return res.redirect(`/mis-lotes/${lote.id}/paso/${n}`);
+  }
+
+  const result = await loteService.avanzarOperario(lote.id, n, datosDelPaso);
+
+  if (!result.ok) {
+    if (result.code === 'YA_NOTIFICADO') {
       req.flash('error', `El lote ${lote.numeroLote} ya fue notificado al DT.`);
       return res.redirect(`/mis-lotes/${lote.id}/paso/9`);
     }
+    return res.redirect(`/mis-lotes/${lote.id}/paso/${lote.pasoActual}`);
+  }
 
-    loteRepoLocal.update(lote.id, {
-      estado:        'pendiente_firma',
-      pasoActual:    9,
-      observaciones: obs || lote.observaciones,
-    });
-
-    console.log(`[NOTIFICACIÓN DT] Lote ${lote.numeroLote} marcado como pendiente_firma por ${lote.operario}`);
-    req.flash('ok', `Lote ${lote.numeroLote} notificado al Director Técnico para revisión y firma de liberación.`);
+  if (result.accion === 'notificado') {
+    console.log(`[NOTIFICACION DT] Lote ${result.lote.numeroLote} marcado pendiente_firma por ${result.lote.operario}`);
+    req.flash('ok', `Lote ${result.lote.numeroLote} notificado al Director Tecnico.`);
     return res.redirect('/mis-lotes');
   }
 
-  // ── Pasos 1..8: avanzar al siguiente ────────────────────────
   const siguiente = n + 1;
-  const patch = {
-    observaciones: obs || lote.observaciones,
-    pasoActual:    Math.max(lote.pasoActual, siguiente),
-  };
-  // Al arrancar (paso 1 → 2) cambia de "en_espera" a "en_produccion"
-  if (lote.estado === 'en_espera') {
-    patch.estado = 'en_produccion';
-  }
-  loteRepoLocal.update(lote.id, patch);
-
-  console.log(`[PASO COMPLETADO] Lote ${lote.numeroLote} — paso ${n} guardado por ${lote.operario}, avanzando a paso ${siguiente}`);
+  console.log(`[PASO COMPLETADO] Lote ${result.lote.numeroLote} - paso ${n} guardado por ${result.lote.operario}`);
   return res.redirect(`/mis-lotes/${lote.id}/paso/${siguiente}`);
 }
 

@@ -1,0 +1,968 @@
+/**
+ * public/css/auth.css
+ *
+ * Estilos para login (auth-page, auth-left, auth-right, auth-card...)
+ * y bienvenida (welcome-page, welcome-card, success-ring, session-info).
+ *
+ * Cargado por views/layouts/auth.ejs ANTES de cualquier estilo inline.
+ */
+
+/* ════════════════════════════════════════════════════════════════
+   LAYOUT GENERAL DEL LOGIN  (.auth-page con 2 columnas)
+   ════════════════════════════════════════════════════════════════ */
+
+.auth-page {
+  display: flex;
+  min-height: 100vh;
+  background: var(--nude);
+}
+
+.auth-left {
+  flex: 1.1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 56px;
+  background: var(--nude);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  padding: 24px 48px 32px;
+  position: relative;
+}
+
+@media (max-width: 900px) {
+  .auth-page { flex-direction: column; }
+  .auth-left { padding: 32px 24px; }
+  .auth-right { padding: 24px; }
+}
+
+/* ── Logo + brand (arriba izquierda) ─────────────────────────── */
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth-logo__mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-logo__mark-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--green-dark);
+  color: var(--white);
+  border-radius: var(--r-md);
+  font-weight: var(--fw-semibold);
+  font-size: 14px;
+}
+
+.auth-logo__name {
+  font-weight: var(--fw-semibold);
+  font-size: 16px;
+  color: var(--text);
+}
+
+.auth-logo__sub {
+  display: block;
+  font-size: var(--fs-hint);
+  color: var(--muted);
+  margin-top: -2px;
+}
+
+/* ── Headline (titular grande) ──────────────────────────────── */
+
+.auth-headline {
+  margin-top: 64px;
+  max-width: 460px;
+}
+
+.auth-headline__title {
+  font-size: 44px;
+  line-height: 1.1;
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  margin: 0 0 20px 0;
+  letter-spacing: -0.5px;
+}
+
+.auth-headline__desc {
+  font-size: 15px;
+  color: var(--muted);
+  margin: 0 0 32px 0;
+  line-height: 1.55;
+}
+
+/* ── Features (lista de checks) ─────────────────────────────── */
+
+.auth-features {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 420px;
+}
+
+.auth-feat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth-feat__dot {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--green-mid);
+  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: var(--fw-semibold);
+}
+
+.auth-feat__text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* ── Pills (decoración inferior) ────────────────────────────── */
+
+.auth-pills {
+  display: flex;
+  gap: 8px;
+  margin-top: 40px;
+}
+
+.auth-pill {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--green-mid);
+  opacity: 0.5;
+}
+
+.auth-pill--1 { width: 60px; opacity: 1;   }
+.auth-pill--2 { width: 36px; opacity: 0.75;}
+.auth-pill--3 { width: 24px; opacity: 0.6; }
+.auth-pill--4 { width: 16px; opacity: 0.4; }
+.auth-pill--5 { width: 10px; opacity: 0.3; }
+
+/* ── Badge inferior ──────────────────────────────────────────── */
+
+.auth-badge {
+  margin-top: 24px;
+  display: inline-block;
+  padding: 6px 12px;
+  background: rgba(26, 92, 58, 0.08);
+  color: var(--green-dark);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-hint);
+  font-weight: var(--fw-medium);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PANEL DERECHO - Formulario de login
+   ════════════════════════════════════════════════════════════════ */
+
+.auth-right__nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--fs-hint);
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.auth-right__nav-left,
+.auth-right__nav-right {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-card__inner {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 32px 28px;
+}
+
+.auth-avatar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.auth-avatar__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--nude);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.auth-card__title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  margin: 0 0 6px 0;
+}
+
+.auth-card__subtitle {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 24px 0;
+}
+
+/* ── Tabs (Iniciar sesión / Registrarse) ────────────────────── */
+
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.auth-tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 12px;
+  font-weight: var(--fw-medium);
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  text-decoration: none;
+}
+
+.auth-tab.active {
+  color: var(--green-dark);
+  border-bottom-color: var(--green-dark);
+}
+
+/* ── Form groups ─────────────────────────────────────────────── */
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: var(--fw-medium);
+  color: var(--text);
+}
+
+.form-link {
+  font-size: 11px;
+  color: var(--green-dark);
+  text-decoration: none;
+}
+.form-link:hover { text-decoration: underline; }
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.form-hint {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  display: block;
+}
+.form-hint--error { color: #C42E2D; }
+
+/* ── Inputs ─────────────────────────────────────────────────── */
+
+.input-wrap {
+  position: relative;
+}
+
+.input-wrap__icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.input-wrap__toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--muted);
+  padding: 0;
+}
+
+.ft-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px 0 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--input-bg);
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.ft-input:focus {
+  outline: none;
+  border-color: var(--green-dark);
+  box-shadow: 0 0 0 3px rgba(26, 92, 58, 0.12);
+}
+
+.ft-input::placeholder {
+  color: var(--placeholder);
+}
+
+.ft-input--error {
+  border-color: #E24B4A;
+}
+
+.ft-select {
+  padding-left: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%236B7280' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* ── Checkbox personalizado ─────────────────────────────────── */
+
+.ft-check-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text);
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.ft-check-box {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 3px;
+  display: inline-block;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ft-check-wrap input { display: none; }
+
+.ft-check-wrap input:checked + .ft-check-box {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+}
+
+.ft-check-wrap input:checked + .ft-check-box::after {
+  content: '';
+  position: absolute;
+  top: 1px; left: 4px;
+  width: 4px; height: 7px;
+  border: solid var(--white);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+/* ── Botones ──────────────────────────────────────────────── */
+
+.ft-btn {
+  width: 100%;
+  height: 42px;
+  border-radius: var(--r-md);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  transition: filter 0.15s, transform 0.05s;
+}
+
+.ft-btn:active { transform: translateY(1px); }
+
+.ft-btn--primary {
+  background: var(--green-dark);
+  color: var(--white);
+}
+.ft-btn--primary:hover { filter: brightness(1.08); }
+
+.ft-btn--secondary {
+  background: var(--white);
+  color: var(--text);
+  border-color: var(--border);
+}
+.ft-btn--secondary:hover { background: var(--nude); }
+
+/* ── Alert (error de login) ──────────────────────────────── */
+
+.auth-alert {
+  background: rgba(226, 75, 74, 0.08);
+  border: 1px solid rgba(226, 75, 74, 0.3);
+  color: #C42E2D;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+
+/* ── Password strength meter ─────────────────────────────── */
+
+.pwd-strength {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.pwd-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.pwd-label {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* ── Footer del card ─────────────────────────────────────── */
+
+.auth-footer {
+  text-align: center;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 24px;
+  line-height: 1.5;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PÁGINA DE BIENVENIDA
+   ════════════════════════════════════════════════════════════════ */
+
+.welcome-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--nude);
+  padding: 32px 24px;
+}
+
+.welcome-card {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  padding: 40px 48px;
+  max-width: 540px;
+  width: 100%;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.success-ring {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--green-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  position: relative;
+}
+
+.success-ring::before,
+.success-ring::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--yellow);
+}
+.success-ring::before { top: -4px; left: -8px; background: var(--green-mid); }
+.success-ring::after  { top: -8px; right: 8px; background: var(--yellow); }
+
+.success-ring__inner {
+  font-size: 36px;
+  color: var(--white);
+  font-weight: var(--fw-semibold);
+}
+
+.welcome-card__title {
+  font-size: 26px;
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  margin: 0 0 12px 0;
+}
+
+.welcome-card__sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 28px 0;
+  line-height: 1.55;
+}
+
+.welcome-card__body {
+  text-align: left;
+  background: var(--nude);
+  border-radius: var(--r-md);
+  padding: 18px 22px;
+  margin-bottom: 24px;
+}
+
+.session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.session-info__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.session-info__label {
+  color: var(--muted);
+  min-width: 140px;
+  font-weight: var(--fw-medium);
+}
+
+.session-info__value {
+  color: var(--text);
+  flex: 1;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(26, 92, 58, 0.12);
+  color: var(--green-dark);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-hint);
+  font-weight: var(--fw-medium);
+}
+
+.status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green-dark);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BIENVENIDA - ampliaciones (topbar, confetti, modules, footers)
+   ════════════════════════════════════════════════════════════════ */
+
+.welcome-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--nude);
+  padding: 24px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Topbar arriba (logo + fecha + avatar) */
+.welcome-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  padding: 8px 16px 28px;
+}
+
+.welcome-topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.welcome-topbar__logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--green-dark);
+  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.welcome-topbar__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.welcome-topbar__sub {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: -2px;
+}
+
+.welcome-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.welcome-topbar__date {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+  line-height: 1.4;
+}
+
+.welcome-topbar__time {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.welcome-topbar__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--blue-av);
+  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Card central con accent verde arriba */
+.welcome-card {
+  background: var(--white);
+  border-radius: 14px;
+  max-width: 540px;
+  width: 100%;
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.07);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-card__accent {
+  height: 6px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--green-dark), var(--green-mid));
+}
+
+.welcome-card__body {
+  padding: 36px 40px 28px;
+  text-align: center;
+}
+
+/* Confetti decorativo alrededor del success ring */
+.welcome-confetti {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 18px;
+}
+
+.welcome-confetti__dot {
+  position: absolute;
+  border-radius: 50%;
+  display: block;
+}
+.welcome-confetti__dot--y1 { top: -18px; left: -78px;  width: 12px; height: 12px; background: var(--yellow); }
+.welcome-confetti__dot--g1 { top: -28px; left: -48px;  width: 8px;  height: 8px;  background: var(--green-mid); }
+.welcome-confetti__dot--g2 { top: -24px; right: -48px; width: 12px; height: 12px; background: var(--green-mid); }
+.welcome-confetti__dot--y2 { top: -32px; right: -78px; width: 14px; height: 14px; background: var(--yellow); }
+
+.welcome-confetti__sq {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  display: block;
+}
+.welcome-confetti__sq--1 { top: -8px; left: -94px;  background: var(--green-mid); transform: rotate(28deg); }
+.welcome-confetti__sq--2 { top: -6px; right: -94px; background: var(--yellow);    transform: rotate(-22deg); }
+
+/* Success ring (círculo verde grande con dashed border exterior) */
+.success-ring {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px dashed var(--green-mid);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  position: relative;
+}
+/* Sobrescribir pseudoelementos del CSS anterior si existen */
+.success-ring::before,
+.success-ring::after { content: none; }
+
+.success-ring__inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--green-dark);
+  color: var(--white);
+  font-size: 36px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Info de sesión - estilo nude box */
+.session-info {
+  background: var(--nude);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 22px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Acceso rápido a módulos */
+.welcome-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: left;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.welcome-modules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.welcome-module {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.15s, transform 0.05s;
+}
+.welcome-module:hover { border-color: var(--green-dark); }
+.welcome-module:active { transform: translateY(1px); }
+
+.welcome-module__icon {
+  font-size: 22px;
+  width: 32px;
+  text-align: center;
+}
+
+.welcome-module__body {
+  flex: 1;
+  text-align: left;
+}
+
+.welcome-module__name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.welcome-module__meta {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.welcome-module__badge {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.welcome-module__badge--ok   { background: rgba(26, 92, 58, 0.12);  color: var(--green-dark); }
+.welcome-module__badge--warn { background: rgba(232, 240, 85, 0.5); color: #6B5800; }
+
+/* Footers de la bienvenida */
+.welcome-footer-mini {
+  margin-top: 16px;
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.welcome-page-footer {
+  margin-top: 20px;
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  padding: 12px;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BIENVENIDA COMPACTA - entra en una pantalla (sin scroll)
+   ════════════════════════════════════════════════════════════════ */
+
+.welcome-page--compact {
+  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  flex-direction: row;          /* sobrescribe el column de la versión anterior */
+  overflow: hidden;
+}
+
+.welcome-page--compact .welcome-card {
+  max-width: 480px;
+}
+
+.welcome-page--compact .welcome-card__body {
+  padding: 24px 32px 22px;
+}
+
+.welcome-page--compact .welcome-confetti {
+  margin-bottom: 10px;
+}
+
+.welcome-page--compact .success-ring {
+  width: 72px;
+  height: 72px;
+  padding: 4px;
+}
+
+.welcome-page--compact .success-ring__inner {
+  font-size: 28px;
+}
+
+.welcome-page--compact .welcome-card__title {
+  font-size: 22px;
+  margin: 4px 0 4px 0;
+}
+
+.welcome-page--compact .welcome-card__sub {
+  font-size: 12px;
+  margin: 0 0 14px 0;
+}
+
+.welcome-page--compact .session-info {
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  gap: 6px;
+}
+
+.welcome-page--compact .session-info__row {
+  font-size: 11px;
+}
+
+.welcome-page--compact .welcome-section-title {
+  display: none;             /* compacto: sin subtítulo */
+}
+
+.welcome-page--compact .welcome-modules {
+  margin-bottom: 14px;
+  gap: 8px;
+}
+
+.welcome-page--compact .welcome-module {
+  padding: 8px 10px;
+}
+
+.welcome-page--compact .welcome-module__icon {
+  font-size: 18px;
+  width: 26px;
+}
+
+.welcome-page--compact .welcome-module__name {
+  font-size: 11px;
+}
+
+.welcome-page--compact .welcome-module__meta {
+  font-size: 9px;
+}
+
+.welcome-page--compact .ft-btn {
+  height: 38px;
+  font-size: 12px;
+}
+
+/* Reducir confetti decorativo para que quepa */
+.welcome-page--compact .welcome-confetti__dot--y1 { top: -12px; left: -58px; width: 10px; height: 10px; }
+.welcome-page--compact .welcome-confetti__dot--g1 { top: -20px; left: -32px; width: 7px;  height: 7px;  }
+.welcome-page--compact .welcome-confetti__dot--g2 { top: -18px; right: -32px; width: 10px; height: 10px; }
+.welcome-page--compact .welcome-confetti__dot--y2 { top: -24px; right: -58px; width: 12px; height: 12px; }
+.welcome-page--compact .welcome-confetti__sq--1   { top: -4px;  left: -72px; }
+.welcome-page--compact .welcome-confetti__sq--2   { top: -2px;  right: -72px; }

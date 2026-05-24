@@ -7,7 +7,7 @@
 
       <div class="step-header">
         <div class="step-header__meta">
-          <span>Paso 9/9 · <%= lote.numeroLote %> · <%= lote.medicamento %> · Operario: <%= operario.nombre %></span>
+          <span>Paso 9/9 · <%= lote.numeroLote %> · <%= lote.producto || lote.medicamento || '—' %> · Operario: <%= operario.nombre %></span>
           <span class="step-header__badge" style="background:rgba(26,92,58,0.12); border-color:var(--green-dark); color:var(--green-dark);">✅ Lote completado</span>
           <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
         </div>
@@ -34,9 +34,9 @@
 
         <div class="checklist-grid">
           <% checklist.forEach(item => { %>
-            <div class="check-row">
-              <div class="check-box"></div>
-              <span><%= item %></span>
+            <div class="check-row<%= item.checked ? ' is-checked' : '' %>">
+              <div class="check-box"><%= item.checked ? '✓' : '' %></div>
+              <span><%= item.texto %></span>
             </div>
           <% }) %>
         </div>
@@ -60,7 +60,7 @@
         <div class="field-grid field-grid--3" style="margin-top:8px;">
           <div class="field-group">
             <span class="field-label">Medicamento</span>
-            <div class="field-value" style="background:var(--white)"><%= lote.medicamento %></div>
+            <div class="field-value" style="background:var(--white)"><%= lote.producto || lote.medicamento || '—' %></div>
           </div>
           <div class="field-group">
             <span class="field-label">Cantidad planificada</span>
@@ -104,9 +104,9 @@
         <p class="aside-card__title">Checklist paso 9 — Operario</p>
         <div class="aside-checklist">
           <% checklist.forEach(item => { %>
-            <div class="aside-check-item">
-              <div class="check-dot"></div>
-              <span><%= item %></span>
+            <div class="aside-check-item<%= item.checked ? ' is-checked' : '' %>">
+              <div class="check-dot"><%= item.checked ? '✓' : '' %></div>
+              <span><%= item.texto %></span>
             </div>
           <% }) %>
         </div>
@@ -191,16 +191,153 @@
           Volver a <%= typeof dashboardLabel !== 'undefined' ? dashboardLabel.toLowerCase() : 'panel' %>
         </a>
       <% } else { %>
-        <%# Acción principal: liberar el lote — POST /lotes/:id/liberar %>
-        <form action="/lotes/<%= lote.id %>/liberar" method="POST" style="display:inline-flex; margin:0; gap:8px;">
-          <button type="submit"
-                  class="btn-step"
-                  style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;"
-                  onclick="return confirm('¿Confirmas liberar el lote <%= lote.numeroLote %>?\n\nEsta acción registra tu firma como Director Técnico y el lote queda marcado como liberado.');">
-            ✓ Liberar lote y firmar →
-          </button>
-        </form>
+        <%# Acción principal: liberar el lote — abre modal de confirmación.
+             El POST real lo hace el form que está dentro del modal. %>
+        <button type="button"
+                class="btn-step"
+                style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;"
+                onclick="document.getElementById('liberarModal').classList.add('is-open')">
+          ✓ Liberar lote y firmar →
+        </button>
       <% } %>
     </div>
   </div>
+
+  <%# ─── Modal de confirmación de liberación ─────────────────────────
+       Solo se renderiza si el lote NO está ya liberado/rechazado. Se
+       abre vía clic en el botón principal y se cierra con Cancelar o
+       clic fuera del card. Usa los tokens del design system. %>
+  <% if (lote.estado !== 'liberado' && lote.estado !== 'rechazado') { %>
+    <div id="liberarModal" class="ft-modal" role="dialog" aria-modal="true" aria-labelledby="liberarModalTitle"
+         onclick="if (event.target === this) this.classList.remove('is-open')">
+      <div class="ft-modal__card">
+        <header class="ft-modal__head">
+          <span class="ft-modal__icon">✓</span>
+          <div>
+            <h2 id="liberarModalTitle" class="ft-modal__title">Liberar lote</h2>
+            <p class="ft-modal__sub">Lote <strong><%= lote.numeroLote %></strong> · <%= lote.producto %></p>
+          </div>
+        </header>
+
+        <div class="ft-modal__body">
+          <p>Estás a punto de firmar y liberar este lote como <strong>Director Técnico</strong>.</p>
+          <ul class="ft-modal__lista">
+            <li>Tu firma queda registrada en el batch record.</li>
+            <li>El lote se marca como <strong>liberado</strong> en el sistema.</li>
+            <li>La acción se registra en la bitácora PAYRMA y no puede deshacerse.</li>
+          </ul>
+        </div>
+
+        <footer class="ft-modal__foot">
+          <button type="button" class="ft-modal__btn ft-modal__btn--secondary"
+                  onclick="document.getElementById('liberarModal').classList.remove('is-open')">
+            Cancelar
+          </button>
+          <form action="/lotes/<%= lote.id %>/liberar" method="POST" style="margin:0;">
+            <button type="submit" class="ft-modal__btn ft-modal__btn--primary">
+              ✓ Confirmar y firmar
+            </button>
+          </form>
+        </footer>
+      </div>
+    </div>
+  <% } %>
 </div>
+
+<style>
+  /* ── Modal de confirmación FarmaTrack ─────────────────────────── */
+  .ft-modal {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(20, 30, 28, 0.45);
+    z-index: 9999;
+    align-items: center; justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(2px);
+  }
+  .ft-modal.is-open { display: flex; }
+  .ft-modal__card {
+    background: var(--white, #fff);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 460px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    font-family: var(--font, inherit);
+    animation: ftModalIn 0.18s ease-out;
+  }
+  @keyframes ftModalIn {
+    from { transform: translateY(8px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+  }
+  .ft-modal__head {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 20px 22px 14px;
+    border-bottom: 0.5px solid var(--border, #e8e3d8);
+  }
+  .ft-modal__icon {
+    width: 36px; height: 36px;
+    background: var(--green-dark, #2f5e4f);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .ft-modal__title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 2px;
+    color: var(--text, #1a1a1a);
+  }
+  .ft-modal__sub {
+    font-size: 12px;
+    color: var(--muted, #8a8a8a);
+    margin: 0;
+  }
+  .ft-modal__body {
+    padding: 16px 22px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text, #1a1a1a);
+  }
+  .ft-modal__body p { margin: 0 0 10px; }
+  .ft-modal__lista {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    font-size: 12px;
+    color: var(--muted, #8a8a8a);
+  }
+  .ft-modal__lista li { margin-bottom: 4px; }
+  .ft-modal__foot {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 14px 22px 18px;
+    border-top: 0.5px solid var(--border, #e8e3d8);
+    background: var(--input-bg, #f6f4ee);
+  }
+  .ft-modal__btn {
+    height: 36px;
+    padding: 0 18px;
+    border-radius: 8px;
+    font-family: var(--font, inherit);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 0.5px solid transparent;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  .ft-modal__btn--secondary {
+    background: var(--white, #fff);
+    color: var(--text, #1a1a1a);
+    border-color: var(--border, #e8e3d8);
+  }
+  .ft-modal__btn--secondary:hover { background: var(--input-bg, #f6f4ee); }
+  .ft-modal__btn--primary {
+    background: var(--green-dark, #2f5e4f);
+    color: #fff;
+    border-color: var(--green-dark, #2f5e4f);
+  }
+  .ft-modal__btn--primary:hover { opacity: 0.92; }
+</style>

@@ -626,16 +626,23 @@ textarea.field-value {
 .check-box {
   width: 16px; height: 16px;
   border-radius: 4px;
-  background: var(--green-dark);
-  border: none;
+  background: var(--white);
+  border: 1.5px solid var(--border);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
 
-.check-box::after {
+/* Solo cuando el operario marcó este check, mostramos el ✓ y el fondo verde */
+.check-box.is-checked {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+}
+
+.check-box.is-checked::after {
   content: '✓';
   font-size: 10px;
   color: var(--white);
+  line-height: 1;
 }
 
 /* ── Control de línea — tabla empaque ────────────────────── */
@@ -667,3 +674,109 @@ textarea.field-value {
 .main-wrapper {
   min-height: 100vh;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   CARDS DEL ASIDE DERECHO (Checklist, Eventos, Navegación)
+   Agregadas para las vistas paso1..paso8 (DT - solo lectura)
+   ════════════════════════════════════════════════════════════════ */
+
+.aside-card {
+  background: var(--white);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.aside-card__title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 10px 0;
+  padding-bottom: 8px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.aside-card__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text);
+  padding: 5px 0;
+  line-height: 1.4;
+}
+
+.aside-card__check {
+  color: var(--green-dark);
+  font-weight: 600;
+  font-size: 12px;
+  width: 12px;
+  flex-shrink: 0;
+}
+
+.aside-card__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green-mid);
+  flex-shrink: 0;
+}
+.aside-card__dot--ok      { background: var(--green-mid); }
+.aside-card__dot--warning { background: var(--yellow); }
+.aside-card__dot--alert   { background: #E24B4A; }
+.aside-card__dot--info    { background: var(--blue-av); }
+
+.aside-card__time {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.aside-card__row--nav {
+  color: var(--muted);
+}
+.aside-card__row--nav.is-done   { color: var(--text); }
+.aside-card__row--nav.is-active {
+  color: var(--green-dark);
+  font-weight: 500;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Fix: cuando un <form> envuelve step-layout + step-footer
+   (vistas editables del operario), debe heredar el column flex del
+   step-page para que el footer no quede gigante.
+   ════════════════════════════════════════════════════════════════ */
+.step-page > form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+}
+
+/* ── Flash de errores en pasos del operario ─────────────────────── */
+.op-flash {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 16px;
+  margin: 0 var(--sp4, 24px) var(--sp3, 16px);
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.op-flash--error {
+  background: rgba(226, 75, 74, 0.06);
+  border-left: 3px solid #E24B4A;
+  color: #C42E2D;
+}
+.op-flash__icon {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.op-flash__body { flex: 1; }
+.op-flash__body p { margin: 0; }
+.op-flash__body p + p { margin-top: 4px; }

@@ -1,3 +1,9 @@
+<%# Datos previamente guardados por el operario en este paso (si existen) %>
+<%
+  const _datos = (lote && lote.pasos && lote.pasos[paso]) || {};
+  const D = (k, def = '') => (_datos[k] !== undefined && _datos[k] !== '') ? _datos[k] : def;
+  const C = (k) => (_datos[k] === true || _datos[k] === 'on' || _datos[k] === '1') ? 'checked' : '';
+%>
 <%# views/operario/pasos/paso1.ejs — Recepción de la orden (operario · editable) %>
 <div class="step-page">
   <%- include('../partials/op-stepper-topbar') %>
@@ -73,7 +79,7 @@
         <div class="step-card">
           <label class="step-card__title" for="observaciones">Observaciones del paso</label>
           <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
-                    rows="3" placeholder="Anota cualquier novedad de la recepción..."></textarea>
+                    rows="3" placeholder="Anota cualquier novedad de la recepción..."><%= D('observaciones') %></textarea>
         </div>
 
       </div>

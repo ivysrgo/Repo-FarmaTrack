@@ -1,0 +1,107 @@
+<%# views/noconformidad/listado.ejs — Listado de NCs con botón Resolver %>
+
+<header class="topbar">
+  <div class="topbar__left">
+    <nav class="breadcrumb">
+      <span class="breadcrumb__link">Inicio</span>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">No conformidades</span>
+    </nav>
+  </div>
+  <div class="topbar__right">
+    <div class="topbar__date"><%= fechaHoy %></div>
+    <div class="avatar topbar__avatar"><%= usuario.iniciales %></div>
+  </div>
+</header>
+
+<% if (flashOk && flashOk.length) { %>
+  <div class="sec-flash sec-flash--ok"><span>✓</span><span><%= flashOk.join(' · ') %></span></div>
+<% } %>
+<% if (flashError && flashError.length) { %>
+  <div class="sec-flash sec-flash--err"><span>⚠</span><span><%= flashError.join(' · ') %></span></div>
+<% } %>
+
+<div class="sec-page">
+  <div class="sec-page__head">
+    <h1 class="sec-page__title">No conformidades</h1>
+    <p class="sec-page__sub">
+      Historial de NCs reportadas. Las bloqueantes mantienen el lote en alerta BPM hasta ser resueltas.
+    </p>
+    <div style="margin-top:12px;">
+      <a href="/noconformidad/nueva" class="btn-step" style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); padding:0 18px; height:36px;">+ Reportar nueva NC</a>
+    </div>
+  </div>
+
+  <div class="sec-card" style="margin-top:var(--sp4);">
+    <div style="display:flex; gap:var(--sp4); margin-bottom:var(--sp3); font-size:12px;">
+      <span><strong><%= stats.total %></strong> totales</span>
+      <span><strong style="color:#C42E2D;"><%= stats.abiertas %></strong> abiertas</span>
+      <span><strong style="color:#C42E2D;"><%= stats.bloqueantes %></strong> bloqueantes</span>
+    </div>
+
+    <% if (!ncs.length) { %>
+      <p style="font-size:12px; color:var(--muted); padding:24px 0; text-align:center;">
+        No hay no conformidades reportadas todavía.
+      </p>
+    <% } else { %>
+      <table class="step-table" style="width:100%;">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Lote</th>
+            <th>Descripción</th>
+            <th>Impacto</th>
+            <th>Reportado por</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% ncs.forEach(nc => { %>
+            <tr style="<%= nc.resuelta ? 'opacity:0.55;' : '' %>">
+              <td><%= new Date(nc.createdAt).toLocaleString('es-CO', { dateStyle:'short', timeStyle:'short' }) %></td>
+              <td><%= nc.tipo %></td>
+              <td>
+                <% if (nc.loteId && nc.loteNumero) { %>
+                  <a href="/lotes/<%= nc.loteId %>" class="sec-link"><%= nc.loteNumero %></a>
+                <% } else if (nc.loteNumero) { %>
+                  <%= nc.loteNumero %>
+                <% } else { %>
+                  <span style="color:var(--muted);">— general —</span>
+                <% } %>
+              </td>
+              <td style="max-width:280px; white-space:normal;"><%= nc.descripcion %></td>
+              <td>
+                <% const colorImp = { critico:'#C42E2D', alto:'#E08600', medio:'#6B7280', bajo:'#6B7280' }[nc.impacto] || '#6B7280'; %>
+                <span style="color:<%= colorImp %>;"><%= nc.impacto %></span>
+                <% if (nc.bloqueante) { %><br/><small style="color:#C42E2D;">bloqueante</small><% } %>
+              </td>
+              <td><%= nc.reportadoPor || '—' %></td>
+              <td>
+                <% if (nc.resuelta) { %>
+                  <span style="color:var(--green-dark); font-weight:500;">✓ Resuelta</span>
+                  <% if (nc.resueltaPor) { %><br/><small style="color:var(--muted);">por <%= nc.resueltaPor %></small><% } %>
+                <% } else { %>
+                  <span style="color:#C42E2D; font-weight:500;">● Abierta</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (!nc.resuelta) { %>
+                  <form action="/noconformidad/<%= nc.id %>/resolver" method="POST" style="margin:0;">
+                    <button type="submit"
+                            class="btn-step btn-step--secondary"
+                            style="height:30px; padding:0 12px; font-size:11px;"
+                            onclick="return confirm('¿Marcar esta NC como resuelta?<%= nc.bloqueante ? \"\\\\n\\\\nEl lote volverá a estado en_produccion.\" : \"\" %>');">
+                      ✓ Resolver
+                    </button>
+                  </form>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>

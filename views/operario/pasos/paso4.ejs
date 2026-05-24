@@ -1,3 +1,12 @@
+<%# Datos previamente guardados por el operario en este paso (si existen) %>
+<%
+  const _datos = (lote && lote.pasos && lote.pasos[paso]) || {};
+  const D = (k, def = '') => (_datos[k] !== undefined && _datos[k] !== '') ? _datos[k] : def;
+  const C = (k) => (_datos[k] === true || _datos[k] === 'on' || _datos[k] === '1') ? 'checked' : '';
+  const _params = (typeof formula !== 'undefined' && formula && formula.paso4 && formula.paso4.parametros) || {};
+  const _rango = (def) => def ? (def.min + '–' + def.max + ' ' + (def.unidad || '')) : '';
+  const _ph = (def) => def ? (def.min + ' - ' + def.max) : '';
+%>
 <%# views/operario/pasos/paso4.ejs — Instructivo de manufactura (editable) %>
 <div class="step-page">
   <%- include('../partials/op-stepper-topbar') %>
@@ -15,35 +24,46 @@
           <h1 class="step-header__title">Instructivo de manufactura</h1>
         </div>
 
+        <% if (typeof flashError !== 'undefined' && flashError && flashError.length) { %>
+          <div class="step-card" style="border-left:3px solid #E24B4A; background:rgba(226,75,74,0.05);">
+            <p class="step-card__title" style="color:#C42E2D;">⚠ Parámetro fuera de rango BPM</p>
+            <% flashError.forEach(function(e) { %><p style="font-size:11px; color:#C42E2D; line-height:1.5;"><%= e %></p><% }) %>
+          </div>
+        <% } %>
+
         <div class="step-card">
-          <p class="step-card__title">Parámetros de la mezcla / granulación</p>
+          <p class="step-card__title">Parámetros de la mezcla / granulación — <%= lote.producto %></p>
           <div class="field-grid field-grid--2">
             <div class="field-group">
               <label class="field-label" for="temp_mezcla">Temperatura de mezcla (°C)</label>
-              <input class="field-value" type="number" step="0.1" id="temp_mezcla" name="temp_mezcla" placeholder="25 - 30">
+              <input class="field-value" type="number" step="0.1" id="temp_mezcla" name="temp_mezcla"
+                     placeholder="<%= _ph(_params.temp_mezcla) %>" value="<%= D('temp_mezcla') %>">
+              <% if (_params.temp_mezcla) { %><small style="color:var(--muted); font-size:10px;">Rango BPM: <%= _rango(_params.temp_mezcla) %></small><% } %>
             </div>
             <div class="field-group">
               <label class="field-label" for="vel_baja">Velocidad baja (rpm)</label>
-              <input class="field-value" type="number" id="vel_baja" name="vel_baja" placeholder="20">
+              <input class="field-value" type="number" id="vel_baja" name="vel_baja" placeholder="20" value="<%= D('vel_baja') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="vel_media">Velocidad media (rpm)</label>
-              <input class="field-value" type="number" id="vel_media" name="vel_media" placeholder="50">
+              <input class="field-value" type="number" id="vel_media" name="vel_media" placeholder="50" value="<%= D('vel_media') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="hora_inicio">Hora de inicio de la mezcla</label>
-              <input class="field-value" type="time" id="hora_inicio" name="hora_inicio">
+              <input class="field-value" type="time" id="hora_inicio" name="hora_inicio" value="<%= D('hora_inicio') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="temp_amasado">Temperatura de amasado (°C)</label>
-              <input class="field-value" type="number" step="0.1" id="temp_amasado" name="temp_amasado" placeholder="28 - 32">
+              <input class="field-value" type="number" step="0.1" id="temp_amasado" name="temp_amasado"
+                     placeholder="<%= _ph(_params.temp_amasado) %>" value="<%= D('temp_amasado') %>">
+              <% if (_params.temp_amasado) { %><small style="color:var(--muted); font-size:10px;">Rango BPM: <%= _rango(_params.temp_amasado) %></small><% } %>
             </div>
             <div class="field-group">
               <label class="field-label" for="homogeneidad">Homogeneidad visual</label>
               <select class="field-value" id="homogeneidad" name="homogeneidad">
                 <option value="">Selecciona...</option>
-                <option value="ok">Confirmada</option>
-                <option value="no">No conforme</option>
+                <option value="ok" <%= D('homogeneidad') === 'ok' ? 'selected' : '' %>>Confirmada</option>
+                <option value="no" <%= D('homogeneidad') === 'no' ? 'selected' : '' %>>No conforme</option>
               </select>
             </div>
           </div>
@@ -62,7 +82,7 @@
         <div class="step-card">
           <label class="step-card__title" for="observaciones">Observaciones del paso</label>
           <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
-                    rows="3" placeholder="Anota desviaciones en parámetros, ajustes de proceso..."></textarea>
+                    rows="3" placeholder="Anota desviaciones en parámetros, ajustes de proceso..."><%= D('observaciones') %></textarea>
         </div>
 
       </div>

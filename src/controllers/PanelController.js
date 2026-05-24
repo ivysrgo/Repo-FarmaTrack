@@ -1,70 +1,105 @@
 /**
- * src/controllers/PanelController.js
- * Panel de lotes activos — Director Técnico (RQF-06).
- *
- * Lee SIEMPRE desde LoteRepository: cualquier lote creado vía
- * /lotes/nuevo aparece automáticamente aquí.
+ * src/controllers/PanelController.js (Iteración 4 - bitácora real)
  */
 'use strict';
 
-const loteRepo = require('../repositories/LoteRepository');
+const loteService = require('../service/LoteService');
+const eventoService = require('../service/EventoService');
+const ncService = require('../service/NoConformidadService');
 
-// Los pendientes y la bitácora siguen siendo mock por ahora — su día llegará
-// cuando aparezcan FirmaRepository y EventoHistorialRepository.
-const PENDIENTES_MOCK = [
-  {
-    tipo: 'firma',
-    label: 'Firma pendiente',
-    loteId: 'FT-2026-0040',
-    producto: 'Loratadina 10mg',
-    accion: 'Firmar',
-    href: '/lotes/4/paso/9',
-  },
-  {
-    tipo: 'alerta',
-    label: 'Revisar desviación',
-    loteId: 'FT-2026-0044',
-    producto: 'Temperatura fuera de rango',
-    accion: 'Ver',
-    href: '/noconformidad/nueva',
-  },
-  {
-    tipo: 'calidad',
-    label: 'Comité de calidad',
-    loteId: '',
-    producto: 'Hoy 3:00 p.m. · Sala B · 3 lotes',
-    accion: 'Ver',
-    href: '/panel',
-  },
-];
+const VISUAL_POR_TIPO = {
+  lote_creado:          'info',
+  paso_completado:      'ok',
+  lote_pendiente_firma: 'warning',
+  lote_liberado:        'ok',
+  nc_reportada:         'warning',
+  lote_alerta_bpm:      'alert',
+};
 
-const BITACORA_MOCK = [
-  { tipo: 'ok',      texto: 'FT-2026-0041 · Paso 5 iniciado',        tiempo: 'Hace 12 min',  usuario: 'C. Rodríguez' },
-  { tipo: 'warning', texto: 'FT-2026-0042 · Pendiente verificación',  tiempo: 'Hace 28 min',  usuario: 'Sistema' },
-  { tipo: 'alert',   texto: 'FT-2026-0044 · Alerta BPM temperatura',  tiempo: 'Hace 1h 04m', usuario: 'Sistema' },
-  { tipo: 'info',    texto: 'FT-2026-0040 · Batch record generado',   tiempo: 'Hace 2h 15m', usuario: 'Sistema' },
-  { tipo: 'ok',      texto: 'FT-2026-0043 · Paso 7 completado',       tiempo: 'Hace 3h 02m', usuario: 'A. Gómez' },
-];
+function _tiempoRelativo(date) {
+  const min = Math.floor((Date.now() - new Date(date).getTime()) / 60000);
+  if (min < 1)  return 'Hace un momento';
+  if (min < 60) return `Hace ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24)   return `Hace ${h}h`;
+  const d = Math.floor(h / 24);
+  return `Hace ${d}d`;
+}
 
-/**
- * GET /panel
- */
-function getPanelDT(req, res) {
+function buildPendientes(lotes) {
+  const pendientes = [];
+  for (const l of lotes) {
+    const pasoTarget = l.pasoAlerta || l.pasoActual;
+    if (l.estado === 'pendiente_firma') {
+      pendientes.push({
+        tipo: 'firma', label: 'Firma pendiente',
+        loteId: l.numeroLote, producto: l.producto,
+        accion: 'Firmar', href: `/lotes/${l.id}/paso/9`,
+      });
+    } else if (l.estado === 'alerta_bpm') {
+      pendientes.push({
+        tipo: 'alerta', label: 'Revisar desviacion',
+        loteId: l.numeroLote,
+        producto: l.observaciones || 'Alerta BPM',
+        accion: 'Ver', href: `/lotes/${l.id}/paso/${pasoTarget}`,
+      });
+    } else if (l.estado === 'bloqueado') {
+      pendientes.push({
+        tipo: 'alerta', label: 'Lote bloqueado',
+        loteId: l.numeroLote,
+        producto: l.observaciones || 'Bloqueado',
+        accion: 'Ver', href: `/lotes/${l.id}/paso/${pasoTarget}`,
+      });
+    }
+  }
+  return pendientes;
+}
+
+async function _pasoAlertaPorLote() {
+  const ncs = await ncService.listar({ resuelta: false, bloqueante: true });
+  const map = new Map();
+  for (const nc of ncs) {
+    if (!nc.loteId || !nc.pasoLote) continue;
+    const key = String(nc.loteId);
+    if (!map.has(key)) map.set(key, nc.pasoLote);
+  }
+  return map;
+}
+
+async function getPanelDT(req, res) {
   const ahora = new Date();
   const fechaHoy = ahora.toLocaleDateString('es-CO', {
     weekday: 'long', day: 'numeric', month: 'short', year: 'numeric',
   }) + ' · ' + ahora.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
 
-  const usuario = res.locals.currentUser || { iniciales: 'DT', nombre: 'Director Técnico' };
-  const iniciales = usuario.nombre
-    ? usuario.nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+  const userLocal = res.locals.currentUser || { iniciales: 'DT', nombre: 'Director Tecnico' };
+  const iniciales = userLocal.nombre
+    ? userLocal.nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
     : 'DT';
 
-  // ⬇️ Una sola fuente de verdad: LoteRepository
-  const lotes  = loteRepo.findAll();
-  const counts = loteRepo.stats();
+  const lotes  = await loteService.findAll();
+  const counts = await loteService.stats();
 
-  // Mensajes flash (ej. "Orden creada con éxito" tras /lotes/nuevo)
+  const tasaBPM = counts.total > 0
+    ? Math.round((counts.liberados / counts.total) * 100)
+    : 100;
+
+  const pasoAlertaMap = await _pasoAlertaPorLote();
+  lotes.forEach(l => {
+    const key = String(l.id);
+    l.pasoAlerta = pasoAlertaMap.get(key) || null;
+  });
+
+  const pendientesReales = buildPendientes(lotes);
+
+  const ultimosEventos = await eventoService.listarUltimos(5);
+  const bitacoraReciente = ultimosEventos.map(e => ({
+    tipo:    VISUAL_POR_TIPO[e.tipo] || 'info',
+    texto:   e.texto,
+    tiempo:  _tiempoRelativo(e.createdAt),
+    usuario: e.usuario,
+  }));
+
   const okMsg    = req.flash ? req.flash('ok')    : [];
   const errorMsg = req.flash ? req.flash('error') : [];
 
@@ -72,20 +107,15 @@ function getPanelDT(req, res) {
     title: 'Panel de lotes activos',
     currentPath: '/panel',
     fechaHoy,
-    usuario: { iniciales, nombre: usuario.nombre || 'Director Técnico' },
+    usuario: { iniciales, nombre: userLocal.nombre || 'Director Tecnico' },
     flashOk:    okMsg,
     flashError: errorMsg,
-
     stats: {
       totalActivos:    counts.total,
-      deltaVsAyer:     2,                       // mock — luego viene de eventos históricos
       pendientesFirma: counts.pendientesFirma,
       alertasBPM:      counts.alertasBPM,
-      tasaBPM:         94,                      // mock — luego se calcula real
+      tasaBPM,
     },
-
-    // Conteos por estado para los filter-tabs (RQF-07)
-    // alertasBPM se agrupa bajo "en_produccion" porque son lotes activos con desvío
     tabCounts: {
       todos:           counts.total,
       en_produccion:   counts.enProduccion + counts.alertasBPM,
@@ -93,17 +123,16 @@ function getPanelDT(req, res) {
       pendiente_firma: counts.pendientesFirma,
       liberado:        counts.liberados,
     },
-
     lotes,
     resumen: {
-      lotesIniciados: counts.enProduccion + counts.pendientesFirma + counts.enCalidad,
+      lotesIniciados:  counts.enProduccion + counts.pendientesFirma + counts.enCalidad,
       pendientesFirma: counts.pendientesFirma,
-      alertasBPM:     counts.alertasBPM,
-      liberadosMes:   counts.liberados,
-      tasaBPM:        94,
+      alertasBPM:      counts.alertasBPM,
+      liberadosMes:    counts.liberados,
+      tasaBPM,
     },
-    pendientes: PENDIENTES_MOCK,
-    bitacora:   BITACORA_MOCK,
+    pendientes: pendientesReales,
+    bitacora:   bitacoraReciente,
   });
 }
 

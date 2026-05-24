@@ -1,12 +1,14 @@
 {
   "name": "farmatrack",
   "version": "1.0.0",
-  "description": "Sistema de Gestión de Lotes Farmacéuticos — FarmaTrack",
+  "description": "Sistema de Gestion de Lotes Farmaceuticos - FarmaTrack",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "seed": "node scripts/seed.js",
+    "seed:reset": "node scripts/seed.js --reset"
   },
   "type": "commonjs",
   "keywords": [],

@@ -1,37 +1,84 @@
 <%- /* views/panel/index.ejs — Panel de lotes activos (Director Técnico) RQF-06 */ %>
 
-<%# ── Mensajes flash (ej. "Orden creada" tras /lotes/nuevo) ─────────── %>
+<%# ── Mensajes flash (ej. "Orden creada" tras /lotes/nuevo) ───────────
+     Banner pulido: aparece adentro del fondo nude (margen consistente),
+     se cierra con la X o se auto-oculta a los 6s. %>
 <% if (typeof flashOk !== 'undefined' && flashOk && flashOk.length) { %>
-  <div class="flash flash--ok" role="status">
-    <span class="flash__icon">✓</span>
-    <span class="flash__text"><%= flashOk[0] %></span>
+  <div class="flash-wrap">
+    <div class="flash flash--ok" role="status" id="flashOk">
+      <span class="flash__icon">✓</span>
+      <span class="flash__text"><%= flashOk[0] %></span>
+      <button type="button" class="flash__close" aria-label="Cerrar"
+              onclick="this.parentElement.classList.add('flash--gone')">×</button>
+    </div>
   </div>
 <% } %>
 <% if (typeof flashError !== 'undefined' && flashError && flashError.length) { %>
-  <div class="flash flash--err" role="alert">
-    <span class="flash__icon">⚠</span>
-    <span class="flash__text"><%= flashError[0] %></span>
+  <div class="flash-wrap">
+    <div class="flash flash--err" role="alert" id="flashErr">
+      <span class="flash__icon">⚠</span>
+      <span class="flash__text"><%= flashError[0] %></span>
+      <button type="button" class="flash__close" aria-label="Cerrar"
+              onclick="this.parentElement.classList.add('flash--gone')">×</button>
+    </div>
   </div>
 <% } %>
 
 <style>
-  /* Banner flash que aparece arriba del panel después de un POST exitoso/erróneo */
+  /* Banner flash: vive dentro del fondo nude, con respiración propia. */
+  .flash-wrap {
+    padding: 16px 20px 0;
+    background: transparent;
+  }
   .flash {
-    margin: 10px 16px 0;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 12px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
     border: 0.5px solid transparent;
+    font-size: 13px;
+    line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    animation: flashIn 0.25s ease-out;
+    transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease;
+    max-height: 80px;
+    overflow: hidden;
+  }
+  .flash--gone {
+    opacity: 0;
+    transform: translateY(-6px);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    border-width: 0;
+    pointer-events: none;
+  }
+  @keyframes flashIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
   .flash__icon {
-    width: 20px; height: 20px;
+    width: 22px; height: 22px;
     border-radius: 50%;
     display: inline-flex; align-items: center; justify-content: center;
     font-weight: 600; flex-shrink: 0;
+    font-size: 12px;
   }
+  .flash__text { flex: 1; }
+  .flash__close {
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+  }
+  .flash__close:hover { opacity: 1; }
   .flash--ok {
     background: rgba(93, 202, 165, 0.12);
     border-color: var(--green-mid);
@@ -97,35 +144,6 @@
       </div>
     </div>
 
-    <!-- Filtros y búsqueda -->
-    <div class="panel-toolbar">
-      <div class="search-box">
-        <input
-          type="text"
-          class="search-box__input"
-          placeholder="Buscar lote, producto..."
-          id="buscarLote"
-        />
-      </div>
-      <div class="filter-tabs" id="filterTabs">
-        <button class="filter-tab filter-tab--active" data-filter="todos" data-count="<%= tabCounts.todos %>" onclick="setFiltro(this, 'todos')">
-          Todos <span class="filter-tab__badge"><%= tabCounts.todos %></span>
-        </button>
-        <button class="filter-tab" data-filter="en_produccion" data-count="<%= tabCounts.en_produccion %>" onclick="setFiltro(this, 'en_produccion')">
-          En producción <% if (tabCounts.en_produccion > 0) { %><span class="filter-tab__badge"><%= tabCounts.en_produccion %></span><% } %>
-        </button>
-        <button class="filter-tab" data-filter="en_calidad" data-count="<%= tabCounts.en_calidad %>" onclick="setFiltro(this, 'en_calidad')">
-          En calidad <% if (tabCounts.en_calidad > 0) { %><span class="filter-tab__badge"><%= tabCounts.en_calidad %></span><% } %>
-        </button>
-        <button class="filter-tab" data-filter="pendiente_firma" data-count="<%= tabCounts.pendiente_firma %>" onclick="setFiltro(this, 'pendiente_firma')">
-          Pendiente lib. <% if (tabCounts.pendiente_firma > 0) { %><span class="filter-tab__badge filter-tab__badge--warning"><%= tabCounts.pendiente_firma %></span><% } %>
-        </button>
-        <button class="filter-tab" data-filter="liberado" data-count="<%= tabCounts.liberado %>" onclick="setFiltro(this, 'liberado')">
-          Liberados <% if (tabCounts.liberado > 0) { %><span class="filter-tab__badge filter-tab__badge--success"><%= tabCounts.liberado %></span><% } %>
-        </button>
-      </div>
-
-    </div>
 
     <!-- Lista de lotes -->
     <section class="lotes-section">
@@ -171,7 +189,7 @@
                 <span class="lote-card__tiempo"><%= lote.tiempoTranscurrido %></span>
               </div>
               <% if (lote.estado === 'alerta_bpm') { %>
-                <span class="lote-card__alerta-label">⚠ Desviación BPM detectada · Paso <%= lote.pasoActual %>/9</span>
+                <span class="lote-card__alerta-label">⚠ Desviación BPM detectada · Paso <%= lote.pasoAlerta || lote.pasoActual %>/9</span>
               <% } %>
             </div>
 
@@ -185,7 +203,7 @@
               <% } else if (lote.estado === 'en_calidad') { %>
                 <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoActual %>" class="btn btn--secondary btn--sm">Ver resultados</a>
               <% } else if (lote.estado === 'alerta_bpm') { %>
-                <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoActual %>" class="btn btn--alert btn--sm">Ver alerta</a>
+                <a href="/lotes/<%= lote.id %>/paso/<%= lote.pasoAlerta || lote.pasoActual %>" class="btn btn--alert btn--sm">Ver alerta</a>
               <% } else { %>
                 <a href="/lotes/<%= lote.id %>" class="btn btn--secondary btn--sm">Ver detalle</a>
               <% } %>
@@ -196,11 +214,6 @@
         <% }); %>
       </div>
 
-      <% if (lotes.length > 4) { %>
-        <button class="ver-todos-btn" onclick="verTodos()">
-          + <%= lotes.length - 4 %> lotes adicionales · Ver todos →
-        </button>
-      <% } %>
     </section>
 
   </div><!-- /panel-main -->
@@ -273,99 +286,19 @@
 
 </div><!-- /panel-layout -->
 
-<!-- ── Script de filtrado y búsqueda (RQF-07) ─────────────────────── -->
+<!-- ── Auto-dismiss del flash de liberación a los 6s ─────────────── -->
 <script>
-  // ── Estado global ────────────────────────────────────────────────
-  var _filtroActivo = 'todos';
-
-  var FILTRO_MAP = {
-    en_produccion:   'en_produccion',
-    alerta_bpm:      'en_produccion',
-    en_espera:       'en_produccion',
-    en_calidad:      'en_calidad',
-    bloqueado:       'en_calidad',
-    pendiente_firma: 'pendiente_firma',
-    liberado:        'liberado',
-    rechazado:       'liberado',
-  };
-
-  // ── Función central: filtro + buscador ──────────────────────────
-  function aplicarFiltros() {
-    var inputEl = document.getElementById('buscarLote');
-    var q = inputEl ? inputEl.value.toLowerCase().trim() : '';
-    var cards = document.querySelectorAll('#lotesLista .lote-card');
-    var visibles = 0;
-
-    cards.forEach(function(card) {
-      var estado = card.getAttribute('data-estado') || '';
-      var nombre = card.getAttribute('data-nombre') || '';
-      var id     = card.getAttribute('data-id')     || '';
-
-      var coincideTexto  = !q || nombre.indexOf(q) !== -1 || id.indexOf(q) !== -1;
-      var coincideFiltro = _filtroActivo === 'todos'
-        ? true
-        : (estado === _filtroActivo || FILTRO_MAP[estado] === _filtroActivo);
-
-      if (coincideTexto && coincideFiltro) {
-        card.style.display = '';
-        visibles++;
-      } else {
-        card.style.display = 'none';
-      }
-    });
-
-    actualizarUI(visibles);
-  }
-
-  // ── Cambiar tab activo ───────────────────────────────────────────
-  function setFiltro(btn, filtro) {
-    _filtroActivo = filtro;
-    document.querySelectorAll('.filter-tab').forEach(function(b) {
-      b.classList.remove('filter-tab--active');
-    });
-    btn.classList.add('filter-tab--active');
-    aplicarFiltros();
-  }
-
-  // ── Actualizar título, contador y estado vacío ──────────────────
-  function actualizarUI(visibles) {
-    var lista = document.getElementById('lotesLista');
-    if (!lista) return;
-
-    var tabActivo  = document.querySelector('.filter-tab--active');
-    var labelTexto = tabActivo ? tabActivo.firstChild.textContent.trim() : 'Lotes en curso';
-
-    var titulo = document.getElementById('lotesSectionTitle');
-    if (titulo) titulo.textContent = _filtroActivo === 'todos' ? 'Lotes en curso' : labelTexto;
-
-    var contador = document.getElementById('lotesCount');
-    if (contador) contador.textContent =
-      visibles + (visibles === 1 ? ' lote' : ' lotes') +
-      (_filtroActivo !== 'todos' ? ' en este estado' : '') +
-      ' · actualizado hace 2 min';
-
-    var hayVacio = lista.querySelector('.lotes-vacio');
-    if (visibles === 0 && !hayVacio) {
-      var el = document.createElement('div');
-      el.className = 'lotes-vacio';
-      el.innerHTML = '<span class="lotes-vacio__icon">📋</span><p class="lotes-vacio__texto">No hay lotes en este estado.</p>';
-      lista.appendChild(el);
-    } else if (visibles > 0 && hayVacio) {
-      hayVacio.remove();
+  (function() {
+    function autoDismissFlash() {
+      ['flashOk', 'flashErr'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) setTimeout(function() { el.classList.add('flash--gone'); }, 6000);
+      });
     }
-  }
-
-  // ── Ver todos ────────────────────────────────────────────────────
-  function verTodos() {
-    var btn = document.querySelector('.ver-todos-btn');
-    if (btn) btn.remove();
-    aplicarFiltros();
-  }
-
-  // ── Arranque cuando el DOM esté listo ───────────────────────────
-  window.addEventListener('load', function() {
-    var inputBuscar = document.getElementById('buscarLote');
-    if (inputBuscar) inputBuscar.addEventListener('input', aplicarFiltros);
-    aplicarFiltros();
-  });
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', autoDismissFlash);
+    } else {
+      autoDismissFlash();
+    }
+  })();
 </script>

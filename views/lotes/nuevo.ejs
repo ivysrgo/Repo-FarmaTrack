@@ -72,8 +72,11 @@
         <div class="field-grid" style="margin-bottom:var(--sp3);">
           <div class="field-group">
             <label class="field-label" for="producto">Producto a fabricar</label>
+            <%# Texto libre — el nombre comercial puede variar (ej. "Amoxident 500"
+                aplicando la fórmula maestra de "Amoxicilina 500 mg"). %>
             <input class="field-value" type="text" id="producto" name="producto"
-                   placeholder="Escribe el nombre del producto..." value="<%= v('producto') %>" required>
+                   placeholder="Escribe el nombre del producto..."
+                   value="<%= v('producto') %>" required>
           </div>
         </div>
 
@@ -127,7 +130,8 @@
             <label class="field-label" for="operario">Operario de producción</label>
             <select class="field-value" id="operario" name="operario" required>
               <option value="">Selecciona operario...</option>
-              <% ['Carlos Rodríguez','Luisa Martínez','Andrés Gómez','María Torres','Felipe Díaz','Valentina Cruz'].forEach(function(op) { %>
+              <% const _operarios = (typeof operariosLista !== 'undefined' && operariosLista && operariosLista.length) ? operariosLista : ['Carlos Rodríguez','Luisa Martínez','Andrés Gómez','María Torres','Felipe Díaz']; %>
+              <% _operarios.forEach(function(op) { %>
                 <option value="<%= op %>" <%= v('operario') === op ? 'selected' : '' %>><%= op %></option>
               <% }); %>
             </select>
@@ -139,7 +143,8 @@
             <label class="field-label" for="jefeCalidad">Jefe de calidad asignado</label>
             <select class="field-value" id="jefeCalidad" name="jefeCalidad" required>
               <option value="">Selecciona jefe de calidad...</option>
-              <% ['Patricia Henao','Roberto Vega','Sofía Restrepo'].forEach(function(jc) { %>
+              <% const _jefes = (typeof jefesCalidadLista !== 'undefined' && jefesCalidadLista && jefesCalidadLista.length) ? jefesCalidadLista : ['Patricia Henao','Roberto Vega','Sofía Restrepo']; %>
+              <% _jefes.forEach(function(jc) { %>
                 <option value="<%= jc %>" <%= v('jefeCalidad') === jc ? 'selected' : '' %>><%= jc %></option>
               <% }); %>
             </select>
@@ -162,42 +167,43 @@
           <span class="nuevo-seccion__num">3</span>
           <h2 class="nuevo-seccion__titulo">Fórmula maestra</h2>
         </header>
+        <p class="nuevo-seccion__hint">
+          Elige una de las fórmulas maestras registradas. Sus MPs y rangos BPM
+          son los que el operario debe respetar en cada paso del stepper.
+        </p>
 
-        <div class="formula-search">
-          <input class="field-value" type="text" id="formulaMaestra" name="formulaMaestra"
-                 placeholder="Selecciona o busca la fórmula maestra registrada..." value="<%= v('formulaMaestra') %>">
-          <a href="#" class="formula-nueva" onclick="event.preventDefault();">+ Nueva fórmula</a>
+        <div class="field-grid" style="margin-bottom:var(--sp3);">
+          <div class="field-group">
+            <label class="field-label" for="formulaId">Fórmula maestra a aplicar</label>
+            <select class="field-value" id="formulaId" name="formulaId" required>
+              <option value="">Selecciona la fórmula maestra registrada...</option>
+              <% (typeof productosConFormula !== 'undefined' ? productosConFormula : []).forEach(function(f) { %>
+                <option value="<%= f %>" <%= v('formulaId') === f ? 'selected' : '' %>><%= f %></option>
+              <% }); %>
+            </select>
+            <small style="font-size:10px; color:var(--muted); margin-top:4px; display:block;">
+              Solo se pueden iniciar lotes con una fórmula maestra ya registrada en el sistema.
+            </small>
+          </div>
         </div>
 
-        <div class="formula-tabla-wrap">
+        <div id="formula-empty" class="formula-empty">
+          <span style="color:var(--muted); font-size:12px;">Selecciona una fórmula arriba para ver las materias primas y rangos correspondientes.</span>
+        </div>
+
+        <div id="formula-content" class="formula-tabla-wrap" style="display:none;">
           <table class="step-table">
             <thead>
               <tr>
                 <th>Materia prima</th>
                 <th>Cantidad</th>
                 <th>Unidad</th>
-                <th>Estado</th>
+                <th>Rango BPM</th>
+                <th>Estado stock</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>Amoxicilina trihidrato</td>
-                <td>2,500</td>
-                <td>g</td>
-                <td><span class="estado-pill estado-pill--ok">Disponible</span></td>
-              </tr>
-              <tr>
-                <td>Celulosa microcristalina</td>
-                <td>800</td>
-                <td>g</td>
-                <td><span class="estado-pill estado-pill--ok">Disponible</span></td>
-              </tr>
-              <tr>
-                <td>Almidón de maíz</td>
-                <td>400</td>
-                <td>g</td>
-                <td><span class="estado-pill estado-pill--warn">Stock bajo</span></td>
-              </tr>
+            <tbody id="formula-mp-body">
+              <!-- filas inyectadas por JS según producto -->
             </tbody>
           </table>
         </div>
@@ -208,6 +214,11 @@
                     rows="3" placeholder="Observaciones adicionales del paso..."><%= v('observaciones') %></textarea>
         </div>
       </section>
+
+      <%# Datos de fórmulas + stock embebidos para que el script abajo
+           pueda renderizar la tabla sin AJAX. Vienen del controller. %>
+      <script id="formulas-data" type="application/json"><%- typeof formulasJson !== 'undefined' ? formulasJson : '{}' %></script>
+      <script id="stock-data"    type="application/json"><%- typeof stockMapJson !== 'undefined' ? stockMapJson : '{}' %></script>
 
       <!-- Confirmaciones previas al inicio -->
       <section class="nuevo-confirmaciones">
@@ -346,21 +357,13 @@
     margin-bottom: var(--sp4);
   }
 
-  /* ── Fórmula maestra (búsqueda + tabla) ──────────────────── */
-  .formula-search {
-    display: flex; gap: var(--sp2); align-items: center;
-    margin-bottom: var(--sp3);
+  /* ── Fórmula maestra (preview de la fórmula del producto) ──── */
+  .formula-empty {
+    padding: 14px 16px;
+    background: var(--input-bg, #f6f4ee);
+    border: 0.5px dashed var(--border);
+    border-radius: 10px;
   }
-  .formula-search .field-value { flex: 1; }
-  .formula-nueva {
-    color: var(--green-dark);
-    font-size: var(--fs-label);
-    font-weight: var(--fw-medium);
-    text-decoration: none;
-    white-space: nowrap;
-    padding: 0 var(--sp2);
-  }
-  .formula-nueva:hover { text-decoration: underline; }
 
   .formula-tabla-wrap {
     background: var(--white);
@@ -386,6 +389,11 @@
     background: rgba(232, 240, 85, 0.35);
     border: 0.5px solid #c5c930;
     color: #555800;
+  }
+  .estado-pill--alert {
+    background: rgba(226, 75, 74, 0.10);
+    border: 0.5px solid #E24B4A;
+    color: #C42E2D;
   }
 
   /* ── Confirmaciones (checkboxes en grid) ──────────────────── */
@@ -485,3 +493,56 @@
     .confirmaciones-grid { grid-template-columns: 1fr; }
   }
 </style>
+
+<script>
+  // Preview dinámico de la fórmula maestra cuando el DT elige producto.
+  // No hace AJAX: las fórmulas y el stock vienen embebidos como JSON
+  // desde el controller (script#formulas-data y script#stock-data).
+  (function() {
+    const formulas = JSON.parse(document.getElementById('formulas-data').textContent || '{}');
+    const stock    = JSON.parse(document.getElementById('stock-data').textContent || '{}');
+    const sel      = document.getElementById('formulaId');
+    const empty    = document.getElementById('formula-empty');
+    const content  = document.getElementById('formula-content');
+    const tbody    = document.getElementById('formula-mp-body');
+
+    function pillEstado(estado) {
+      if (estado === 'agotado') return '<span class="estado-pill estado-pill--alert">Agotado</span>';
+      if (estado === 'bajo')    return '<span class="estado-pill estado-pill--warn">Stock bajo</span>';
+      if (estado === 'ok')      return '<span class="estado-pill estado-pill--ok">Disponible</span>';
+      return '<span class="estado-pill" style="background:var(--input-bg);color:var(--muted);">No catalogada</span>';
+    }
+
+    function pintarFormula(prod) {
+      const f = formulas[prod];
+      if (!f || !f.paso2 || !Array.isArray(f.paso2.materias)) {
+        empty.style.display = 'block';
+        content.style.display = 'none';
+        return;
+      }
+      empty.style.display = 'none';
+      content.style.display = 'block';
+      tbody.innerHTML = f.paso2.materias.map(function(mp) {
+        const st = stock[mp.codigo];
+        const estado = st ? st.estado : null;
+        const rango = (mp.min !== undefined && mp.max !== undefined)
+          ? (mp.min + '–' + mp.max + ' ' + (mp.espUnidad || ''))
+          : '—';
+        return '<tr>'
+          + '<td>' + mp.nombre + ' <span style="color:var(--muted); font-size:10px;">(' + (mp.codigo || '') + ')</span></td>'
+          + '<td>' + mp.espNum + '</td>'
+          + '<td>' + (mp.espUnidad || '') + '</td>'
+          + '<td style="font-size:11px; color:var(--muted);">' + rango + '</td>'
+          + '<td>' + pillEstado(estado) + '</td>'
+          + '</tr>';
+      }).join('');
+    }
+
+    // Estado inicial: si el form viene re-renderizado con un producto
+    // seleccionado (caso error), mostramos su fórmula. Si no, vacío.
+    if (sel) {
+      sel.addEventListener('change', function() { pintarFormula(sel.value); });
+      if (sel.value) pintarFormula(sel.value);
+    }
+  })();
+</script>

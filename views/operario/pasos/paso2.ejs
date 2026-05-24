@@ -1,3 +1,18 @@
+<%# Datos previamente guardados por el operario en este paso (si existen) %>
+<%
+  const _datos = (lote && lote.pasos && lote.pasos[paso]) || {};
+  const D = (k, def = '') => (_datos[k] !== undefined && _datos[k] !== '') ? _datos[k] : def;
+  const C = (k) => (_datos[k] === true || _datos[k] === 'on' || _datos[k] === '1') ? 'checked' : '';
+  // Materias primas: de la fórmula del producto. Si no hay fórmula, usamos
+  // un set genérico (legacy) para que la vista no se rompa.
+  const _materiasFormula = (typeof formula !== 'undefined' && formula && formula.paso2 && formula.paso2.materias)
+    ? formula.paso2.materias
+    : [
+        { nombre:'Materia prima 1', espNum:'',      espUnidad:'', min:null, max:null },
+        { nombre:'Materia prima 2', espNum:'',      espUnidad:'', min:null, max:null },
+        { nombre:'Materia prima 3', espNum:'',      espUnidad:'', min:null, max:null },
+      ];
+%>
 <%# views/operario/pasos/paso2.ejs — Traslado de materias primas (editable) %>
 <div class="step-page">
   <%- include('../partials/op-stepper-topbar') %>
@@ -15,35 +30,51 @@
           <h1 class="step-header__title">Traslado de materias primas</h1>
         </div>
 
-        <!-- Tabla editable de materias primas -->
+        <% if (typeof flashError !== 'undefined' && flashError && flashError.length) { %>
+          <div class="step-card" style="border-left:3px solid #E24B4A; background:rgba(226,75,74,0.05);">
+            <p class="step-card__title" style="color:#C42E2D;">⚠ Valor fuera de rango BPM</p>
+            <% flashError.forEach(function(e) { %><p style="font-size:11px; color:#C42E2D; line-height:1.5;"><%= e %></p><% }) %>
+          </div>
+        <% } %>
+
+        <!-- Tabla editable de materias primas (de la fórmula del producto) -->
         <div class="step-card">
-          <p class="step-card__title">Recepción de materias primas en laboratorio</p>
+          <p class="step-card__title">Recepción de materias primas — <%= lote.producto %></p>
+          <% if (typeof formula === 'undefined' || !formula) { %>
+            <p style="font-size:11px; color:var(--muted); margin-bottom:8px;">
+              ⓘ Este producto no tiene fórmula registrada — la tabla aparece sin rangos esperados.
+            </p>
+          <% } %>
           <table class="step-table">
             <thead>
               <tr>
                 <th>Materia prima</th>
                 <th>Cantidad esperada</th>
+                <th>Rango BPM</th>
                 <th>Cantidad recibida</th>
                 <th>Estado</th>
               </tr>
             </thead>
             <tbody>
-              <% const mp = [
-                { nombre:'Amoxicilina trihidrato',  esp:'2,500 g' },
-                { nombre:'Celulosa microcristalina', esp:'800 g'  },
-                { nombre:'Almidón de maíz',          esp:'400 g'  },
-                { nombre:'Estearato de magnesio',    esp:'20 g'   },
-                { nombre:'Dióxido de silicio',       esp:'15 g'   },
-              ]; %>
-              <% mp.forEach((m, i) => { %>
+              <% _materiasFormula.forEach(function(m, i) { %>
+                <% const _prev = (_datos.materias && _datos.materias[i]) || {}; %>
                 <tr>
                   <td><%= m.nombre %></td>
-                  <td><%= m.esp %></td>
-                  <td><input type="text" name="mp_<%= i %>_recibida" placeholder="<%= m.esp %>"></td>
+                  <td><%= m.espNum %> <%= m.espUnidad %></td>
+                  <td style="font-size:11px; color:var(--muted);">
+                    <% if (m.min !== null && m.min !== undefined) { %>
+                      <%= m.min %>–<%= m.max %> <%= m.espUnidad %>
+                    <% } else { %>—<% } %>
+                  </td>
+                  <td>
+                    <input type="number" step="0.1" name="mp_<%= i %>_recibida"
+                           placeholder="<%= m.espNum %>"
+                           value="<%= _prev.recibida || '' %>">
+                  </td>
                   <td>
                     <select name="mp_<%= i %>_estado">
-                      <option value="conforme">Conforme</option>
-                      <option value="no_conforme">No conforme</option>
+                      <option value="conforme"     <%= _prev.estado === 'conforme' ? 'selected' : '' %>>Conforme</option>
+                      <option value="no_conforme"  <%= _prev.estado === 'no_conforme' ? 'selected' : '' %>>No conforme</option>
                     </select>
                   </td>
                 </tr>
@@ -65,7 +96,7 @@
         <div class="step-card">
           <label class="step-card__title" for="observaciones">Observaciones del paso</label>
           <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
-                    rows="3" placeholder="Estado de los embalajes, novedades de la cadena de frío..."></textarea>
+                    rows="3" placeholder="Estado de los embalajes, novedades de la cadena de frío..."><%= D('observaciones') %></textarea>
         </div>
 
       </div>

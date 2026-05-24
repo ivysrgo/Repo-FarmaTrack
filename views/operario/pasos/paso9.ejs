@@ -1,3 +1,9 @@
+<%# Datos previamente guardados por el operario en este paso (si existen) %>
+<%
+  const _datos = (lote && lote.pasos && lote.pasos[paso]) || {};
+  const D = (k, def = '') => (_datos[k] !== undefined && _datos[k] !== '') ? _datos[k] : def;
+  const C = (k) => (_datos[k] === true || _datos[k] === 'on' || _datos[k] === '1') ? 'checked' : '';
+%>
 <%# views/operario/pasos/paso9.ejs — Etiquetado + Notificación al DT (paso terminal del operario) %>
 <div class="step-page">
   <%- include('../partials/op-stepper-topbar') %>
@@ -54,22 +60,22 @@
             <div class="field-group">
               <label class="field-label" for="fecha_fab">Fecha de fabricación</label>
               <input class="field-value" type="date" id="fecha_fab" name="fecha_fab"
-                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>>
+                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : ''  %> value="<%= D('fecha_fab') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="fecha_venc">Fecha de vencimiento</label>
               <input class="field-value" type="date" id="fecha_venc" name="fecha_venc"
-                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>>
+                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : ''  %> value="<%= D('fecha_venc') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="unidades_etiquetadas">Unidades etiquetadas</label>
               <input class="field-value" type="number" id="unidades_etiquetadas" name="unidades_etiquetadas" placeholder="0"
-                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>>
+                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : ''  %> value="<%= D('unidades_etiquetadas') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="registro_sanitario">N° de registro sanitario</label>
               <input class="field-value" type="text" id="registro_sanitario" name="registro_sanitario" placeholder="INVIMA..."
-                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>>
+                     <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : ''  %> value="<%= D('registro_sanitario') %>">
             </div>
           </div>
         </div>
@@ -99,7 +105,7 @@
           <label class="step-card__title" for="observaciones">Observaciones finales del operario</label>
           <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
                     rows="3" placeholder="Cualquier nota relevante para el DT antes de la firma..."
-                    <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>></textarea>
+                    <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'readonly' : '' %>><%= D('observaciones') %></textarea>
         </div>
 
       </div>

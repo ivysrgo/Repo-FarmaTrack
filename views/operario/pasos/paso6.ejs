@@ -1,3 +1,9 @@
+<%# Datos previamente guardados por el operario en este paso (si existen) %>
+<%
+  const _datos = (lote && lote.pasos && lote.pasos[paso]) || {};
+  const D = (k, def = '') => (_datos[k] !== undefined && _datos[k] !== '') ? _datos[k] : def;
+  const C = (k) => (_datos[k] === true || _datos[k] === 'on' || _datos[k] === '1') ? 'checked' : '';
+%>
 <%# views/operario/pasos/paso6.ejs — Retiro de marmita (editable) %>
 <div class="step-page">
   <%- include('../partials/op-stepper-topbar') %>
@@ -24,15 +30,15 @@
             </div>
             <div class="field-group">
               <label class="field-label" for="cant_obtenida">Cantidad obtenida</label>
-              <input class="field-value" type="number" id="cant_obtenida" name="cant_obtenida" placeholder="unidades">
+              <input class="field-value" type="number" id="cant_obtenida" name="cant_obtenida" placeholder="unidades" value="<%= D('cant_obtenida') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="hora_retiro">Hora de retiro</label>
-              <input class="field-value" type="time" id="hora_retiro" name="hora_retiro">
+              <input class="field-value" type="time" id="hora_retiro" name="hora_retiro" value="<%= D('hora_retiro') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="destino">Destino del producto</label>
-              <input class="field-value" type="text" id="destino" name="destino" placeholder="Ej: Área de empaque — Mesa 3">
+              <input class="field-value" type="text" id="destino" name="destino" placeholder="Ej: Área de empaque — Mesa 3" value="<%= D('destino') %>">
             </div>
             <div class="field-group" style="grid-column: span 2;">
               <label class="field-label" for="condicion">Condición del producto</label>
@@ -59,7 +65,7 @@
         <div class="step-card">
           <label class="step-card__title" for="observaciones">Observaciones del paso</label>
           <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
-                    rows="3" placeholder="Rendimiento, novedades del retiro..."></textarea>
+                    rows="3" placeholder="Rendimiento, novedades del retiro..."><%= D('observaciones') %></textarea>
         </div>
 
       </div>

@@ -1,3 +1,9 @@
+<%# Datos previamente guardados por el operario en este paso (si existen) %>
+<%
+  const _datos = (lote && lote.pasos && lote.pasos[paso]) || {};
+  const D = (k, def = '') => (_datos[k] !== undefined && _datos[k] !== '') ? _datos[k] : def;
+  const C = (k) => (_datos[k] === true || _datos[k] === 'on' || _datos[k] === '1') ? 'checked' : '';
+%>
 <%# views/operario/pasos/paso7.ejs — Empaque y tapado (editable) %>
 <div class="step-page">
   <%- include('../partials/op-stepper-topbar') %>
@@ -20,31 +26,31 @@
           <div class="field-grid field-grid--3">
             <div class="field-group">
               <label class="field-label" for="tipo_envase">Tipo de envase</label>
-              <input class="field-value" type="text" id="tipo_envase" name="tipo_envase" placeholder="Ej: Frasco PET 60ml">
+              <input class="field-value" type="text" id="tipo_envase" name="tipo_envase" placeholder="Ej: Frasco PET 60ml" value="<%= D('tipo_envase') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="lote_envases">Lote de envases</label>
-              <input class="field-value" type="text" id="lote_envases" name="lote_envases" placeholder="ENV-2026-...">
+              <input class="field-value" type="text" id="lote_envases" name="lote_envases" placeholder="ENV-2026-..." value="<%= D('lote_envases') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="lote_etiquetas">Lote de etiquetas</label>
-              <input class="field-value" type="text" id="lote_etiquetas" name="lote_etiquetas" placeholder="ETQ-2026-...">
+              <input class="field-value" type="text" id="lote_etiquetas" name="lote_etiquetas" placeholder="ETQ-2026-..." value="<%= D('lote_etiquetas') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="unidades_empacadas">Unidades empacadas</label>
-              <input class="field-value" type="number" id="unidades_empacadas" name="unidades_empacadas" placeholder="0">
+              <input class="field-value" type="number" id="unidades_empacadas" name="unidades_empacadas" placeholder="0" value="<%= D('unidades_empacadas') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="unidades_descartadas">Unidades descartadas</label>
-              <input class="field-value" type="number" id="unidades_descartadas" name="unidades_descartadas" placeholder="0">
+              <input class="field-value" type="number" id="unidades_descartadas" name="unidades_descartadas" placeholder="0" value="<%= D('unidades_descartadas') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="hora_inicio_emp">Hora de inicio</label>
-              <input class="field-value" type="time" id="hora_inicio_emp" name="hora_inicio_emp">
+              <input class="field-value" type="time" id="hora_inicio_emp" name="hora_inicio_emp" value="<%= D('hora_inicio_emp') %>">
             </div>
             <div class="field-group">
               <label class="field-label" for="hora_fin_emp">Hora de fin</label>
-              <input class="field-value" type="time" id="hora_fin_emp" name="hora_fin_emp">
+              <input class="field-value" type="time" id="hora_fin_emp" name="hora_fin_emp" value="<%= D('hora_fin_emp') %>">
             </div>
           </div>
         </div>
@@ -62,7 +68,7 @@
         <div class="step-card">
           <label class="step-card__title" for="observaciones">Observaciones del paso</label>
           <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
-                    rows="3" placeholder="Defectos detectados, descartes, novedades de línea..."></textarea>
+                    rows="3" placeholder="Defectos detectados, descartes, novedades de línea..."><%= D('observaciones') %></textarea>
         </div>
 
       </div>

@@ -1,9 +1,17 @@
 /**
- * src/app.js — FarmaTrack
- * Punto de entrada principal.
- * Integra: Login (bahos) + Panel/Lotes (base + sergio) + No-conformidades (base)
+ * src/app.js - FarmaTrack
+ *
+ * Bootstrap de la app:
+ *   1. Carga .env (dotenv)
+ *   2. Conecta a MongoDB Atlas si MONGO_URI esta definida
+ *   3. Levanta el servidor Express
+ *
+ * El composition root de los repositorios (memoria vs Mongo) vive en
+ * src/repositories/index.js y se inicializa lazy cuando los services lo piden.
  */
 'use strict';
+
+require('dotenv').config();
 
 const express        = require('express');
 const path           = require('path');
@@ -12,9 +20,8 @@ const session        = require('express-session');
 const flash          = require('connect-flash');
 const methodOverride = require('method-override');
 const expressLayouts = require('express-ejs-layouts');
-require('dotenv').config();
-const connectDB = require('../config/db');
 
+const { connectMongo } = require('./config/mongo');
 const config = require('../config/app');
 const router = require('./routes/index');
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
@@ -25,7 +32,7 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', 'views'));
 app.use(expressLayouts);
-app.set('layout', 'layouts/main');        // layout principal con sidebar
+app.set('layout', 'layouts/main');
 app.set('layout extractScripts', true);
 app.set('layout extractStyles', true);
 
@@ -36,57 +43,54 @@ app.use(express.json());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// ── Sesión ──────────────────────────────────────────────────────
+// ── Sesion ──────────────────────────────────────────────────────
 app.use(session({
   secret:            config.session.secret,
   resave:            false,
   saveUninitialized: false,
-  cookie: {
-    maxAge:   config.session.maxAge,
-    httpOnly: true,
-  },
+  cookie: { maxAge: config.session.maxAge, httpOnly: true },
 }));
 
-// ── Flash messages ──────────────────────────────────────────────
 app.use(flash());
 
-// ── Variables globales para todas las vistas ───────────────────
-// dashboardPath: a dónde "vuelvo a casa" según el rol del usuario logueado.
-//   - operario          → /mis-lotes
-//   - director_tecnico  → /panel
-//   - sin sesión        → /panel (default seguro)
-// Esta variable la consumen bienvenida.ejs, el sidebar, los breadcrumbs
-// "Volver al panel" del stepper y la página de error. Centralizada acá
-// para que cambiar la regla sea modificar UNA línea, no diez vistas.
+// ── Locals globales para vistas ─────────────────────────────────
 app.use((req, res, next) => {
   const usuario = req.session.usuario || null;
   const rol     = usuario && usuario.rol;
 
-  res.locals.appName       = config.app.name;
-  res.locals.currentPath   = req.path;
-  res.locals.currentUser   = usuario;
-  res.locals.dashboardPath = rol === 'operario' ? '/mis-lotes' : '/panel';
+  res.locals.appName        = config.app.name;
+  res.locals.currentPath    = req.path;
+  res.locals.currentUser    = usuario;
+  res.locals.dashboardPath  = rol === 'operario' ? '/mis-lotes' : '/panel';
   res.locals.dashboardLabel = rol === 'operario' ? 'Mis lotes asignados' : 'Panel de lotes';
-
   next();
 });
 
-// ── Rutas ───────────────────────────────────────────────────────
 app.use('/', router);
-
-// ── Manejo de errores ───────────────────────────────────────────
 app.use(notFound);
 app.use(errorHandler);
 
-
 // ── Arranque ────────────────────────────────────────────────────
-connectDB();
-const { port, host } = config.server;
-app.listen(port, () => {
-  console.log(`\n🚀 FarmaTrack corriendo en: http://${host}:${port}`);
-  console.log(`🔐 Login:  http://${host}:${port}/auth/login`);
-  console.log(`📋 Panel:  http://${host}:${port}/panel`);
-  console.log(`🏭 Lotes:  http://${host}:${port}/lotes\n`);
-});
+async function start() {
+  try {
+    await connectMongo();   // null si MONGO_URI no esta - la app sigue con repos memoria
+  } catch (err) {
+    console.error('[app] Conexion a Mongo fallo. La app NO arrancara.');
+    process.exit(1);
+  }
+
+  const { port, host } = config.server;
+  app.listen(port, () => {
+    console.log(`\nFarmaTrack corriendo en: http://${host}:${port}`);
+    console.log(`Login: http://${host}:${port}/auth/login`);
+    console.log(`Panel: http://${host}:${port}/panel`);
+    console.log(`Lotes: http://${host}:${port}/lotes\n`);
+  });
+}
+
+// Solo arrancamos cuando se ejecuta directamente (no en tests/imports)
+if (require.main === module) {
+  start();
+}
 
 module.exports = app;

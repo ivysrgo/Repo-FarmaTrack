@@ -18,6 +18,19 @@
   </div>
 </div>
 
+<%# Banner global de errores: lo muestran TODAS las vistas del operario
+     (paso 1-9) sin que cada una tenga que repetir el markup. Se pinta
+     cuando postPaso bloquea el guardado por campos incompletos o valores
+     fuera del rango BPM. %>
+<% if (typeof flashError !== 'undefined' && flashError && flashError.length) { %>
+  <div class="op-flash op-flash--error">
+    <span class="op-flash__icon">⚠</span>
+    <div class="op-flash__body">
+      <% flashError.forEach(function(e) { %><p><%= e %></p><% }) %>
+    </div>
+  </div>
+<% } %>
+
 <%# Stepper visual — solo los pasos done/active son clicables; los futuros
      se muestran apagados para evitar que el operario salte hacia adelante. %>
 <div class="stepper-bar">

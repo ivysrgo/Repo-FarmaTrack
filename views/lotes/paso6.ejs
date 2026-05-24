@@ -1,0 +1,177 @@
+<%# views/lotes/paso6.ejs - Vista DT (solo lectura) %>
+<div class="step-page">
+  <%- include('../partials/stepper-topbar') %>
+
+  <div class="step-layout">
+    <div class="step-main">
+
+      <div class="step-header">
+        <div class="step-header__meta">
+          <span>Paso 6/9 · <%= lote.numeroLote %> · <%= lote.medicamento || lote.producto %> · Operario: <%= operario.nombre %></span>
+          <span class="step-header__badge step-header__badge--readonly">Vista de solo lectura</span>
+          <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+        </div>
+        <h1 class="step-header__title"><%= nombrePaso %></h1>
+      </div>
+
+      <div class="readonly-notice">🔒 Vista de solo lectura — Director Técnico. Este paso fue completado por el Operario.</div>
+
+      <div class="step-card">
+        <p class="step-card__title">Datos registrados por el operario</p>
+
+        <% /* === Bloques específicos por paso === */ %>
+
+        <% if (typeof ordenNumero !== 'undefined') { %>
+          <div class="field-grid field-grid--2">
+            <div class="field-group"><span class="field-label">Orden</span><div class="field-value"><%= ordenNumero %></div></div>
+            <div class="field-group"><span class="field-label">Producto</span><div class="field-value"><%= producto %></div></div>
+            <div class="field-group"><span class="field-label">Cantidad</span><div class="field-value"><%= cantidad %></div></div>
+            <div class="field-group"><span class="field-label">Fecha inicio</span><div class="field-value"><%= fechaInicio %></div></div>
+            <div class="field-group"><span class="field-label">Responsable</span><div class="field-value"><%= responsable %></div></div>
+            <div class="field-group"><span class="field-label">Área</span><div class="field-value"><%= area %></div></div>
+          </div>
+        <% } %>
+
+        <% if (typeof materias !== 'undefined') { %>
+          <table class="step-table">
+            <thead><tr><th>Materia prima</th><th>Cant. esperada</th><th>Cant. recibida</th><th>Estado</th><th>Recibida</th></tr></thead>
+            <tbody>
+              <% materias.forEach(m => { %>
+                <tr><td><%= m.nombre %></td><td><%= m.esperada %></td><td><%= m.recibida %></td><td><%= m.estado %></td><td>✓ Sí</td></tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } %>
+
+        <% if (typeof pesos !== 'undefined') { %>
+          <table class="step-table">
+            <thead><tr><th>Materia prima</th><th>P. teórico</th><th>Min (g)</th><th>Máx (g)</th><th>Peso registrado</th><th>Resultado</th></tr></thead>
+            <tbody>
+              <% pesos.forEach(p => { %>
+                <tr><td><%= p.nombre %></td><td><%= p.teorico %></td><td><%= p.min %></td><td><%= p.max %></td><td><%= p.registrado %></td><td><%= p.resultado %> <%= p.nota %></td></tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } %>
+
+        <% if (typeof instrucciones !== 'undefined') { %>
+          <table class="step-table">
+            <thead><tr><th></th><th>Instrucción</th><th>Valor</th></tr></thead>
+            <tbody>
+              <% instrucciones.forEach(i => { %>
+                <tr><td>✓</td><td><%= i.texto %></td><td><%= i.valor %></td></tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } %>
+
+        <% if (typeof controles !== 'undefined') { %>
+          <table class="step-table">
+            <thead><tr><th>Parámetro</th><th>Espec. Min</th><th>Espec. Max</th><th>Valor obtenido</th><th>Resultado</th><th>Reporte</th></tr></thead>
+            <tbody>
+              <% controles.forEach(c => { %>
+                <tr><td><%= c.parametro %></td><td><%= c.especMin %></td><td><%= c.especMax %></td><td><%= c.valor %></td><td><%= c.resultado %></td><td>PDF →</td></tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } %>
+
+        <% if (typeof rendimiento !== 'undefined') { %>
+          <div class="field-grid field-grid--2">
+            <div class="field-group"><span class="field-label">Cantidad planificada</span><div class="field-value"><%= cantidadPlanificada %></div></div>
+            <div class="field-group"><span class="field-label">Cantidad obtenida</span><div class="field-value"><%= cantidadObtenida %></div></div>
+            <div class="field-group"><span class="field-label">Rendimiento</span><div class="field-value"><%= rendimiento %></div></div>
+            <div class="field-group"><span class="field-label">Hora retiro</span><div class="field-value"><%= horaRetiro %></div></div>
+            <div class="field-group"><span class="field-label">Destino</span><div class="field-value"><%= destino %></div></div>
+            <div class="field-group"><span class="field-label">Condición</span><div class="field-value"><%= condicion %></div></div>
+          </div>
+        <% } %>
+
+        <% if (typeof tipoEnvase !== 'undefined') { %>
+          <div class="field-grid field-grid--2">
+            <div class="field-group"><span class="field-label">Tipo de envase</span><div class="field-value"><%= tipoEnvase %></div></div>
+            <div class="field-group"><span class="field-label">Lote envases</span><div class="field-value"><%= loteEnvases %></div></div>
+            <div class="field-group"><span class="field-label">Lote etiquetas</span><div class="field-value"><%= loteEtiquetas %></div></div>
+            <div class="field-group"><span class="field-label">Unidades empacadas</span><div class="field-value"><%= unidadesEmpacadas %> / <%= unidadesPlanificadas %></div></div>
+            <div class="field-group"><span class="field-label">Hora inicio</span><div class="field-value"><%= horaInicio %></div></div>
+            <div class="field-group"><span class="field-label">Hora fin</span><div class="field-value"><%= horaFin %></div></div>
+          </div>
+          <% if (typeof controlLinea !== 'undefined') { %>
+            <table class="step-table" style="margin-top:16px">
+              <thead><tr><th>Hora</th><th>Revisadas</th><th>Conformes</th><th>No conformes</th><th>Observaciones</th></tr></thead>
+              <tbody>
+                <% controlLinea.forEach(c => { %>
+                  <tr><td><%= c.hora %></td><td><%= c.revisadas %></td><td><%= c.conformes %></td><td><%= c.noConformes %></td><td><%= c.obs %></td></tr>
+                <% }) %>
+              </tbody>
+            </table>
+          <% } %>
+        <% } %>
+
+        <% if (typeof temperatura !== 'undefined') { %>
+          <div class="field-grid field-grid--2">
+            <div class="field-group"><span class="field-label">Hora ingreso</span><div class="field-value"><%= horaIngreso %></div></div>
+            <div class="field-group"><span class="field-label">Área</span><div class="field-value"><%= codigoArea %></div></div>
+            <div class="field-group"><span class="field-label">Temperatura</span><div class="field-value"><%= temperatura %> °C (BPM: <%= tempMin %>-<%= tempMax %>)</div></div>
+            <div class="field-group"><span class="field-label">Humedad</span><div class="field-value"><%= humedad %>% (BPM: <%= humMin %>-<%= humMax %>)</div></div>
+            <div class="field-group"><span class="field-label">Condición</span><div class="field-value"><%= condicion %></div></div>
+          </div>
+        <% } %>
+
+        <% if (typeof observaciones !== 'undefined' && observaciones) { %>
+          <div style="margin-top:18px; padding:12px 14px; background:var(--nude); border-radius:8px; font-size:12px; color:var(--text);">
+            <strong style="display:block; margin-bottom:4px; font-size:11px; color:var(--muted);">Observaciones del operario</strong>
+            <%= observaciones %>
+          </div>
+        <% } %>
+
+        <% if (typeof checklist !== 'undefined') { %>
+          <p class="step-card__title" style="margin-top:22px">Checklist completado</p>
+          <div class="checklist-grid">
+            <% checklist.forEach(item => { %>
+              <div class="check-row"><div class="check-box <%= item.checked ? "is-checked" : "" %>"></div><span><%= item.texto %></span></div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <aside class="step-aside">
+
+      <% if (typeof checklist !== 'undefined') { %>
+        <div class="aside-card">
+          <p class="aside-card__title">Checklist paso <%= paso %> — Operario</p>
+          <% checklist.forEach(item => { %>
+            <div class="aside-card__row"><span class="aside-card__check"><%= item.checked ? "✓" : "○" %></span> <%= item.texto %></div>
+          <% }) %>
+        </div>
+      <% } %>
+
+      <% if (typeof eventos !== 'undefined' && eventos.length) { %>
+        <div class="aside-card">
+          <p class="aside-card__title">Eventos recientes</p>
+          <% eventos.forEach(e => { %>
+            <div class="aside-card__row">
+              <span class="aside-card__dot aside-card__dot--<%= e.tipo %>"></span>
+              <%= e.texto %>
+              <span class="aside-card__time"><%= e.hora %></span>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+
+      <div class="aside-card">
+        <p class="aside-card__title">Navegación de pasos</p>
+        <% pasos.forEach(p => { %>
+          <div class="aside-card__row aside-card__row--nav <%= p.n === paso ? 'is-active' : (p.n < paso ? 'is-done' : '') %>">
+            <span class="aside-card__check"><%= p.n < paso ? '✓' : (p.n === paso ? '●' : '○') %></span>
+            Paso <%= p.n %> — <%= p.nombre %>
+          </div>
+        <% }) %>
+      </div>
+
+    </aside>
+  </div>
+
+  <%- include('../partials/stepper-footer') %>
+</div>

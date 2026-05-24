@@ -1,3 +1,16 @@
+<%# Datos previamente guardados por el operario en este paso (si existen) %>
+<%
+  const _datos = (lote && lote.pasos && lote.pasos[paso]) || {};
+  const D = (k, def = '') => (_datos[k] !== undefined && _datos[k] !== '') ? _datos[k] : def;
+  const C = (k) => (_datos[k] === true || _datos[k] === 'on' || _datos[k] === '1') ? 'checked' : '';
+  // Reutilizamos las materias de paso2 de la fórmula del producto.
+  const _pesosFormula = (typeof formula !== 'undefined' && formula && formula.paso2 && formula.paso2.materias)
+    ? formula.paso2.materias
+    : [
+        { nombre:'Materia prima 1', espNum:'', espUnidad:'', min:null, max:null },
+        { nombre:'Materia prima 2', espNum:'', espUnidad:'', min:null, max:null },
+      ];
+%>
 <%# views/operario/pasos/paso3.ejs — Verificación de pesos (editable) %>
 <div class="step-page">
   <%- include('../partials/op-stepper-topbar') %>
@@ -15,36 +28,41 @@
           <h1 class="step-header__title">Verificación de pesos</h1>
         </div>
 
+        <% if (typeof flashError !== 'undefined' && flashError && flashError.length) { %>
+          <div class="step-card" style="border-left:3px solid #E24B4A; background:rgba(226,75,74,0.05);">
+            <p class="step-card__title" style="color:#C42E2D;">⚠ Peso fuera de rango BPM</p>
+            <% flashError.forEach(function(e) { %><p style="font-size:11px; color:#C42E2D; line-height:1.5;"><%= e %></p><% }) %>
+          </div>
+        <% } %>
+
         <div class="step-card">
-          <p class="step-card__title">Registro de pesos por materia prima (paso crítico)</p>
+          <p class="step-card__title">Registro de pesos — <%= lote.producto %> (paso crítico)</p>
           <div class="info-notice" style="margin-bottom:10px">
-            ⚠ Si algún peso sale fuera del rango BPM, se debe abrir una No Conformidad antes de continuar.
+            ⚠ Si algún peso sale fuera del rango BPM, el sistema bloquea el guardado y debe abrirse una No Conformidad.
           </div>
           <table class="step-table">
             <thead>
               <tr>
                 <th>Materia prima</th>
-                <th>Teórico (g)</th>
+                <th>Teórico</th>
                 <th>Mín</th>
                 <th>Máx</th>
-                <th>Peso registrado (g)</th>
+                <th>Peso registrado</th>
               </tr>
             </thead>
             <tbody>
-              <% const pesos = [
-                { nombre:'Amoxicilina trihidrato',  t:'500.0', min:'490.0', max:'510.0' },
-                { nombre:'Celulosa microcristalina', t:'160.0', min:'155.0', max:'165.0' },
-                { nombre:'Almidón de maíz',          t:'80.0',  min:'77.0',  max:'83.0'  },
-                { nombre:'Estearato de magnesio',    t:'4.0',   min:'3.8',   max:'4.2'   },
-                { nombre:'Dióxido de silicio',       t:'3.0',   min:'2.8',   max:'3.2'   },
-              ]; %>
-              <% pesos.forEach((p, i) => { %>
+              <% _pesosFormula.forEach(function(m, i) { %>
+                <% const _prev = (_datos.pesos && _datos.pesos[i]) || {}; %>
                 <tr>
-                  <td><%= p.nombre %></td>
-                  <td><%= p.t %></td>
-                  <td><%= p.min %></td>
-                  <td><%= p.max %></td>
-                  <td><input type="number" step="0.1" name="peso_<%= i %>" placeholder="<%= p.t %>"></td>
+                  <td><%= m.nombre %></td>
+                  <td><%= m.espNum %> <%= m.espUnidad %></td>
+                  <td><%= m.min !== null && m.min !== undefined ? m.min : '—' %></td>
+                  <td><%= m.max !== null && m.max !== undefined ? m.max : '—' %></td>
+                  <td>
+                    <input type="number" step="0.1" name="peso_<%= i %>"
+                           placeholder="<%= m.espNum %>"
+                           value="<%= _prev.registrado || '' %>">
+                  </td>
                 </tr>
               <% }) %>
             </tbody>
@@ -64,7 +82,7 @@
         <div class="step-card">
           <label class="step-card__title" for="observaciones">Observaciones del paso</label>
           <textarea name="observaciones" id="observaciones" class="field-value field-value--wide"
-                    rows="3" placeholder="Reporta desviaciones, ajustes o no conformidades..."></textarea>
+                    rows="3" placeholder="Reporta desviaciones, ajustes o no conformidades..."><%= D('observaciones') %></textarea>
         </div>
 
       </div>

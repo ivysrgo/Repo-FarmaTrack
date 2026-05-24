@@ -1,0 +1,89 @@
+/**
+ * public/css/farmatrack.css
+ *
+ * Tokens semanticos (aliases cortos) del design system FarmaTrack.
+ * Las vistas EJS y los estilos inline usan estos nombres cortos
+ * (--green-dark, --text, --sp4, etc.). Este archivo los mapea a
+ * sus valores reales.
+ *
+ * IMPORTANTE: este archivo debe cargarse PRIMERO (antes que panel.css,
+ * stepper.css, sistema.css), porque todos esos archivos consumen estas
+ * variables.
+ */
+
+:root {
+  /* ── Paleta ────────────────────────────────────────── */
+  --green-dark:  #1A5C3A;   /* boton primario, paso completado, accion principal */
+  --green-mid:   #5DCAA5;   /* paso activo, borde completado, badges activos */
+  --green-light: #DFF5EA;   /* fondo suave verde, hover de items */
+  --nude:        #F5EFE6;   /* fondo topbar, fondo stepper, contextual */
+  --yellow:      #E8F055;   /* alertas amarillas, NC */
+  --blue-av:     #7EC8E3;   /* avatares, iconos de acceso rapido */
+  --white:       #FFFFFF;
+
+  /* ── Texto y bordes ────────────────────────────────── */
+  --text:        #1F2421;   /* gris muy oscuro casi negro - texto principal */
+  --muted:       #6B7280;   /* gris medio - texto secundario, labels */
+  --placeholder: #B1B5B9;   /* gris claro para placeholders de inputs */
+  --border:      #D3D1C7;   /* gris claro de bordes y separadores */
+
+  /* ── Estados ──────────────────────────────────────── */
+  --input-bg:    #FFFFFF;   /* fondo de inputs */
+
+  /* ── Tipografia ───────────────────────────────────── */
+  --font:        Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  --fs-hint:     10px;      /* hint, badge, numero de paso */
+  --fs-label:    11px;      /* labels de campos */
+  --fs-input:    13px;      /* texto dentro de inputs */
+  --fs-title:    18px;      /* titulo de pantalla */
+  --fs-section:  14px;      /* titulo de seccion */
+  --fs-button:   12px;
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+
+  /* ── Espaciado ───────────────────────────────────── */
+  --sp1:         4px;
+  --sp2:         8px;
+  --sp3:         12px;
+  --sp4:         16px;
+  --sp5:         20px;
+  --sp6:         24px;
+  --sp7:         32px;
+  --sp8:         40px;
+
+  /* ── Radius ──────────────────────────────────────── */
+  --r-sm:        4px;
+  --r-md:        8px;
+  --r-lg:        12px;
+  --r-pill:      20px;
+}
+
+/* ── Reset basico + base ───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font);
+  font-size: var(--fs-input);
+  color: var(--text);
+  background: var(--nude);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: var(--font); cursor: pointer; }
+input, select, textarea {
+  font-family: var(--font);
+  font-size: var(--fs-input);
+  color: var(--text);
+}
+
+/* Estado focus consistente */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--green-dark);
+  box-shadow: 0 0 0 3px rgba(26, 92, 58, 0.12);
+}
