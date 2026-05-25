@@ -23,14 +23,14 @@
           <div class="step-header__meta">
             <span>Paso 5/9 · <%= lote.numeroLote %> · <%= lote.producto %> · Operario: <%= operario.nombre %></span>
             <span class="step-header__badge" style="background:rgba(93,202,165,0.16); border-color:var(--green-mid); color:var(--green-dark);">✎ Editable · Operario</span>
-            <span class="step-header__timer">⏱ <%= tiempoTranscurrido %></span>
+            <span class="step-header__timer">⏱️ <%= tiempoTranscurrido %></span>
           </div>
           <h1 class="step-header__title">Controles de calidad</h1>
         </div>
 
         <% if (typeof flashError !== 'undefined' && flashError && flashError.length) { %>
           <div class="step-card" style="border-left:3px solid #E24B4A; background:rgba(226,75,74,0.05);">
-            <p class="step-card__title" style="color:#C42E2D;">⚠ Control fuera de rango BPM</p>
+            <p class="step-card__title" style="color:#C42E2D;">⚠️ Control fuera de rango BPM</p>
             <% flashError.forEach(function(e) { %><p style="font-size:11px; color:#C42E2D; line-height:1.5;"><%= e %></p><% }) %>
           </div>
         <% } %>
@@ -38,7 +38,7 @@
         <div class="step-card">
           <p class="step-card__title">Controles intermedios — <%= lote.producto %></p>
           <div class="info-notice" style="margin-bottom:10px">
-            ⚠ Paso crítico. Si algún valor cae fuera del rango, el sistema bloquea el guardado y debe abrirse una No Conformidad.
+            ⚠️ Paso crítico. Si algún valor cae fuera del rango, el sistema bloquea el guardado y debe abrirse una No Conformidad.
           </div>
           <table class="step-table">
             <thead>
@@ -72,10 +72,10 @@
         <div class="step-card">
           <p class="step-card__title">Confirmaciones del paso</p>
           <div class="checklist-grid">
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_controles" value="1"><span>Controles ejecutados</span></label>
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_lab" value="1"><span>Reporte de laboratorio adjunto</span></label>
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_dentro_espec" value="1"><span>Resultados dentro de especificación</span></label>
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_desviaciones" value="1"><span>Desviaciones revisadas</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_controles" value="1" <%= C('chk_controles') %>><span>Controles ejecutados</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_lab" value="1" <%= C('chk_lab') %>><span>Reporte de laboratorio adjunto</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_dentro_espec" value="1" <%= C('chk_dentro_espec') %>><span>Resultados dentro de especificación</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_desviaciones" value="1" <%= C('chk_desviaciones') %>><span>Desviaciones revisadas</span></label>
           </div>
         </div>
 
@@ -95,7 +95,7 @@
         <span>✎ Editando paso <%= paso %>/9 · <%= operario.nombre %></span>
       </div>
       <div class="step-footer__right">
-        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+        <button type="submit" name="accion" value="anterior" formnovalidate class="btn-step btn-step--secondary">← Paso anterior</button>
         <button type="submit" class="btn-step"
                 style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;">
           Guardar y continuar →

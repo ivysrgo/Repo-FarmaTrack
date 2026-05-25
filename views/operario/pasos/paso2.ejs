@@ -109,7 +109,7 @@
         <span>✎ Editando paso <%= paso %>/9 · <%= operario.nombre %></span>
       </div>
       <div class="step-footer__right">
-        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+        <button type="submit" name="accion" value="anterior" formnovalidate class="btn-step btn-step--secondary">← Paso anterior</button>
         <button type="submit" class="btn-step"
                 style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;">
           Guardar y continuar →

@@ -55,10 +55,10 @@
         <div class="step-card">
           <p class="step-card__title">Confirmaciones del paso</p>
           <div class="checklist-grid">
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_producto_retirado" value="1"><span>Producto retirado de marmita</span></label>
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_cantidad" value="1"><span>Cantidad registrada</span></label>
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_hora" value="1"><span>Hora anotada</span></label>
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_destino" value="1"><span>Destino confirmado</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_producto_retirado" value="1" <%= C('chk_producto_retirado') %>><span>Producto retirado de marmita</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_cantidad" value="1" <%= C('chk_cantidad') %>><span>Cantidad registrada</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_hora" value="1" <%= C('chk_hora') %>><span>Hora anotada</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_destino" value="1" <%= C('chk_destino') %>><span>Destino confirmado</span></label>
           </div>
         </div>
 
@@ -78,7 +78,7 @@
         <span>✎ Editando paso <%= paso %>/9 · <%= operario.nombre %></span>
       </div>
       <div class="step-footer__right">
-        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+        <button type="submit" name="accion" value="anterior" formnovalidate class="btn-step btn-step--secondary">← Paso anterior</button>
         <button type="submit" class="btn-step"
                 style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;">
           Guardar y continuar →

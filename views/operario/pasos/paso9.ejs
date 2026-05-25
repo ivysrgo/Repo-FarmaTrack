@@ -94,6 +94,7 @@
             <% items.forEach(([n, t]) => { %>
               <label class="check-row" style="cursor:pointer;">
                 <input type="checkbox" name="<%= n %>" value="1"
+                       <%= C(n) %>
                        <%= (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') ? 'disabled' : '' %>>
                 <span><%= t %></span>
               </label>
@@ -125,7 +126,7 @@
         <% } %>
       </div>
       <div class="step-footer__right">
-        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+        <button type="submit" name="accion" value="anterior" formnovalidate class="btn-step btn-step--secondary">← Paso anterior</button>
 
         <% if (lote.estado === 'pendiente_firma' || lote.estado === 'liberado') { %>
           <a href="/mis-lotes" class="btn-step btn-step--secondary">Volver a mis lotes</a>

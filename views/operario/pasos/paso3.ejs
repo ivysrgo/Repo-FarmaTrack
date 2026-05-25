@@ -72,10 +72,10 @@
         <div class="step-card">
           <p class="step-card__title">Confirmaciones del paso</p>
           <div class="checklist-grid">
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_balanza" value="1"><span>Balanza calibrada</span></label>
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_pesos_reg" value="1"><span>Pesos registrados</span></label>
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_bpm" value="1"><span>Dentro de BPM</span></label>
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_area_limpia" value="1"><span>Área limpia</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_balanza" value="1" <%= C('chk_balanza') %>><span>Balanza calibrada</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_pesos_reg" value="1" <%= C('chk_pesos_reg') %>><span>Pesos registrados</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_bpm" value="1" <%= C('chk_bpm') %>><span>Dentro de BPM</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_area_limpia" value="1" <%= C('chk_area_limpia') %>><span>Área limpia</span></label>
           </div>
         </div>
 
@@ -95,7 +95,7 @@
         <span>✎ Editando paso <%= paso %>/9 · <%= operario.nombre %></span>
       </div>
       <div class="step-footer__right">
-        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+        <button type="submit" name="accion" value="anterior" formnovalidate class="btn-step btn-step--secondary">← Paso anterior</button>
         <button type="submit" class="btn-step"
                 style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;">
           Guardar y continuar →

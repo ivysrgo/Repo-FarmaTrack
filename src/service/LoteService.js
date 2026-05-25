@@ -123,6 +123,26 @@ class LoteService {
     return { ok: true, lote: actualizado };
   }
 
+  /**
+   * Guarda un BORRADOR del paso N sin avanzar pasoActual, sin cambiar estado
+   * y sin emitir eventos. Lo usa el botón "Paso anterior" del operario para
+   * persistir lo que llevaba escrito antes de navegar atrás.
+   */
+  async guardarBorradorPaso(loteId, n, datosDelPaso) {
+    const lote = await this.loteRepo.findById(loteId);
+    if (!lote) return { ok: false, error: 'Lote no encontrado.', code: 'NOT_FOUND' };
+    const paso = parseInt(n, 10);
+    if (Number.isNaN(paso) || paso < 1 || paso > 9) {
+      return { ok: false, error: 'Paso invalido.', code: 'INVALID_STEP' };
+    }
+    const datos = (datosDelPaso && typeof datosDelPaso === 'object') ? { ...datosDelPaso } : {};
+    if (typeof datos.observaciones === 'string') datos.observaciones = datos.observaciones.trim();
+    const pasosPrev = (lote.pasos && typeof lote.pasos === 'object') ? lote.pasos : {};
+    const pasosNuevos = { ...pasosPrev, [paso]: { ...datos, fechaRegistro: new Date().toISOString() } };
+    const actualizado = await this.loteRepo.update(lote.id || loteId, { pasos: pasosNuevos });
+    return { ok: true, lote: actualizado };
+  }
+
   async avanzarOperario(loteId, n, datosDelPaso) {
     const lote = await this.loteRepo.findById(loteId);
     if (!lote) return { ok: false, error: 'Lote no encontrado.', code: 'NOT_FOUND' };

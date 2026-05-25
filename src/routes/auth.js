@@ -15,24 +15,4 @@ router.post('/login',  login);
 router.post('/signup', signup);
 router.post('/logout', logout);
 
-// Recuperar contraseña — placeholder demo (no envía mail real).
-router.get('/recuperar', (req, res) => {
-  res.render('auth/recuperar', {
-    layout:   'layouts/auth',
-    title:    'Recuperar contraseña',
-    error:    req.flash('error'),
-    ok:       req.flash('ok'),
-    emailVal: '',
-  });
-});
-router.post('/recuperar', (req, res) => {
-  const { email } = req.body || {};
-  if (!email || !email.trim()) {
-    req.flash('error', 'Ingresa tu correo institucional.');
-    return res.redirect('/auth/recuperar');
-  }
-  req.flash('ok', `Si el correo ${email} está registrado, recibirás las instrucciones.`);
-  res.redirect('/auth/recuperar');
-});
-
 module.exports = router;

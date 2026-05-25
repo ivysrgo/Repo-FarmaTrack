@@ -57,19 +57,19 @@
           <p class="step-card__title">Confirmaciones del paso (marca cuando hayas verificado)</p>
           <div class="checklist-grid">
             <label class="check-row" style="cursor:pointer;">
-              <input type="checkbox" name="chk_orden_recibida" value="1">
+              <input type="checkbox" name="chk_orden_recibida" value="1" <%= C('chk_orden_recibida') %>>
               <span>Orden física recibida y en mi poder</span>
             </label>
             <label class="check-row" style="cursor:pointer;">
-              <input type="checkbox" name="chk_datos_coinciden" value="1">
+              <input type="checkbox" name="chk_datos_coinciden" value="1" <%= C('chk_datos_coinciden') %>>
               <span>Datos del sistema coinciden con la orden física</span>
             </label>
             <label class="check-row" style="cursor:pointer;">
-              <input type="checkbox" name="chk_responsable" value="1">
+              <input type="checkbox" name="chk_responsable" value="1" <%= C('chk_responsable') %>>
               <span>Responsable de producción asignado</span>
             </label>
             <label class="check-row" style="cursor:pointer;">
-              <input type="checkbox" name="chk_observaciones" value="1">
+              <input type="checkbox" name="chk_observaciones" value="1" <%= C('chk_observaciones') %>>
               <span>Observaciones iniciales registradas</span>
             </label>
           </div>

@@ -458,6 +458,17 @@ async function postPaso(req, res, next) {
   // Extrae TODOS los campos del form según el paso (no solo observaciones)
   const datosDelPaso = extractPasoData(n, req.body);
 
+  // Acción "Paso anterior": guarda lo que el operario haya escrito (sin
+  // validar completitud ni rangos BPM) y navega al paso n-1. Si el lote
+  // estaba en_espera lo deja igual; no avanza pasoActual.
+  if (req.body && req.body.accion === 'anterior') {
+    if (n > 1) {
+      await loteService.guardarBorradorPaso(lote.id, n, datosDelPaso);
+      return res.redirect(`/mis-lotes/${lote.id}/paso/${n - 1}`);
+    }
+    return res.redirect(`/mis-lotes/${lote.id}/paso/1`);
+  }
+
   // Validación de completitud: el RQF exige que el operario llene TODO
   // antes de guardar. Si algún campo está vacío, bloqueamos.
   // En jest (JEST_WORKER_ID) se salta para que los tests del flujo no se
@@ -506,7 +517,4 @@ async function postPaso(req, res, next) {
 module.exports = { getDashboard, getPaso, postPaso };
 // Exports internos para testing directo (no usar en runtime).
 module.exports._extractPasoData      = extractPasoData;
-module.exports._validarPasoCompleto  = validarPasoCompleto;
-// Exports internos para testing directo (no usar en runtime).
-module.exports._extractPasoData     = extractPasoData;
-module.exports._validarPasoCompleto = validarPasoCompleto;
+module.exports._validarPasoCompleto  = validarPasoCompleto

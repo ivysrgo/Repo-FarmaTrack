@@ -72,10 +72,10 @@
         <div class="step-card">
           <p class="step-card__title">Confirmaciones del paso</p>
           <div class="checklist-grid">
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_mezclador" value="1"><span>Mezclador limpio y habilitado</span></label>
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_temp_ok" value="1"><span>Temperatura OK</span></label>
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_pasos_seguidos" value="1"><span>Pasos del instructivo seguidos en orden</span></label>
-            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_homogeneidad" value="1"><span>Homogeneidad visual OK</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_mezclador" value="1" <%= C('chk_mezclador') %>><span>Mezclador limpio y habilitado</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_temp_ok" value="1" <%= C('chk_temp_ok') %>><span>Temperatura OK</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_pasos_seguidos" value="1" <%= C('chk_pasos_seguidos') %>><span>Pasos del instructivo seguidos en orden</span></label>
+            <label class="check-row" style="cursor:pointer;"><input type="checkbox" name="chk_homogeneidad" value="1" <%= C('chk_homogeneidad') %>><span>Homogeneidad visual OK</span></label>
           </div>
         </div>
 
@@ -95,7 +95,7 @@
         <span>✎ Editando paso <%= paso %>/9 · <%= operario.nombre %></span>
       </div>
       <div class="step-footer__right">
-        <a href="/mis-lotes/<%= lote.id %>/paso/<%= paso - 1 %>" class="btn-step btn-step--secondary">← Paso anterior</a>
+        <button type="submit" name="accion" value="anterior" formnovalidate class="btn-step btn-step--secondary">← Paso anterior</button>
         <button type="submit" class="btn-step"
                 style="background:var(--green-dark); color:#fff; border-color:var(--green-dark); cursor:pointer;">
           Guardar y continuar →
